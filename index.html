@@ -24,7 +24,20 @@
     --text-light: #8a6a50;
   }
   html { scroll-behavior: smooth; }
+
   body { font-family: 'Georgia', serif; background: var(--cream); color: var(--text-dark); line-height: 1.7; }
+  body::before { content: ''; position: fixed; inset: 0; background: url('images/emi_alex_autumn_transparent.png') center 55% / min(70vw, 560px) no-repeat; opacity: 0; pointer-events: none; z-index: -1; transition: opacity 0.35s ease; }
+  body.show-watermark::before { opacity: 0.08; }
+
+  /* ACK MODAL */
+  .ack-modal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(28,12,5,0.72); z-index: 9999; padding: 1rem; }
+  .ack-modal.open { display: flex; }
+  .ack-card { width: min(540px, 100%); background: #fffaf4; border: 1px solid rgba(196,96,10,0.2); border-radius: 14px; box-shadow: 0 24px 80px rgba(0,0,0,0.22); padding: 1.25rem 1.25rem 1rem; text-align: center; }
+  .ack-title { font-size: clamp(1.1rem, 4vw, 1.45rem); margin-bottom: 0.35rem; color: var(--text-dark); }
+  .ack-text { font-family: Arial, sans-serif; font-size: 0.92rem; color: var(--text-mid); margin-bottom: 1rem; line-height: 1.55; }
+  .ack-btn { padding: 0.72rem 1.1rem; border: none; border-radius: 9px; background: var(--orange); color: #fff; font-family: Arial, sans-serif; font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; width: 100%; }
+  .ack-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+
 
   /* NAV */
   nav { position: sticky; top: 0; z-index: 100; background: rgba(168,50,32,0.97); }
@@ -159,6 +172,7 @@
     .gallery-grid { grid-template-columns: repeat(2, 1fr); }
     .rsvp-form { padding: 1.5rem; }
     .timeline-item { grid-template-columns: 70px 12px 1fr; gap: 0 1rem; }
+    body.show-watermark::before { opacity: 0.06; background-size: min(92vw, 420px); background-position: center 28%; }
   }
 </style>
 </head>
@@ -196,11 +210,11 @@
   <div class="leaf-bg" aria-hidden="true">
     🍂🍁🍃🍂🍁🍃🍂🍁🍃🍂🍁🍃🍂🍁🍃🍂🍁🍃🍂🍁🍃🍂🍁🍃🍂🍁🍃🍂
   </div>
+  <p class="hero-eyebrow">You are warmly invited to celebrate the marriage of</p>
   <div style="text-align:center; margin-bottom: 1.5rem; position: relative; z-index: 1;">
     <img class="hero-img" src="images/emi_alex_autumn_transparent.png" alt="Emma and Alex autumn illustration by Alice Krieits">
     <p class="hero-credit">Illustration by <a href="https://www.instagram.com/alice_krieits/" target="_blank">@alice_krieits</a></p>
   </div>
-  <p class="hero-eyebrow">You are warmly invited to celebrate the marriage of</p>
   <p class="hero-date">6th November 2027</p>
   <p class="hero-venue">Gaynes Park, Epping</p>
   <div class="countdown">
@@ -450,12 +464,45 @@
   </div>
 </section>
 
+
+<div class="ack-modal" id="ackModal" aria-hidden="true" role="dialog" aria-labelledby="ackTitle">
+  <div class="ack-card">
+    <h2 class="ack-title" id="ackTitle">Quick check-in</h2>
+    <p class="ack-text">Please tap the button below to let us know this link opened successfully for you.</p>
+    <button class="ack-btn" id="ackBtn" type="button" onclick="submitAcknowledgement()">Yes, I opened the site</button>
+  </div>
+</div>
+
 <!-- FOOTER -->
 <footer>
   Made with love for <span>Emma & Alex</span> &nbsp;·&nbsp; 6th November 2027 &nbsp;·&nbsp; Gaynes Park, Epping
 </footer>
 
 <script>
+  var FORMSPREE_ENDPOINT = 'https://formspree.io/f/mgorqjel';
+  // Replace with your deployed Google Apps Script Web App URL when ready.
+  var GOOGLE_SHEETS_WEBHOOK = '';
+
+  function postToEndpoints(payload) {
+    var requests = [
+      fetch(FORMSPREE_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+    ];
+
+    if (GOOGLE_SHEETS_WEBHOOK) {
+      requests.push(fetch(GOOGLE_SHEETS_WEBHOOK, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }));
+    }
+
+    return Promise.allSettled(requests);
+  }
+
   function toggleMenu() {
     var m = document.getElementById('mobileMenu');
     m.style.display = m.style.display === 'block' ? 'none' : 'block';
@@ -475,6 +522,36 @@
     document.getElementById('lbl-no').classList.toggle('selected', val === 'no');
   }
 
+  function submitAcknowledgement() {
+    var btn = document.getElementById('ackBtn');
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+
+    var payload = {
+      eventType: 'acknowledgement',
+      submittedAtIso: new Date().toISOString(),
+      page: window.location.href,
+      userAgent: navigator.userAgent,
+      tz: Intl.DateTimeFormat().resolvedOptions().timeZone
+    };
+
+    postToEndpoints(payload).then(function(results) {
+      var formspreeOk = results[0] && results[0].status === 'fulfilled' && results[0].value.ok;
+      if (formspreeOk) {
+        localStorage.setItem('ea_ack_v1', '1');
+        document.getElementById('ackModal').classList.remove('open');
+      } else {
+        alert('Could not send acknowledgement. Please try again.');
+        btn.disabled = false;
+        btn.textContent = 'Yes, I opened the site';
+      }
+    }).catch(function() {
+      alert('Connection issue. Please try again.');
+      btn.disabled = false;
+      btn.textContent = 'Yes, I opened the site';
+    });
+  }
+
   function submitRsvp() {
     var name = document.getElementById('rsvp-name').value.trim();
     var email = document.getElementById('rsvp-email').value.trim();
@@ -488,12 +565,23 @@
     var btn = document.querySelector('.rsvp-submit');
     btn.textContent = 'Sending...';
     btn.disabled = true;
-    fetch('https://formspree.io/f/mgorqjel', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify({ name: name, _replyto: email, attending: attending.value, guests: guests, notes: notes })
-    }).then(function(r) {
-      if (r.ok) {
+
+    var payload = {
+      eventType: 'rsvp',
+      name: name,
+      _replyto: email,
+      submittedAtIso: new Date().toISOString(),
+      details: {
+        attending: attending.value,
+        guests: Number(guests),
+        notes: notes,
+        source: 'wedding-site'
+      }
+    };
+
+    postToEndpoints(payload).then(function(results) {
+      var formspreeOk = results[0] && results[0].status === 'fulfilled' && results[0].value.ok;
+      if (formspreeOk) {
         document.getElementById('rsvpForm').style.display = 'none';
         document.getElementById('rsvpSuccess').style.display = 'block';
       } else {
@@ -506,6 +594,19 @@
       btn.textContent = 'Send my RSVP';
       btn.disabled = false;
     });
+  }
+
+  function setupHeroWatermark() {
+    var heroImage = document.querySelector('.hero-img');
+    if (!heroImage || !('IntersectionObserver' in window)) { return; }
+
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        document.body.classList.toggle('show-watermark', !entry.isIntersecting);
+      });
+    }, { threshold: 0.05 });
+
+    observer.observe(heroImage);
   }
 
   function updateCountdown() {
@@ -521,8 +622,16 @@
     document.getElementById('cd-mins').textContent = Math.floor((diff % 3600000) / 60000);
     document.getElementById('cd-secs').textContent = Math.floor((diff % 60000) / 1000);
   }
-  updateCountdown();
-  setInterval(updateCountdown, 1000);
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var alreadyAcknowledged = localStorage.getItem('ea_ack_v1') === '1';
+    if (!alreadyAcknowledged) {
+      document.getElementById('ackModal').classList.add('open');
+    }
+    setupHeroWatermark();
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+  });
 </script>
 </body>
 </html>
