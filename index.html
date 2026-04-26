@@ -187,6 +187,19 @@
   .rsvp-resubmit-btn { margin-top: 0.7rem; border: 1px solid rgba(255,255,255,0.4); background: transparent; color: #fff; border-radius: 9px; padding: 0.55rem 0.8rem; font-family: Arial, sans-serif; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.11em; cursor: pointer; }
   .rsvp-disabled { opacity: 0.42; pointer-events: none; }
 
+  /* FUN MODE: flying heads */
+  .flying-head {
+    position: fixed;
+    width: 72px;
+    height: 72px;
+    object-fit: cover;
+    border-radius: 50%;
+    pointer-events: none;
+    user-select: none;
+    z-index: 9998;
+    will-change: transform;
+  }
+
   /* FOOTER */
   footer { background: #3a1a0a; color: rgba(255,243,230,0.5); text-align: center; padding: 2.5rem 1.5rem; font-family: Arial, sans-serif; font-size: 0.8rem; letter-spacing: 0.05em; }
   footer span { color: var(--orange-glow); }
@@ -517,6 +530,11 @@
   var pendingGuestMatch = null;
   var RSVP_STORAGE_PREFIX = 'ea_rsvp_';
   var peopleSyncPromise = null;
+  var HEAD_POP_ENABLED = true;
+  var HEAD_IMAGE_CHOICES = ['images/alex_head.png', 'images/emma_head.png'];
+  var activeFlyingHeads = [];
+  var flyingHeadAnimationId = null;
+  var lastHeadTimestamp = 0;
 
   function postToGoogleSheets(payload) {
     if (!GOOGLE_SHEETS_WEBHOOK) {
@@ -1027,6 +1045,84 @@
     observer.observe(heroImage);
   }
 
+  function spawnFlyingHead(originX, originY) {
+    if (!HEAD_POP_ENABLED) { return; }
+    var imageSrc = HEAD_IMAGE_CHOICES[Math.floor(Math.random() * HEAD_IMAGE_CHOICES.length)];
+    var el = document.createElement('img');
+    el.className = 'flying-head';
+    el.src = imageSrc;
+    el.alt = '';
+    el.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(el);
+
+    var size = 56 + Math.random() * 42;
+    var launchSpeedY = -(640 + Math.random() * 300);
+    var launchSpeedX = (Math.random() - 0.5) * 280;
+    var spinVelocity = (Math.random() > 0.5 ? 1 : -1) * (280 + Math.random() * 500);
+
+    activeFlyingHeads.push({
+      node: el,
+      x: originX - (size / 2),
+      y: originY - (size / 2),
+      vx: launchSpeedX,
+      vy: launchSpeedY,
+      angle: Math.random() * 360,
+      spinVelocity: spinVelocity,
+      size: size
+    });
+    ensureFlyingHeadAnimation();
+  }
+
+  function ensureFlyingHeadAnimation() {
+    if (flyingHeadAnimationId) { return; }
+    var gravity = 1750; // px/s^2
+    var last = performance.now();
+
+    function tick(now) {
+      var dt = Math.min((now - last) / 1000, 0.05);
+      last = now;
+      activeFlyingHeads = activeFlyingHeads.filter(function(head) {
+        head.vy += gravity * dt;
+        head.x += head.vx * dt;
+        head.y += head.vy * dt;
+        head.angle += head.spinVelocity * dt;
+        head.node.style.width = head.size + 'px';
+        head.node.style.height = head.size + 'px';
+        head.node.style.transform = 'translate3d(' + head.x + 'px,' + head.y + 'px,0) rotate(' + head.angle + 'deg)';
+
+        var outOfBounds = head.y - head.size > window.innerHeight || head.x + head.size < -120 || head.x > window.innerWidth + 120;
+        if (outOfBounds) {
+          head.node.remove();
+          return false;
+        }
+        return true;
+      });
+
+      if (activeFlyingHeads.length) {
+        flyingHeadAnimationId = requestAnimationFrame(tick);
+      } else {
+        flyingHeadAnimationId = null;
+      }
+    }
+
+    flyingHeadAnimationId = requestAnimationFrame(tick);
+  }
+
+  function setupFlyingHeads() {
+    document.addEventListener('pointerdown', function(event) {
+      if (!HEAD_POP_ENABLED) { return; }
+      var now = performance.now();
+      if (now - lastHeadTimestamp < 75) { return; }
+      lastHeadTimestamp = now;
+      spawnFlyingHead(event.clientX, event.clientY);
+    });
+  }
+
+  function setFlyingHeadsEnabled(isEnabled) {
+    HEAD_POP_ENABLED = Boolean(isEnabled);
+    return HEAD_POP_ENABLED;
+  }
+
   function updateCountdown() {
     var target = new Date('2027-11-06T14:00:00');
     var now = new Date();
@@ -1077,6 +1173,8 @@
     });
     initializeRsvpSection();
     setupHeroWatermark();
+    setupFlyingHeads();
+    window.setFlyingHeadsEnabled = setFlyingHeadsEnabled;
     updateCountdown();
     setInterval(updateCountdown, 1000);
   });
