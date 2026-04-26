@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Emma & Alex — Evening Celebration</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --orange: #c4600a; --orange-dark: #a85208; --orange-light: #f5e6d3;
+    --rust: #a83220; --forest: #2d5016; --cream: #fdf6ef; --warm-white: #fff9f4;
+    --text-dark: #2c1a0e; --text-mid: #5c3d28; --text-light: #8a6a50;
+  }
+  body { font-family: Georgia, serif; background: var(--cream); color: var(--text-dark); line-height: 1.7; }
+  nav { position: sticky; top: 0; z-index: 100; background: rgba(168,50,32,0.97); }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between; max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; height: 54px; }
+  .nav-brand { font-size: 1.1rem; color: #fff3e6; letter-spacing: 0.08em; font-style: italic; text-decoration: none; }
+  .nav-links { display: flex; list-style: none; }
+  .nav-links a { display: block; padding: 0 0.9rem; height: 54px; line-height: 54px; font-family: Arial, sans-serif; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,243,230,0.8); text-decoration: none; }
+  .hero { min-height: 72vh; background: linear-gradient(160deg, #7a2010 0%, #c4600a 45%, #b8860b 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 5rem 1.2rem 4rem; }
+  .hero-img { width: min(280px, 72vw); margin-bottom: 1rem; }
+  .hero-eyebrow, .hero-date { font-family: Arial, sans-serif; text-transform: uppercase; color: rgba(255,243,230,0.9); letter-spacing: 0.2em; }
+  .hero-eyebrow { font-size: 0.75rem; margin-bottom: 1rem; }
+  .hero-date { font-size: 0.95rem; margin: 1rem 0; }
+  .hero-venue { font-size: 1.05rem; color: rgba(255,243,230,0.82); font-style: italic; }
+  .guest-banner { max-width: 900px; margin: 1.2rem auto 0; background: #fff; border: 1px solid rgba(196,96,10,0.25); border-radius: 12px; padding: 1rem 1.2rem; font-family: Arial, sans-serif; }
+  .guest-banner .label { color: var(--text-light); letter-spacing: 0.08em; text-transform: uppercase; font-size: 0.65rem; }
+  section { padding: 4.5rem 1.5rem; }
+  .section-inner { max-width: 900px; margin: 0 auto; }
+  .section-label { font-family: Arial, sans-serif; font-size: 0.7rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--orange); margin-bottom: 0.75rem; display: block; }
+  .section-title { font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 400; margin-bottom: 1.5rem; }
+  .divider { width: 60px; height: 2px; background: linear-gradient(90deg, var(--orange), var(--rust)); margin: 1.5rem 0; }
+  .section-body { font-size: 1.05rem; color: var(--text-mid); max-width: 680px; }
+  #schedule { background: var(--warm-white); }
+  .timeline { margin-top: 2rem; }
+  .timeline-item { display: grid; grid-template-columns: 88px 1fr; gap: 0.8rem 1.2rem; padding-bottom: 1rem; }
+  .timeline-time { font-family: Arial, sans-serif; font-size: 0.8rem; color: var(--orange); text-align: right; font-weight: bold; }
+  #venue { background: var(--forest); color: var(--cream); }
+  #venue .section-label { color: #f1bb81; }
+  #venue .section-body { color: rgba(245,235,220,0.85); }
+  .venue-card { margin-top: 1.4rem; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; padding: 1.2rem; max-width: 540px; }
+  .faq-item { border-bottom: 1px solid rgba(196,96,10,0.15); }
+  .faq-q { width: 100%; background: none; border: none; text-align: left; padding: 1rem 0; font-size: 1rem; font-family: Georgia, serif; color: var(--text-dark); cursor: pointer; }
+  .faq-a { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; font-size: 0.95rem; color: var(--text-mid); }
+  .faq-a.open { max-height: 220px; padding-bottom: 1rem; }
+  #rsvp { background: var(--rust); color: #fff8f0; }
+  #rsvp .section-label { color: #f1bb81; }
+  #rsvp .section-title { color: #fff8f0; }
+  .rsvp-note { font-size: 1.02rem; color: rgba(255,243,230,0.86); max-width: 700px; }
+  .rsvp-form { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15); border-radius: 14px; margin-top: 1.2rem; padding: 1.2rem; max-width: 640px; }
+  .rsvp-row { margin-bottom: 0.95rem; }
+  .rsvp-label { display: block; font-family: Arial, sans-serif; font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.35rem; color: rgba(255,243,230,0.75); }
+  .rsvp-input, .rsvp-textarea { width: 100%; border-radius: 8px; border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.07); color: #fff; padding: 0.66rem 0.8rem; font-family: Georgia, serif; }
+  .rsvp-party-list { display: grid; gap: 0.75rem; }
+  .rsvp-person { border: 1px solid rgba(255,255,255,0.16); border-radius: 10px; padding: 0.75rem; background: rgba(255,255,255,0.05); }
+  .rsvp-person-name { margin-bottom: 0.4rem; }
+  .rsvp-radio-group { display: flex; gap: 0.65rem; flex-wrap: wrap; }
+  .rsvp-radio-label { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.45rem 0.7rem; border: 1px solid rgba(255,255,255,0.18); border-radius: 8px; cursor: pointer; font-family: Arial, sans-serif; font-size: 0.82rem; }
+  .rsvp-radio-label.selected { background: rgba(232,160,96,0.24); border-color: rgba(232,160,96,0.6); }
+  .rsvp-radio-label input { display: none; }
+  .rsvp-submit { width: 100%; border: none; border-radius: 8px; background: var(--orange); color: #fff; padding: 0.8rem; text-transform: uppercase; letter-spacing: 0.12em; font-family: Arial, sans-serif; cursor: pointer; }
+  .rsvp-inline-error { display: none; color: #ffd7cb; margin-top: 0.35rem; font-family: Arial, sans-serif; font-size: 0.82rem; }
+  .rsvp-inline-error.open { display: block; }
+  .rsvp-locked { display: none; margin-top: 1rem; border: 1px solid rgba(232,160,96,0.45); border-radius: 12px; background: rgba(232,160,96,0.15); padding: 1rem; max-width: 640px; }
+  .rsvp-locked.open { display: block; }
+  .rsvp-resubmit-btn { margin-top: 0.7rem; border: 1px solid rgba(255,255,255,0.4); background: transparent; color: #fff; border-radius: 9px; padding: 0.55rem 0.8rem; font-family: Arial, sans-serif; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.11em; cursor: pointer; }
+  .rsvp-disabled { opacity: 0.42; pointer-events: none; }
+  .rsvp-success { display: none; margin-top: 1rem; color: #ffd8bd; }
+  footer { background: #3a1a0a; color: rgba(255,243,230,0.6); text-align: center; padding: 2.2rem 1.5rem; font-family: Arial, sans-serif; font-size: 0.82rem; }
+  @media (max-width: 700px) { .nav-links { display: none; } .timeline-item { grid-template-columns: 72px 1fr; } }
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-inner">
+    <a class="nav-brand" href="#top">Emma & Alex</a>
+    <ul class="nav-links">
+      <li><a href="#schedule">Evening</a></li>
+      <li><a href="#venue">Venue</a></li>
+      <li><a href="#faq">FAQ</a></li>
+      <li><a href="#rsvp">RSVP</a></li>
+    </ul>
+  </div>
+</nav>
+
+<section class="hero" id="top">
+  <p class="hero-eyebrow">You are warmly invited to our evening celebration</p>
+  <img class="hero-img" src="images/emi_alex_autumn_transparent.png" alt="Emma and Alex autumn illustration">
+  <p class="hero-date">6th November 2027 · Evening Reception</p>
+  <p class="hero-venue">Gaynes Park, Epping</p>
+</section>
+
+<div class="guest-banner" id="guestBanner" style="display:none;"></div>
+
+<section id="schedule">
+  <div class="section-inner">
+    <span class="section-label">The evening</span>
+    <h2 class="section-title">Evening Schedule</h2>
+    <div class="divider"></div>
+    <p class="section-body">We can't wait to celebrate with you in the evening. Here is the plan for your part of the day.</p>
+    <div class="timeline">
+      <div class="timeline-item"><div class="timeline-time">7:30 pm</div><div>Evening guests arrive and welcome drinks</div></div>
+      <div class="timeline-item"><div class="timeline-time">8:00 pm</div><div>First dance and cake cutting</div></div>
+      <div class="timeline-item"><div class="timeline-time">8:30 pm</div><div>Music, dancing and evening food</div></div>
+      <div class="timeline-item"><div class="timeline-time">Midnight</div><div>Carriages</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="venue">
+  <div class="section-inner">
+    <span class="section-label">Getting here</span>
+    <h2 class="section-title">Venue & Travel</h2>
+    <div class="divider"></div>
+    <p class="section-body">Gaynes Park, Theydon Garnon, Epping, Essex, CM16 7ES.</p>
+    <div class="venue-card">Epping station is around 10 minutes by taxi. Free on-site parking is available.</div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="section-inner">
+    <span class="section-label">Good to know</span>
+    <h2 class="section-title">Evening FAQ</h2>
+    <div class="divider"></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">What time should evening guests arrive?</button><div class="faq-a">Please arrive from 7:30 pm so we can welcome you before first dance celebrations begin.</div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Is parking available?</button><div class="faq-a">Yes, there is free parking at Gaynes Park.</div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Can I update my RSVP later?</button><div class="faq-a">Absolutely. Please message us directly if anything changes after you RSVP.</div></div>
+  </div>
+</section>
+
+<section id="rsvp">
+  <div class="section-inner">
+    <span class="section-label">Will you join us?</span>
+    <h2 class="section-title">Evening RSVP</h2>
+    <div class="divider"></div>
+    <p class="rsvp-note">Please RSVP by 1st September 2027.</p>
+    <div class="rsvp-locked" id="rsvpLockedNotice">
+      <p>You have already RSVPd.</p>
+      <button type="button" class="rsvp-resubmit-btn" onclick="enableRsvpResubmission()">I would like to resubmit my RSVP</button>
+    </div>
+    <div class="rsvp-form" id="rsvpForm">
+      <div class="rsvp-row">
+        <label class="rsvp-label">Your full name</label>
+        <input class="rsvp-input" type="text" id="rsvp-name" placeholder="e.g. Sarah Thompson">
+      </div>
+      <div class="rsvp-row">
+        <label class="rsvp-label">Email address</label>
+        <input class="rsvp-input" type="email" id="rsvp-email" placeholder="your@email.com">
+      </div>
+      <div class="rsvp-row">
+        <label class="rsvp-label">Attendance per person (required for everyone in your party)</label>
+        <div id="individualRsvpList" class="rsvp-party-list"></div>
+        <div id="individualRsvpError" class="rsvp-inline-error">Please choose attending or not attending for every person in your party.</div>
+      </div>
+      <div class="rsvp-row">
+        <label class="rsvp-label">Dietary requirements or anything else we should know</label>
+        <textarea class="rsvp-textarea" id="rsvp-notes" rows="3" placeholder="Allergies, dietary needs, or a message for us..."></textarea>
+      </div>
+      <button class="rsvp-submit" type="button" onclick="submitRsvp()">Send my RSVP</button>
+    </div>
+    <div class="rsvp-success" id="rsvpSuccess">Thank you — we have received your RSVP.</div>
+  </div>
+</section>
+
+<footer>Made with love for Emma & Alex · 6th November 2027 · Gaynes Park, Epping</footer>
+
+<script>
+  var FORMSPREE_ENDPOINT = 'https://formspree.io/f/mgorqjel';
+  var GOOGLE_SHEETS_WEBHOOK = 'https://script.google.com/macros/s/AKfycbxC6Z-QzSMTOnbmhy0uv8iDKeayN-BnrzKaPHKTv3M2V6dat3U37ZZ5V7l68o_eYuJlQQ/exec';
+  var RSVP_STORAGE_PREFIX = 'ea_rsvp_';
+
+  function postToGoogleSheets(payload) {
+    if (!GOOGLE_SHEETS_WEBHOOK) { return Promise.resolve({ skipped: true }); }
+    return fetch(GOOGLE_SHEETS_WEBHOOK, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    });
+  }
+
+  function postToEndpoints(payload) {
+    return Promise.allSettled([
+      fetch(FORMSPREE_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(payload)
+      }),
+      postToGoogleSheets(payload)
+    ]);
+  }
+
+  function toggleFaq(btn) {
+    var answer = btn.nextElementSibling;
+    var open = answer.classList.contains('open');
+    document.querySelectorAll('.faq-a').forEach(function(a) { a.classList.remove('open'); });
+    if (!open) { answer.classList.add('open'); }
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var savedParty = localStorage.getItem('ea_ack_party');
+    var party = null;
+    if (savedParty) {
+      try {
+        party = JSON.parse(savedParty);
+      } catch (err) {
+        party = null;
+      }
+    }
+
+    if (!party) {
+      renderIndividualRsvpChoices();
+      setRsvpLockedState(localStorage.getItem(getRsvpStorageKey()) === '1');
+      return;
+    }
+
+    try {
+      var banner = document.getElementById('guestBanner');
+      var parts = ['<div class="label">Welcome</div><div><strong>' + party.matchedName + '</strong></div>'];
+      if (party.guestName) {
+        parts.push('<div class="label">and Guest(s):</div><div>' + party.guestName + '</div>');
+      }
+      if (party.children && party.children.length) {
+        parts.push('<div class="label">Children:</div><div>' + party.children.join(', ') + '</div>');
+      }
+      banner.innerHTML = parts.join('');
+      banner.style.display = 'block';
+    } catch (err) {
+      // Ignore malformed local storage.
+    }
+    renderIndividualRsvpChoices();
+    setRsvpLockedState(localStorage.getItem(getRsvpStorageKey()) === '1' || Boolean(party.hasRsvped));
+  });
+
+  function getSavedParty() {
+    var raw = localStorage.getItem('ea_ack_party');
+    if (!raw) { return null; }
+    try { return JSON.parse(raw); } catch (err) { return null; }
+  }
+
+  function currentPartyMembers() {
+    var party = getSavedParty();
+    var members = [];
+    if (party && party.matchedName) { members.push(party.matchedName); }
+    if (party && party.guestName) { members.push(party.guestName); }
+    if (party && party.children && party.children.length) {
+      party.children.forEach(function(child) { members.push(child); });
+    }
+    if (!members.length) {
+      members.push(document.getElementById('rsvp-name').value.trim() || 'Guest 1');
+    }
+    return members;
+  }
+
+  function renderIndividualRsvpChoices() {
+    var container = document.getElementById('individualRsvpList');
+    if (!container) { return; }
+    var members = currentPartyMembers();
+    container.innerHTML = '';
+    members.forEach(function(member, index) {
+      var item = document.createElement('div');
+      item.className = 'rsvp-person';
+      item.innerHTML =
+        '<p class=\"rsvp-person-name\">' + escapeHtml(member) + '</p>' +
+        '<div class=\"rsvp-radio-group\">' +
+          '<label class=\"rsvp-radio-label\"><input type=\"radio\" name=\"person_' + index + '\" value=\"yes\"> 🎉 Attending</label>' +
+          '<label class=\"rsvp-radio-label\"><input type=\"radio\" name=\"person_' + index + '\" value=\"no\"> 😢 Not attending</label>' +
+        '</div>';
+      item.querySelectorAll('input[type=\"radio\"]').forEach(function(radio) {
+        radio.addEventListener('change', function() {
+          var labelNodes = item.querySelectorAll('.rsvp-radio-label');
+          labelNodes.forEach(function(label) {
+            var input = label.querySelector('input');
+            label.classList.toggle('selected', input.checked);
+          });
+        });
+      });
+      container.appendChild(item);
+    });
+  }
+
+  function collectIndividualRsvp() {
+    var members = currentPartyMembers();
+    var decisions = [];
+    for (var i = 0; i < members.length; i += 1) {
+      var selected = document.querySelector('input[name=\"person_' + i + '\"]:checked');
+      if (!selected) { return null; }
+      decisions.push({ name: members[i], attending: selected.value === 'yes' });
+    }
+    return decisions;
+  }
+
+  function getRsvpStorageKey() {
+    var party = getSavedParty();
+    return RSVP_STORAGE_PREFIX + (party && party.partyId ? party.partyId : 'anonymous_evening');
+  }
+
+  function setRsvpLockedState(isLocked) {
+    document.getElementById('rsvpForm').classList.toggle('rsvp-disabled', isLocked);
+    document.getElementById('rsvpLockedNotice').classList.toggle('open', isLocked);
+  }
+
+  function enableRsvpResubmission() {
+    localStorage.removeItem(getRsvpStorageKey());
+    setRsvpLockedState(false);
+    document.getElementById('rsvpSuccess').style.display = 'none';
+    document.getElementById('rsvpForm').style.display = 'block';
+  }
+
+  function submitRsvp() {
+    var name = document.getElementById('rsvp-name').value.trim();
+    var email = document.getElementById('rsvp-email').value.trim();
+    var partyResponses = collectIndividualRsvp();
+    var party = getSavedParty() || {};
+    var notes = document.getElementById('rsvp-notes').value;
+    if (!name || !email) {
+      alert('Please fill in your name and email.');
+      return;
+    }
+    if (!partyResponses) {
+      document.getElementById('individualRsvpError').classList.add('open');
+      alert('Please make an attendance choice for every person in your party.');
+      return;
+    }
+    document.getElementById('individualRsvpError').classList.remove('open');
+
+    var btn = document.querySelector('.rsvp-submit');
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+    var payload = {
+      eventType: 'rsvp',
+      eventAudience: 'evening',
+      name: name,
+      _replyto: email,
+      partyId: party.partyId || '',
+      matchedName: party.matchedName || '',
+      submittedAtIso: new Date().toISOString(),
+      details: {
+        partyResponses: partyResponses,
+        attendingCount: partyResponses.filter(function(p) { return p.attending; }).length,
+        declineCount: partyResponses.filter(function(p) { return !p.attending; }).length,
+        notes: notes,
+        source: 'wedding-site-evening'
+      }
+    };
+
+    postToEndpoints(payload).then(function(results) {
+      var formspreeOk = results[0] && results[0].status === 'fulfilled' && results[0].value.ok;
+      if (!formspreeOk) {
+        alert('Something went wrong — please try again.');
+        btn.disabled = false;
+        btn.textContent = 'Send my RSVP';
+        return;
+      }
+      localStorage.setItem(getRsvpStorageKey(), '1');
+      setRsvpLockedState(true);
+      document.getElementById('rsvpForm').style.display = 'none';
+      document.getElementById('rsvpSuccess').style.display = 'block';
+    }).catch(function() {
+      alert('Could not send — please check your connection and try again.');
+      btn.disabled = false;
+      btn.textContent = 'Send my RSVP';
+    });
+  }
+
+  function escapeHtml(str) {
+    return String(str || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/\"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+</script>
+</body>
+</html>
