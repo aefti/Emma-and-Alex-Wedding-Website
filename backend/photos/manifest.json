@@ -1,0 +1,11 @@
+{
+  "mainPhoto": "images/photos/main.jpg",
+  "galleryPhotos": [
+    "images/photos/small-1.jpg",
+    "images/photos/small-2.jpg",
+    "images/photos/small-3.jpg",
+    "images/photos/small-4.jpg",
+    "images/photos/small-5.jpg",
+    "images/photos/small-6.jpg"
+  ]
+}
