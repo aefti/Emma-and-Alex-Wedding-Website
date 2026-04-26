@@ -618,7 +618,7 @@
 
       script.onerror = function() {
         cleanup();
-        reject(new Error('Could not load People tab data.'));
+        reject(new Error('Could not load People tab data. Check Google Apps Script Web App access ("Anyone") and that the deployed URL is current.'));
       };
 
       script.src = GOOGLE_SHEETS_WEBHOOK + '?action=people&callback=' + encodeURIComponent(callbackName) + '&t=' + Date.now();
