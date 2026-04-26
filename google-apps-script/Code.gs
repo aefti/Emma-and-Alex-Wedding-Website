@@ -59,6 +59,9 @@ function doPost(e) {
 
 function buildPeoplePayload_() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
+  if (!ss) {
+    throw new Error('No active spreadsheet found. If this is a standalone Web App, use SpreadsheetApp.openById(...) instead.');
+  }
   var peopleSheet = ss.getSheetByName(PEOPLE_SHEET_NAME);
   if (!peopleSheet) {
     throw new Error('Missing People sheet: ' + PEOPLE_SHEET_NAME);
@@ -69,22 +72,36 @@ function buildPeoplePayload_() {
     return { ok: true, people: [] };
   }
 
-  var values = peopleSheet.getRange(2, 1, lastRow - 1, 14).getValues();
+  var lastColumn = peopleSheet.getLastColumn();
+  var values = peopleSheet.getRange(1, 1, lastRow, lastColumn).getValues();
+  var headers = values[0].map(normalizeHeaderKey_);
+  var dataRows = values.slice(1);
+
+  var partyIdIx = indexOfHeader_(headers, ['PARTY_ID']);
+  var dayEveningIx = indexOfHeader_(headers, ['DAY_EVENING']);
+  var leadFullNameIx = indexOfHeader_(headers, ['LEAD_PERSON_FULL_NAME']);
+  var guestFullNameIx = indexOfHeader_(headers, ['PERSON_2_FULL_NAME']);
+  var childrenIx = indexOfHeader_(headers, ['CHILDREN']);
+
+  if (partyIdIx === -1 || leadFullNameIx === -1) {
+    throw new Error('People sheet is missing required headers. Expected at least PARTY_ID and LEAD_PERSON_FULL_NAME.');
+  }
+
   var rsvpStatusByPartyId = getRsvpStatusByPartyId_();
 
-  var people = values
+  var people = dataRows
     .filter(function(row) {
-      return row[0] || row[4] || row[12];
+      return row[partyIdIx] || row[leadFullNameIx] || (guestFullNameIx > -1 ? row[guestFullNameIx] : '');
     })
     .map(function(row) {
-      var partyId = toStringSafe_(row[0]);
-      var dayEveningRaw = normalizeWhitespace_(row[1]);
+      var partyId = toStringSafe_(row[partyIdIx]);
+      var dayEveningRaw = dayEveningIx > -1 ? normalizeWhitespace_(row[dayEveningIx]) : '';
       return {
         partyId: partyId,
         dayEvening: mapDayEvening_(dayEveningRaw),
-        leadFullName: normalizeWhitespace_(row[4]),
-        guestFullName: normalizeWhitespace_(row[12]),
-        children: normalizeWhitespace_(row[13]),
+        leadFullName: normalizeWhitespace_(row[leadFullNameIx]),
+        guestFullName: guestFullNameIx > -1 ? normalizeWhitespace_(row[guestFullNameIx]) : '',
+        children: childrenIx > -1 ? normalizeWhitespace_(row[childrenIx]) : '',
         hasRsvped: Boolean(rsvpStatusByPartyId[partyId])
       };
     });
@@ -251,6 +268,19 @@ function mapDayEvening_(value) {
   if (v === 'yes' || v === 'true' || v === '1') { return 'Day'; }
   if (v === 'no' || v === 'false' || v === '0') { return 'Evening'; }
   return 'Day';
+}
+
+function normalizeHeaderKey_(value) {
+  return String(value || '').replace(/\s+/g, '').replace(/[^A-Za-z0-9_]/g, '').toUpperCase();
+}
+
+function indexOfHeader_(normalizedHeaders, candidateKeys) {
+  for (var i = 0; i < candidateKeys.length; i += 1) {
+    var key = normalizeHeaderKey_(candidateKeys[i]);
+    var idx = normalizedHeaders.indexOf(key);
+    if (idx !== -1) { return idx; }
+  }
+  return -1;
 }
 
 function normalizeWhitespace_(value) {
