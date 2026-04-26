@@ -30,13 +30,24 @@
   body.show-watermark::before { opacity: 0.08; }
 
   /* ACK MODAL */
-  .ack-modal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(28,12,5,0.72); z-index: 9999; padding: 1rem; }
+  .ack-modal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background:
+      radial-gradient(circle at 18% 18%, rgba(255, 200, 140, 0.16), transparent 42%),
+      radial-gradient(circle at 82% 78%, rgba(140, 255, 180, 0.08), transparent 45%),
+      rgba(16, 8, 4, 0.82); backdrop-filter: blur(12px); z-index: 9999; padding: 1rem; }
   .ack-modal.open { display: flex; }
-  .ack-card { width: min(540px, 100%); background: #fffaf4; border: 1px solid rgba(196,96,10,0.2); border-radius: 14px; box-shadow: 0 24px 80px rgba(0,0,0,0.22); padding: 1.25rem 1.25rem 1rem; text-align: center; }
-  .ack-title { font-size: clamp(1.1rem, 4vw, 1.45rem); margin-bottom: 0.35rem; color: var(--text-dark); }
+  .ack-card { width: min(560px, 100%); background: linear-gradient(180deg, #fffefc 0%, #fff8f0 100%); border: 1px solid rgba(196,96,10,0.18); border-radius: 18px; box-shadow: 0 22px 90px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.75); padding: 1.5rem 1.4rem 1.2rem; text-align: center; }
+  .ack-title { font-size: clamp(1.15rem, 4vw, 1.65rem); margin-bottom: 0.5rem; color: var(--text-dark); letter-spacing: 0.01em; }
   .ack-text { font-family: Arial, sans-serif; font-size: 0.92rem; color: var(--text-mid); margin-bottom: 1rem; line-height: 1.55; }
-  .ack-btn { padding: 0.72rem 1.1rem; border: none; border-radius: 9px; background: var(--orange); color: #fff; font-family: Arial, sans-serif; font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; width: 100%; }
+  .ack-input-wrap { text-align: left; margin: 0.2rem 0 0.95rem; }
+  .ack-label { display: block; margin-bottom: 0.42rem; font-family: Arial, sans-serif; font-size: 0.67rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-light); }
+  .ack-input { width: 100%; padding: 0.8rem 0.95rem; border: 1px solid rgba(196,96,10,0.24); border-radius: 11px; font-family: Georgia, serif; font-size: 0.98rem; color: var(--text-dark); background: #fff; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
+  .ack-input:focus { border-color: rgba(196,96,10,0.7); box-shadow: 0 0 0 4px rgba(196,96,10,0.12); }
+  .ack-btn { padding: 0.82rem 1.1rem; border: none; border-radius: 11px; background: linear-gradient(180deg, #d06f18 0%, #be5e0b 100%); color: #fff; font-family: Arial, sans-serif; font-size: 0.76rem; letter-spacing: 0.13em; text-transform: uppercase; cursor: pointer; width: 100%; box-shadow: 0 10px 24px rgba(164,82,8,0.32); }
+  .ack-btn:hover { filter: brightness(1.04); }
   .ack-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+  #siteContent { opacity: 1; transition: opacity 0.25s ease; }
+  body.pre-ack { overflow: hidden; }
+  body.pre-ack #siteContent { opacity: 0; visibility: hidden; pointer-events: none; user-select: none; }
 
 
   /* NAV */
@@ -177,6 +188,7 @@
 </style>
 </head>
 <body>
+<div id="siteContent">
 
 <nav>
   <div class="nav-inner">
@@ -464,11 +476,14 @@
   </div>
 </section>
 
-
 <div class="ack-modal" id="ackModal" aria-hidden="true" role="dialog" aria-labelledby="ackTitle">
   <div class="ack-card">
     <h2 class="ack-title" id="ackTitle">Quick check-in</h2>
-    <p class="ack-text">Please tap the button below to let us know this link opened successfully for you.</p>
+    <p class="ack-text">Please enter your name to unlock the page and confirm this link opened successfully.</p>
+    <div class="ack-input-wrap">
+      <label class="ack-label" for="ackName">Your name</label>
+      <input class="ack-input" id="ackName" type="text" placeholder="e.g. Sarah Thompson" autocomplete="name">
+    </div>
     <button class="ack-btn" id="ackBtn" type="button" onclick="submitAcknowledgement()">Yes, I opened the site</button>
   </div>
 </div>
@@ -477,11 +492,40 @@
 <footer>
   Made with love for <span>Emma & Alex</span> &nbsp;·&nbsp; 6th November 2027 &nbsp;·&nbsp; Gaynes Park, Epping
 </footer>
+</div>
 
 <script>
   var FORMSPREE_ENDPOINT = 'https://formspree.io/f/mgorqjel';
   // Replace with your deployed Google Apps Script Web App URL when ready.
   var GOOGLE_SHEETS_WEBHOOK = 'https://script.google.com/macros/s/AKfycbxC6Z-QzSMTOnbmhy0uv8iDKeayN-BnrzKaPHKTv3M2V6dat3U37ZZ5V7l68o_eYuJlQQ/exec';
+  // Optional: separate Apps Script endpoint just for acknowledgements.
+  var GOOGLE_SHEETS_ACK_WEBHOOK = '';
+
+  function postToGoogleSheets(payload) {
+    var targetWebhook = (payload && payload.eventType === 'acknowledgement' && GOOGLE_SHEETS_ACK_WEBHOOK)
+      ? GOOGLE_SHEETS_ACK_WEBHOOK
+      : GOOGLE_SHEETS_WEBHOOK;
+
+    if (!targetWebhook) {
+      return Promise.resolve({ skipped: true });
+    }
+
+    // Prefer sendBeacon for fire-and-forget delivery without CORS preflight.
+    if (navigator.sendBeacon) {
+      var blob = new Blob([JSON.stringify(payload)], { type: 'text/plain;charset=UTF-8' });
+      var sent = navigator.sendBeacon(targetWebhook, blob);
+      return sent ? Promise.resolve({ beacon: true }) : Promise.reject(new Error('sendBeacon failed'));
+    }
+
+    // Fallback: "simple request" + no-cors to avoid OPTIONS preflight failures
+    // against Apps Script web apps that don't return CORS headers.
+    return fetch(targetWebhook, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload)
+    });
+  }
 
   function postToEndpoints(payload) {
     var requests = [
@@ -489,16 +533,9 @@
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify(payload)
-      })
+      }),
+      postToGoogleSheets(payload)
     ];
-
-    if (GOOGLE_SHEETS_WEBHOOK) {
-      requests.push(fetch(GOOGLE_SHEETS_WEBHOOK, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      }));
-    }
 
     return Promise.allSettled(requests);
   }
@@ -524,11 +561,20 @@
 
   function submitAcknowledgement() {
     var btn = document.getElementById('ackBtn');
+    var ackNameInput = document.getElementById('ackName');
+    var ackName = ackNameInput.value.trim();
+    if (!ackName) {
+      alert('Please enter your name first.');
+      ackNameInput.focus();
+      return;
+    }
+
     btn.disabled = true;
     btn.textContent = 'Sending...';
 
     var payload = {
       eventType: 'acknowledgement',
+      name: ackName,
       submittedAtIso: new Date().toISOString(),
       page: window.location.href,
       userAgent: navigator.userAgent,
@@ -538,7 +584,9 @@
     postToEndpoints(payload).then(function(results) {
       var formspreeOk = results[0] && results[0].status === 'fulfilled' && results[0].value.ok;
       if (formspreeOk) {
-        localStorage.setItem('ea_ack_v1', '1');
+        localStorage.setItem('ea_ack_v2', '1');
+        localStorage.setItem('ea_ack_name', ackName);
+        document.body.classList.remove('pre-ack');
         document.getElementById('ackModal').classList.remove('open');
       } else {
         alert('Could not send acknowledgement. Please try again.');
@@ -624,9 +672,20 @@
   }
 
   document.addEventListener('DOMContentLoaded', function() {
-    var alreadyAcknowledged = localStorage.getItem('ea_ack_v1') === '1';
+    var alreadyAcknowledged = localStorage.getItem('ea_ack_v2') === '1';
     if (!alreadyAcknowledged) {
+      document.body.classList.add('pre-ack');
       document.getElementById('ackModal').classList.add('open');
+      var ackNameInput = document.getElementById('ackName');
+      ackNameInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          submitAcknowledgement();
+        }
+      });
+      ackNameInput.focus();
+    } else {
+      document.body.classList.remove('pre-ack');
     }
     setupHeroWatermark();
     updateCountdown();
