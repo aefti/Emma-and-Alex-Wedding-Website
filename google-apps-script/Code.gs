@@ -20,18 +20,23 @@ var ACKNOWLEDGEMENTS_SHEET_NAME = 'Acknowledgements';
 function doGet(e) {
   try {
     var action = (e && e.parameter && e.parameter.action) ? String(e.parameter.action) : '';
+    var callback = (e && e.parameter && e.parameter.callback) ? String(e.parameter.callback) : '';
 
     if (action === 'people') {
-      return jsonResponse(buildPeoplePayload_());
+      var payload = buildPeoplePayload_();
+      return callback ? jsonpResponse(payload, callback) : jsonResponse(payload);
     }
 
-    return jsonResponse({
+    var defaultPayload = {
       ok: true,
       actions: ['people'],
       message: 'Use ?action=people to fetch guest directory with RSVP status.'
-    });
+    };
+    return callback ? jsonpResponse(defaultPayload, callback) : jsonResponse(defaultPayload);
   } catch (err) {
-    return jsonResponse({ ok: false, error: err.message, stack: err.stack });
+    var errorPayload = { ok: false, error: err.message, stack: err.stack };
+    var fallbackCallback = (e && e.parameter && e.parameter.callback) ? String(e.parameter.callback) : '';
+    return fallbackCallback ? jsonpResponse(errorPayload, fallbackCallback) : jsonResponse(errorPayload);
   }
 }
 
@@ -261,4 +266,14 @@ function jsonResponse(obj) {
   return ContentService
     .createTextOutput(JSON.stringify(obj))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+function jsonpResponse(obj, callbackName) {
+  var safeCallback = String(callbackName || '').replace(/[^A-Za-z0-9_$.]/g, '');
+  if (!safeCallback) {
+    return jsonResponse(obj);
+  }
+  return ContentService
+    .createTextOutput(safeCallback + '(' + JSON.stringify(obj) + ');')
+    .setMimeType(ContentService.MimeType.JAVASCRIPT);
 }
