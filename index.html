@@ -45,6 +45,13 @@
   .ack-btn { padding: 0.82rem 1.1rem; border: none; border-radius: 11px; background: linear-gradient(180deg, #d06f18 0%, #be5e0b 100%); color: #fff; font-family: Arial, sans-serif; font-size: 0.76rem; letter-spacing: 0.13em; text-transform: uppercase; cursor: pointer; width: 100%; box-shadow: 0 10px 24px rgba(164,82,8,0.32); }
   .ack-btn:hover { filter: brightness(1.04); }
   .ack-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+  .ack-result { display: none; text-align: left; border: 1px solid rgba(196,96,10,0.2); border-radius: 11px; background: rgba(196,96,10,0.05); padding: 0.8rem 0.9rem; margin-bottom: 0.95rem; }
+  .ack-result.open { display: block; }
+  .ack-result p { margin: 0.2rem 0; font-family: Arial, sans-serif; font-size: 0.9rem; color: var(--text-mid); }
+  .ack-result .ack-name-primary { color: var(--text-dark); font-size: 1rem; }
+  .ack-result .ack-inline-label { color: var(--text-light); text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.65rem; display: block; margin-top: 0.55rem; }
+  .ack-actions { display: flex; gap: 0.6rem; }
+  .ack-secondary-btn { padding: 0.82rem 1.1rem; border: 1px solid rgba(196,96,10,0.32); border-radius: 11px; background: #fff; color: var(--text-mid); font-family: Arial, sans-serif; font-size: 0.72rem; letter-spacing: 0.11em; text-transform: uppercase; cursor: pointer; flex: 1; }
   #siteContent { opacity: 1; transition: opacity 0.25s ease; }
   body.pre-ack { overflow: hidden; }
   body.pre-ack #siteContent > *:not(#ackModal) { opacity: 0; visibility: hidden; pointer-events: none; user-select: none; }
@@ -168,6 +175,15 @@
   .rsvp-submit { width: 100%; padding: 0.9rem; background: var(--orange); border: none; border-radius: 10px; color: white; font-family: Arial, sans-serif; font-size: 0.85rem; letter-spacing: 0.15em; text-transform: uppercase; cursor: pointer; margin-top: 0.5rem; transition: background 0.2s; }
   .rsvp-submit:hover { background: var(--orange-dark); }
   .rsvp-success { display: none; text-align: center; padding: 2rem; font-size: 1.1rem; color: var(--orange-glow); font-style: italic; }
+  .rsvp-party-list { display: grid; gap: 0.8rem; }
+  .rsvp-person { border: 1px solid rgba(255,255,255,0.16); border-radius: 10px; padding: 0.8rem; background: rgba(255,255,255,0.04); }
+  .rsvp-person-name { font-size: 0.95rem; margin-bottom: 0.45rem; color: #fff6eb; }
+  .rsvp-inline-error { display: none; margin-top: 0.4rem; color: #ffc4b8; font-family: Arial, sans-serif; font-size: 0.78rem; }
+  .rsvp-inline-error.open { display: block; }
+  .rsvp-locked { display: none; margin-top: 1rem; border: 1px solid rgba(232,160,96,0.45); border-radius: 12px; background: rgba(232,160,96,0.15); padding: 1rem; }
+  .rsvp-locked.open { display: block; }
+  .rsvp-resubmit-btn { margin-top: 0.7rem; border: 1px solid rgba(255,255,255,0.4); background: transparent; color: #fff; border-radius: 9px; padding: 0.55rem 0.8rem; font-family: Arial, sans-serif; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.11em; cursor: pointer; }
+  .rsvp-disabled { opacity: 0.42; pointer-events: none; }
 
   /* FOOTER */
   footer { background: #3a1a0a; color: rgba(255,243,230,0.5); text-align: center; padding: 2.5rem 1.5rem; font-family: Arial, sans-serif; font-size: 0.8rem; letter-spacing: 0.05em; }
@@ -437,6 +453,10 @@
     <h2 class="section-title">RSVP</h2>
     <div class="divider" style="background:linear-gradient(90deg,var(--orange-glow),var(--orange))"></div>
     <p class="section-body">Please let us know by <strong style="color:var(--orange-glow)">1st September 2027</strong> so we can plan the perfect day for everyone.</p>
+    <div class="rsvp-locked" id="rsvpLockedNotice">
+      <p style="color:#fff8f0;">You have already RSVPd.</p>
+      <button type="button" class="rsvp-resubmit-btn" onclick="enableRsvpResubmission()">I would like to resubmit my RSVP</button>
+    </div>
     <div class="rsvp-form" id="rsvpForm">
       <div class="rsvp-row">
         <label class="rsvp-label">Your full name</label>
@@ -447,21 +467,9 @@
         <input class="rsvp-input" type="email" placeholder="your@email.com" id="rsvp-email">
       </div>
       <div class="rsvp-row">
-        <label class="rsvp-label">Will you be joining us?</label>
-        <div class="rsvp-radio-group">
-          <label class="rsvp-radio-label" id="lbl-yes"><input type="radio" name="attending" value="yes" onchange="selectRadio('yes')"> 🎉 Joyfully accept</label>
-          <label class="rsvp-radio-label" id="lbl-no"><input type="radio" name="attending" value="no" onchange="selectRadio('no')"> 😢 Regretfully decline</label>
-        </div>
-      </div>
-      <div class="rsvp-row">
-        <label class="rsvp-label">Number of guests (including yourself)</label>
-        <select class="rsvp-select" id="rsvp-guests">
-          <option value="1">1 guest</option>
-          <option value="2">2 guests</option>
-          <option value="3">3 guests</option>
-          <option value="4">4 guests</option>
-          <option value="5">5 guests</option>
-        </select>
+        <label class="rsvp-label">Attendance per person (required for everyone in your party)</label>
+        <div id="individualRsvpList" class="rsvp-party-list"></div>
+        <div id="individualRsvpError" class="rsvp-inline-error">Please choose attending or not attending for every person in your party.</div>
       </div>
       <div class="rsvp-row">
         <label class="rsvp-label">Dietary requirements or anything else we should know</label>
@@ -479,12 +487,16 @@
 <div class="ack-modal" id="ackModal" aria-hidden="true" role="dialog" aria-labelledby="ackTitle">
   <div class="ack-card">
     <h2 class="ack-title" id="ackTitle">Quick check-in</h2>
-    <p class="ack-text">Please enter your name to unlock the page and confirm this link opened successfully.</p>
+    <p class="ack-text">Please type your name and click <strong>Check Name</strong>. We will only show the single best match, then ask you to confirm before you continue.</p>
     <div class="ack-input-wrap">
       <label class="ack-label" for="ackName">Your name</label>
       <input class="ack-input" id="ackName" type="text" placeholder="e.g. Sarah Thompson" autocomplete="name">
     </div>
-    <button class="ack-btn" id="ackBtn" type="button" onclick="submitAcknowledgement()">Yes, I opened the site</button>
+    <div id="ackResult" class="ack-result" aria-live="polite"></div>
+    <div class="ack-actions">
+      <button class="ack-secondary-btn" id="checkNameBtn" type="button" onclick="checkNameMatch()">Check Name</button>
+      <button class="ack-btn" id="ackBtn" type="button" onclick="confirmAcknowledgement()" disabled>Confirm & Enter</button>
+    </div>
   </div>
 </div>
 
@@ -497,9 +509,13 @@
 <script>
   var FORMSPREE_ENDPOINT = 'https://formspree.io/f/mgorqjel';
   // Replace with your deployed Google Apps Script Web App URL when ready.
-  var GOOGLE_SHEETS_WEBHOOK = 'https://script.google.com/macros/s/AKfycbxC6Z-QzSMTOnbmhy0uv8iDKeayN-BnrzKaPHKTv3M2V6dat3U37ZZ5V7l68o_eYuJlQQ/exec';
+  var GOOGLE_SHEETS_WEBHOOK = 'https://script.google.com/macros/s/AKfycby6Z82lWPZxOkCWigrlyJUTLnvjHWl3sFihylhqLemM9-_58lAkuf0DM0Thv1I-SFCtTg/exec';
   // Optional: separate Apps Script endpoint just for acknowledgements.
-  var GOOGLE_SHEETS_ACK_WEBHOOK = 'https://script.google.com/macros/s/AKfycbzk7u-tzMotFdWHA3c5wh-C0NgyStqZqslGtYIA--einB5W8ny2lUCs_poDWe5jXFZPCQ/exec';
+  var GOOGLE_SHEETS_ACK_WEBHOOK = 'https://script.google.com/macros/s/AKfycby6Z82lWPZxOkCWigrlyJUTLnvjHWl3sFihylhqLemM9-_58lAkuf0DM0Thv1I-SFCtTg/exec';
+  var GUEST_DIRECTORY = [];
+  var pendingGuestMatch = null;
+  var RSVP_STORAGE_PREFIX = 'ea_rsvp_';
+  var peopleSyncPromise = null;
 
   function postToGoogleSheets(payload) {
     var targetWebhook = (payload && payload.eventType === 'acknowledgement' && GOOGLE_SHEETS_ACK_WEBHOOK)
@@ -554,27 +570,141 @@
     if (!open) { answer.classList.add('open'); chevron.classList.add('open'); }
   }
 
-  function selectRadio(val) {
-    document.getElementById('lbl-yes').classList.toggle('selected', val === 'yes');
-    document.getElementById('lbl-no').classList.toggle('selected', val === 'no');
+  function getSavedParty() {
+    var raw = localStorage.getItem('ea_ack_party');
+    if (!raw) { return null; }
+    try {
+      return JSON.parse(raw);
+    } catch (err) {
+      return null;
+    }
+  }
+
+  function fetchPeopleDirectory() {
+    if (peopleSyncPromise) { return peopleSyncPromise; }
+    var url = GOOGLE_SHEETS_WEBHOOK + '?action=people&t=' + Date.now();
+    peopleSyncPromise = fetch(url, { method: 'GET', cache: 'no-store' })
+      .then(function(response) {
+        if (!response.ok) { throw new Error('Could not load People tab data.'); }
+        return response.json();
+      })
+      .then(function(data) {
+        if (!data || !Array.isArray(data.people)) {
+          throw new Error('People data format is invalid.');
+        }
+        GUEST_DIRECTORY = data.people;
+        return GUEST_DIRECTORY;
+      })
+      .catch(function(err) {
+        peopleSyncPromise = null;
+        throw err;
+      });
+    return peopleSyncPromise;
+  }
+
+  function currentPartyMembers() {
+    var party = getSavedParty() || pendingGuestMatch;
+    var members = [];
+    if (party && party.matchedName) { members.push(party.matchedName); }
+    if (party && party.guestName) { members.push(party.guestName); }
+    if (party && party.children && party.children.length) {
+      party.children.forEach(function(child) { members.push(child); });
+    }
+    if (!members.length) {
+      var typedName = document.getElementById('rsvp-name').value.trim();
+      members.push(typedName || 'Guest 1');
+    }
+    return members;
+  }
+
+  function getRsvpStorageKey() {
+    var party = getSavedParty() || pendingGuestMatch;
+    return RSVP_STORAGE_PREFIX + (party && party.partyId ? party.partyId : 'anonymous');
+  }
+
+  function renderIndividualRsvpChoices() {
+    var container = document.getElementById('individualRsvpList');
+    if (!container) { return; }
+    var members = currentPartyMembers();
+    container.innerHTML = '';
+    members.forEach(function(member, index) {
+      var item = document.createElement('div');
+      item.className = 'rsvp-person';
+      item.innerHTML =
+        '<p class="rsvp-person-name">' + escapeHtml(member) + '</p>' +
+        '<div class="rsvp-radio-group">' +
+          '<label class="rsvp-radio-label"><input type="radio" name="person_' + index + '" value="yes"> 🎉 Attending</label>' +
+          '<label class="rsvp-radio-label"><input type="radio" name="person_' + index + '" value="no"> 😢 Not attending</label>' +
+        '</div>';
+      item.querySelectorAll('input[type="radio"]').forEach(function(radio) {
+        radio.addEventListener('change', function() {
+          var labelNodes = item.querySelectorAll('.rsvp-radio-label');
+          labelNodes.forEach(function(label) {
+            var input = label.querySelector('input');
+            label.classList.toggle('selected', input.checked);
+          });
+        });
+      });
+      container.appendChild(item);
+    });
+  }
+
+  function collectIndividualRsvp() {
+    var members = currentPartyMembers();
+    var decisions = [];
+    for (var i = 0; i < members.length; i += 1) {
+      var selected = document.querySelector('input[name="person_' + i + '"]:checked');
+      if (!selected) { return null; }
+      decisions.push({ name: members[i], attending: selected.value === 'yes' });
+    }
+    return decisions;
+  }
+
+  function setRsvpLockedState(isLocked) {
+    var form = document.getElementById('rsvpForm');
+    var notice = document.getElementById('rsvpLockedNotice');
+    if (!form || !notice) { return; }
+    form.classList.toggle('rsvp-disabled', isLocked);
+    notice.classList.toggle('open', isLocked);
+  }
+
+  function enableRsvpResubmission() {
+    localStorage.removeItem(getRsvpStorageKey());
+    setRsvpLockedState(false);
+    document.getElementById('rsvpSuccess').style.display = 'none';
+    document.getElementById('rsvpForm').style.display = 'block';
+  }
+
+  function initializeRsvpSection() {
+    renderIndividualRsvpChoices();
+    var party = getSavedParty();
+    var alreadyRsvped = localStorage.getItem(getRsvpStorageKey()) === '1' || (party && party.hasRsvped);
+    setRsvpLockedState(Boolean(alreadyRsvped));
   }
 
   function submitAcknowledgement() {
-    var btn = document.getElementById('ackBtn');
-    var ackNameInput = document.getElementById('ackName');
-    var ackName = ackNameInput.value.trim();
-    if (!ackName) {
-      alert('Please enter your name first.');
-      ackNameInput.focus();
+    if (!pendingGuestMatch) {
+      alert('Please click "Check Name" and confirm the suggested match first.');
       return;
     }
 
+    var btn = document.getElementById('ackBtn');
+    var checkBtn = document.getElementById('checkNameBtn');
     btn.disabled = true;
     btn.textContent = 'Sending...';
+    checkBtn.disabled = true;
 
     var payload = {
       eventType: 'acknowledgement',
-      name: ackName,
+      typedName: document.getElementById('ackName').value.trim(),
+      matchedName: pendingGuestMatch.matchedName,
+      matchedBy: pendingGuestMatch.matchedBy,
+      matchType: pendingGuestMatch.matchType,
+      partyId: pendingGuestMatch.partyId,
+      dayEvening: pendingGuestMatch.dayEvening,
+      hasRsvped: pendingGuestMatch.hasRsvped,
+      guestName: pendingGuestMatch.guestName,
+      children: pendingGuestMatch.children,
       submittedAtIso: new Date().toISOString(),
       page: window.location.href,
       userAgent: navigator.userAgent,
@@ -585,31 +715,206 @@
       var formspreeOk = results[0] && results[0].status === 'fulfilled' && results[0].value.ok;
       if (formspreeOk) {
         localStorage.setItem('ea_ack_v2', '1');
-        localStorage.setItem('ea_ack_name', ackName);
-        document.body.classList.remove('pre-ack');
-        document.getElementById('ackModal').classList.remove('open');
+        localStorage.setItem('ea_ack_name', pendingGuestMatch.matchedName);
+        localStorage.setItem('ea_ack_party', JSON.stringify(pendingGuestMatch));
+        if (pendingGuestMatch.dayEvening === 'Evening') {
+          window.location.href = 'evening.html';
+          return;
+        }
+        unlockPage();
       } else {
         alert('Could not send acknowledgement. Please try again.');
         btn.disabled = false;
-        btn.textContent = 'Yes, I opened the site';
+        btn.textContent = 'Confirm & Enter';
+        checkBtn.disabled = false;
       }
     }).catch(function() {
       alert('Connection issue. Please try again.');
       btn.disabled = false;
-      btn.textContent = 'Yes, I opened the site';
+      btn.textContent = 'Confirm & Enter';
+      checkBtn.disabled = false;
     });
+  }
+
+  function normalizeName(name) {
+    return (name || '')
+      .toUpperCase()
+      .replace(/[^A-Z0-9]+/g, ' ')
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)
+      .sort()
+      .join(' ');
+  }
+
+  function levenshtein(a, b) {
+    var m = a.length;
+    var n = b.length;
+    var dp = [];
+    for (var i = 0; i <= m; i += 1) {
+      dp[i] = [];
+      dp[i][0] = i;
+    }
+    for (var j = 0; j <= n; j += 1) {
+      dp[0][j] = j;
+    }
+    for (var r = 1; r <= m; r += 1) {
+      for (var c = 1; c <= n; c += 1) {
+        var cost = a[r - 1] === b[c - 1] ? 0 : 1;
+        dp[r][c] = Math.min(
+          dp[r - 1][c] + 1,
+          dp[r][c - 1] + 1,
+          dp[r - 1][c - 1] + cost
+        );
+      }
+    }
+    return dp[m][n];
+  }
+
+  function childrenList(childrenRaw) {
+    if (!childrenRaw) { return []; }
+    return childrenRaw.split(';').map(function(c) { return c.trim(); }).filter(Boolean);
+  }
+
+  function buildNameIndex() {
+    var index = [];
+    GUEST_DIRECTORY.forEach(function(row) {
+      if (row.leadFullName) {
+        index.push({
+          partyId: row.partyId,
+          dayEvening: (row.dayEvening || '').trim().toLowerCase() === 'evening' ? 'Evening' : 'Day',
+          hasRsvped: Boolean(row.hasRsvped),
+          matchedBy: 'Column E',
+          matchedName: row.leadFullName,
+          guestName: row.guestFullName || '',
+          children: childrenList(row.children),
+          normalized: normalizeName(row.leadFullName)
+        });
+      }
+      if (row.guestFullName) {
+        index.push({
+          partyId: row.partyId,
+          dayEvening: (row.dayEvening || '').trim().toLowerCase() === 'evening' ? 'Evening' : 'Day',
+          hasRsvped: Boolean(row.hasRsvped),
+          matchedBy: 'Column M',
+          matchedName: row.guestFullName,
+          guestName: row.leadFullName || '',
+          children: childrenList(row.children),
+          normalized: normalizeName(row.guestFullName)
+        });
+      }
+    });
+    return index;
+  }
+
+  function checkNameMatch() {
+    var inputEl = document.getElementById('ackName');
+    var query = inputEl.value.trim();
+    var normalizedQuery = normalizeName(query);
+    if (!normalizedQuery) {
+      alert('Please type your name first.');
+      inputEl.focus();
+      return;
+    }
+
+    fetchPeopleDirectory().then(function() {
+      var allNames = buildNameIndex();
+      var exact = allNames.find(function(entry) { return entry.normalized === normalizedQuery; });
+      var best = exact;
+      var matchType = 'exact';
+
+      if (!best) {
+        best = allNames.reduce(function(currentBest, entry) {
+          var distance = levenshtein(normalizedQuery, entry.normalized);
+          if (!currentBest || distance < currentBest.distance) {
+            return { entry: entry, distance: distance };
+          }
+          return currentBest;
+        }, null);
+        best = best ? best.entry : null;
+        matchType = 'fuzzy';
+      }
+
+      if (!best) {
+        alert('We could not find any names in the guest list yet.');
+        return;
+      }
+
+      pendingGuestMatch = {
+        partyId: best.partyId,
+        dayEvening: best.dayEvening,
+        hasRsvped: best.hasRsvped,
+        matchedBy: best.matchedBy,
+        matchType: matchType,
+        matchedName: best.matchedName,
+        guestName: best.guestName,
+        children: best.children
+      };
+      renderMatchResult(pendingGuestMatch);
+    }).catch(function(err) {
+      alert(err.message || 'Could not sync guest list from Google Sheets right now.');
+    });
+  }
+
+  function renderMatchResult(match) {
+    var resultEl = document.getElementById('ackResult');
+    var children = (match.children || []).join(', ');
+    var html = [
+      '<span class="ack-inline-label">Most likely match (' + match.matchType + ')</span>',
+      '<p class="ack-name-primary"><strong>' + escapeHtml(match.matchedName) + '</strong></p>'
+    ];
+    if (match.guestName) {
+      html.push('<span class="ack-inline-label">and Guest(s):</span>');
+      html.push('<p>' + escapeHtml(match.guestName) + '</p>');
+    }
+    if (children) {
+      html.push('<span class="ack-inline-label">Children:</span>');
+      html.push('<p>' + escapeHtml(children) + '</p>');
+    }
+    html.push('<p style="margin-top:0.65rem;">Is this you? If yes, click <strong>Confirm & Enter</strong>.</p>');
+    if (match.hasRsvped) {
+      html.push('<p style="margin-top:0.45rem; color:#7a1f0f;"><strong>We already have an RSVP on file for this party.</strong></p>');
+    }
+    resultEl.innerHTML = html.join('');
+    resultEl.classList.add('open');
+    document.getElementById('ackBtn').disabled = false;
+  }
+
+  function escapeHtml(str) {
+    return String(str || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  function unlockPage() {
+    document.body.classList.remove('pre-ack');
+    document.getElementById('ackModal').classList.remove('open');
+    initializeRsvpSection();
+  }
+
+  function confirmAcknowledgement() {
+    submitAcknowledgement();
   }
 
   function submitRsvp() {
     var name = document.getElementById('rsvp-name').value.trim();
     var email = document.getElementById('rsvp-email').value.trim();
-    var attending = document.querySelector('input[name="attending"]:checked');
-    var guests = document.getElementById('rsvp-guests').value;
+    var partyResponses = collectIndividualRsvp();
+    var party = getSavedParty() || pendingGuestMatch || {};
     var notes = document.getElementById('rsvp-notes').value;
-    if (!name || !email || !attending) {
-      alert('Please fill in your name, email, and let us know if you can make it!');
+    if (!name || !email) {
+      alert('Please fill in your name and email.');
       return;
     }
+    if (!partyResponses) {
+      document.getElementById('individualRsvpError').classList.add('open');
+      alert('Please make an attendance choice for every person in your party.');
+      return;
+    }
+    document.getElementById('individualRsvpError').classList.remove('open');
     var btn = document.querySelector('.rsvp-submit');
     btn.textContent = 'Sending...';
     btn.disabled = true;
@@ -618,10 +923,13 @@
       eventType: 'rsvp',
       name: name,
       _replyto: email,
+      partyId: party.partyId || '',
+      matchedName: party.matchedName || '',
       submittedAtIso: new Date().toISOString(),
       details: {
-        attending: attending.value,
-        guests: Number(guests),
+        partyResponses: partyResponses,
+        attendingCount: partyResponses.filter(function(p) { return p.attending; }).length,
+        declineCount: partyResponses.filter(function(p) { return !p.attending; }).length,
         notes: notes,
         source: 'wedding-site'
       }
@@ -630,6 +938,8 @@
     postToEndpoints(payload).then(function(results) {
       var formspreeOk = results[0] && results[0].status === 'fulfilled' && results[0].value.ok;
       if (formspreeOk) {
+        localStorage.setItem(getRsvpStorageKey(), '1');
+        setRsvpLockedState(true);
         document.getElementById('rsvpForm').style.display = 'none';
         document.getElementById('rsvpSuccess').style.display = 'block';
       } else {
@@ -680,13 +990,28 @@
       ackNameInput.addEventListener('keydown', function(e) {
         if (e.key === 'Enter') {
           e.preventDefault();
-          submitAcknowledgement();
+          checkNameMatch();
         }
+      });
+      ackNameInput.addEventListener('input', function() {
+        pendingGuestMatch = null;
+        document.getElementById('ackBtn').disabled = true;
+        document.getElementById('ackResult').classList.remove('open');
+        document.getElementById('ackResult').innerHTML = '';
       });
       ackNameInput.focus();
     } else {
-      document.body.classList.remove('pre-ack');
+      unlockPage();
     }
+    document.getElementById('rsvp-name').addEventListener('blur', function() {
+      if (!getSavedParty()) {
+        renderIndividualRsvpChoices();
+      }
+    });
+    fetchPeopleDirectory().catch(function() {
+      // Keep page usable; name check will surface an explicit error if needed.
+    });
+    initializeRsvpSection();
     setupHeroWatermark();
     updateCountdown();
     setInterval(updateCountdown, 1000);
