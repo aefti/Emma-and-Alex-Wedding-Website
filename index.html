@@ -190,13 +190,15 @@
   /* FUN MODE: flying heads */
   .flying-head {
     position: fixed;
+    left: 0;
+    top: 0;
     width: 72px;
     height: 72px;
     object-fit: cover;
     border-radius: 50%;
     pointer-events: none;
     user-select: none;
-    z-index: 9998;
+    z-index: 10001;
     will-change: transform;
   }
 
@@ -1055,15 +1057,15 @@
     el.setAttribute('aria-hidden', 'true');
     document.body.appendChild(el);
 
-    var size = 56 + Math.random() * 42;
-    var launchSpeedY = -(640 + Math.random() * 300);
-    var launchSpeedX = (Math.random() - 0.5) * 280;
+    var size = 56 + Math.random() * 36;
+    var launchSpeedY = -(560 + Math.random() * 220);
+    var launchSpeedX = (Math.random() > 0.5 ? 1 : -1) * (55 + Math.random() * 110);
     var spinVelocity = (Math.random() > 0.5 ? 1 : -1) * (280 + Math.random() * 500);
 
     activeFlyingHeads.push({
       node: el,
-      x: originX - (size / 2),
-      y: originY - (size / 2),
+      x: originX,
+      y: originY,
       vx: launchSpeedX,
       vy: launchSpeedY,
       angle: Math.random() * 360,
@@ -1088,7 +1090,7 @@
         head.angle += head.spinVelocity * dt;
         head.node.style.width = head.size + 'px';
         head.node.style.height = head.size + 'px';
-        head.node.style.transform = 'translate3d(' + head.x + 'px,' + head.y + 'px,0) rotate(' + head.angle + 'deg)';
+        head.node.style.transform = 'translate3d(' + (head.x - (head.size / 2)) + 'px,' + (head.y - (head.size / 2)) + 'px,0) rotate(' + head.angle + 'deg)';
 
         var outOfBounds = head.y - head.size > window.innerHeight || head.x + head.size < -120 || head.x > window.innerWidth + 120;
         if (outOfBounds) {
