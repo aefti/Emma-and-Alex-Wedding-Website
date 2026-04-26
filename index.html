@@ -47,7 +47,7 @@
   .ack-btn:disabled { opacity: 0.7; cursor: not-allowed; }
   #siteContent { opacity: 1; transition: opacity 0.25s ease; }
   body.pre-ack { overflow: hidden; }
-  body.pre-ack #siteContent { opacity: 0; visibility: hidden; pointer-events: none; user-select: none; }
+  body.pre-ack #siteContent > *:not(#ackModal) { opacity: 0; visibility: hidden; pointer-events: none; user-select: none; }
 
 
   /* NAV */
