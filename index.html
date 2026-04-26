@@ -508,34 +508,28 @@
 
 <script>
   var FORMSPREE_ENDPOINT = 'https://formspree.io/f/mgorqjel';
-  // Replace with your deployed Google Apps Script Web App URL when ready.
-  var GOOGLE_SHEETS_WEBHOOK = 'https://script.google.com/macros/s/AKfycby6Z82lWPZxOkCWigrlyJUTLnvjHWl3sFihylhqLemM9-_58lAkuf0DM0Thv1I-SFCtTg/exec';
-  // Optional: separate Apps Script endpoint just for acknowledgements.
-  var GOOGLE_SHEETS_ACK_WEBHOOK = 'https://script.google.com/macros/s/AKfycby6Z82lWPZxOkCWigrlyJUTLnvjHWl3sFihylhqLemM9-_58lAkuf0DM0Thv1I-SFCtTg/exec';
+  // Unified Google Apps Script Web App URL (people lookup + RSVP + acknowledgement).
+  var GOOGLE_SHEETS_WEBHOOK = 'https://script.google.com/macros/s/AKfycbxC6Z-QzSMTOnbmhy0uv8iDKeayN-BnrzKaPHKTv3M2V6dat3U37ZZ5V7l68o_eYuJlQQ/exec';
   var GUEST_DIRECTORY = [];
   var pendingGuestMatch = null;
   var RSVP_STORAGE_PREFIX = 'ea_rsvp_';
   var peopleSyncPromise = null;
 
   function postToGoogleSheets(payload) {
-    var targetWebhook = (payload && payload.eventType === 'acknowledgement' && GOOGLE_SHEETS_ACK_WEBHOOK)
-      ? GOOGLE_SHEETS_ACK_WEBHOOK
-      : GOOGLE_SHEETS_WEBHOOK;
-
-    if (!targetWebhook) {
+    if (!GOOGLE_SHEETS_WEBHOOK) {
       return Promise.resolve({ skipped: true });
     }
 
     // Prefer sendBeacon for fire-and-forget delivery without CORS preflight.
     if (navigator.sendBeacon) {
       var blob = new Blob([JSON.stringify(payload)], { type: 'text/plain;charset=UTF-8' });
-      var sent = navigator.sendBeacon(targetWebhook, blob);
+      var sent = navigator.sendBeacon(GOOGLE_SHEETS_WEBHOOK, blob);
       return sent ? Promise.resolve({ beacon: true }) : Promise.reject(new Error('sendBeacon failed'));
     }
 
     // Fallback: "simple request" + no-cors to avoid OPTIONS preflight failures
     // against Apps Script web apps that don't return CORS headers.
-    return fetch(targetWebhook, {
+    return fetch(GOOGLE_SHEETS_WEBHOOK, {
       method: 'POST',
       mode: 'no-cors',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
