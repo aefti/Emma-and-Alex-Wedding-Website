@@ -499,7 +499,7 @@
   // Replace with your deployed Google Apps Script Web App URL when ready.
   var GOOGLE_SHEETS_WEBHOOK = 'https://script.google.com/macros/s/AKfycbxC6Z-QzSMTOnbmhy0uv8iDKeayN-BnrzKaPHKTv3M2V6dat3U37ZZ5V7l68o_eYuJlQQ/exec';
   // Optional: separate Apps Script endpoint just for acknowledgements.
-  var GOOGLE_SHEETS_ACK_WEBHOOK = '';
+  var GOOGLE_SHEETS_ACK_WEBHOOK = 'https://script.google.com/macros/s/AKfycbzk7u-tzMotFdWHA3c5wh-C0NgyStqZqslGtYIA--einB5W8ny2lUCs_poDWe5jXFZPCQ/exec';
 
   function postToGoogleSheets(payload) {
     var targetWebhook = (payload && payload.eventType === 'acknowledgement' && GOOGLE_SHEETS_ACK_WEBHOOK)
