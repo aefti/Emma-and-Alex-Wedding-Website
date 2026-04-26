@@ -50,6 +50,8 @@
   .ack-result p { margin: 0.2rem 0; font-family: Arial, sans-serif; font-size: 0.9rem; color: var(--text-mid); }
   .ack-result .ack-name-primary { color: var(--text-dark); font-size: 1rem; }
   .ack-result .ack-inline-label { color: var(--text-light); text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.65rem; display: block; margin-top: 0.55rem; }
+  .ack-error { display: none; margin-bottom: 0.95rem; padding: 0.8rem 0.9rem; border-radius: 11px; text-align: left; border: 1px solid rgba(168,50,32,0.34); background: rgba(168,50,32,0.1); color: #7a1f0f; font-family: Arial, sans-serif; font-size: 0.87rem; line-height: 1.45; }
+  .ack-error.open { display: block; }
   .ack-actions { display: flex; gap: 0.6rem; }
   .ack-secondary-btn { padding: 0.82rem 1.1rem; border: 1px solid rgba(196,96,10,0.32); border-radius: 11px; background: #fff; color: var(--text-mid); font-family: Arial, sans-serif; font-size: 0.72rem; letter-spacing: 0.11em; text-transform: uppercase; cursor: pointer; flex: 1; }
   #siteContent { opacity: 1; transition: opacity 0.25s ease; }
@@ -492,6 +494,7 @@
       <label class="ack-label" for="ackName">Your name</label>
       <input class="ack-input" id="ackName" type="text" placeholder="e.g. Sarah Thompson" autocomplete="name">
     </div>
+    <div id="ackError" class="ack-error" aria-live="polite"></div>
     <div id="ackResult" class="ack-result" aria-live="polite"></div>
     <div class="ack-actions">
       <button class="ack-secondary-btn" id="checkNameBtn" type="button" onclick="checkNameMatch()">Check Name</button>
@@ -579,10 +582,11 @@
 
     peopleSyncPromise = loadPeopleDirectoryWithJsonp()
       .then(function(data) {
-        if (!data || !Array.isArray(data.people)) {
+        var normalized = normalizePeoplePayload(data);
+        if (!normalized || !Array.isArray(normalized.people)) {
           throw new Error('People data format is invalid.');
         }
-        GUEST_DIRECTORY = data.people;
+        GUEST_DIRECTORY = normalized.people;
         return GUEST_DIRECTORY;
       })
       .catch(function(err) {
@@ -620,6 +624,16 @@
       script.src = GOOGLE_SHEETS_WEBHOOK + '?action=people&callback=' + encodeURIComponent(callbackName) + '&t=' + Date.now();
       document.head.appendChild(script);
     });
+  }
+
+  function normalizePeoplePayload(data) {
+    if (!data) { return null; }
+    if (Array.isArray(data.people)) { return data; }
+    if (data.ok && data.data && Array.isArray(data.data.people)) { return data.data; }
+    if (Array.isArray(data.data)) { return { people: data.data }; }
+    if (Array.isArray(data.guests)) { return { people: data.guests }; }
+    if (Array.isArray(data.rows)) { return { people: data.rows }; }
+    return data;
   }
 
   function currentPartyMembers() {
@@ -704,7 +718,7 @@
 
   function submitAcknowledgement() {
     if (!pendingGuestMatch) {
-      alert('Please click "Check Name" and confirm the suggested match first.');
+      showAckError('Please click "Check Name" and confirm the suggested match first.');
       return;
     }
 
@@ -743,13 +757,13 @@
         }
         unlockPage();
       } else {
-        alert('Could not send acknowledgement. Please try again.');
+        showAckError('Could not send acknowledgement. Please try again.');
         btn.disabled = false;
         btn.textContent = 'Confirm & Enter';
         checkBtn.disabled = false;
       }
     }).catch(function() {
-      alert('Connection issue. Please try again.');
+      showAckError('Connection issue. Please try again.');
       btn.disabled = false;
       btn.textContent = 'Confirm & Enter';
       checkBtn.disabled = false;
@@ -799,40 +813,51 @@
   function buildNameIndex() {
     var index = [];
     GUEST_DIRECTORY.forEach(function(row) {
-      if (row.leadFullName) {
+      var leadFullName = normalizeWhitespaceClient_(row.leadFullName || row.leadName || row.primaryName || row.name || '');
+      var guestFullName = normalizeWhitespaceClient_(row.guestFullName || row.partnerName || row.secondaryName || '');
+      var rowChildren = row.children || row.kids || '';
+      var rowPartyId = row.partyId || row.partyID || row.id || '';
+      var rowDayEvening = row.dayEvening || row.audience || row.day_or_evening || '';
+      var rowHasRsvped = Boolean(row.hasRsvped || row.hasRSVPed || row.rsvpReceived);
+      if (leadFullName) {
         index.push({
-          partyId: row.partyId,
-          dayEvening: (row.dayEvening || '').trim().toLowerCase() === 'evening' ? 'Evening' : 'Day',
-          hasRsvped: Boolean(row.hasRsvped),
+          partyId: rowPartyId,
+          dayEvening: String(rowDayEvening).trim().toLowerCase() === 'evening' ? 'Evening' : 'Day',
+          hasRsvped: rowHasRsvped,
           matchedBy: 'Column E',
-          matchedName: row.leadFullName,
-          guestName: row.guestFullName || '',
-          children: childrenList(row.children),
-          normalized: normalizeName(row.leadFullName)
+          matchedName: leadFullName,
+          guestName: guestFullName,
+          children: childrenList(rowChildren),
+          normalized: normalizeName(leadFullName)
         });
       }
-      if (row.guestFullName) {
+      if (guestFullName) {
         index.push({
-          partyId: row.partyId,
-          dayEvening: (row.dayEvening || '').trim().toLowerCase() === 'evening' ? 'Evening' : 'Day',
-          hasRsvped: Boolean(row.hasRsvped),
+          partyId: rowPartyId,
+          dayEvening: String(rowDayEvening).trim().toLowerCase() === 'evening' ? 'Evening' : 'Day',
+          hasRsvped: rowHasRsvped,
           matchedBy: 'Column M',
-          matchedName: row.guestFullName,
-          guestName: row.leadFullName || '',
-          children: childrenList(row.children),
-          normalized: normalizeName(row.guestFullName)
+          matchedName: guestFullName,
+          guestName: leadFullName,
+          children: childrenList(rowChildren),
+          normalized: normalizeName(guestFullName)
         });
       }
     });
     return index;
   }
 
+  function normalizeWhitespaceClient_(value) {
+    return String(value || '').replace(/\s+/g, ' ').trim();
+  }
+
   function checkNameMatch() {
+    clearAckError();
     var inputEl = document.getElementById('ackName');
     var query = inputEl.value.trim();
     var normalizedQuery = normalizeName(query);
     if (!normalizedQuery) {
-      alert('Please type your name first.');
+      showAckError('Please type your name first.');
       inputEl.focus();
       return;
     }
@@ -856,7 +881,7 @@
       }
 
       if (!best) {
-        alert('We could not find any names in the guest list yet.');
+        showAckError('We could not find any names in the guest list yet.');
         return;
       }
 
@@ -872,11 +897,12 @@
       };
       renderMatchResult(pendingGuestMatch);
     }).catch(function(err) {
-      alert(err.message || 'Could not sync guest list from Google Sheets right now.');
+      showAckError(err.message || 'Could not sync guest list from Google Sheets right now.');
     });
   }
 
   function renderMatchResult(match) {
+    clearAckError();
     var resultEl = document.getElementById('ackResult');
     var children = (match.children || []).join(', ');
     var html = [
@@ -913,6 +939,20 @@
     document.body.classList.remove('pre-ack');
     document.getElementById('ackModal').classList.remove('open');
     initializeRsvpSection();
+  }
+
+  function showAckError(message) {
+    var errorEl = document.getElementById('ackError');
+    if (!errorEl) { return; }
+    errorEl.textContent = message;
+    errorEl.classList.add('open');
+  }
+
+  function clearAckError() {
+    var errorEl = document.getElementById('ackError');
+    if (!errorEl) { return; }
+    errorEl.textContent = '';
+    errorEl.classList.remove('open');
   }
 
   function confirmAcknowledgement() {
@@ -1002,7 +1042,8 @@
   }
 
   document.addEventListener('DOMContentLoaded', function() {
-    var alreadyAcknowledged = localStorage.getItem('ea_ack_v2') === '1';
+    var savedParty = getSavedParty();
+    var alreadyAcknowledged = localStorage.getItem('ea_ack_v2') === '1' && Boolean(savedParty && savedParty.matchedName);
     if (!alreadyAcknowledged) {
       document.body.classList.add('pre-ack');
       document.getElementById('ackModal').classList.add('open');
@@ -1015,6 +1056,7 @@
       });
       ackNameInput.addEventListener('input', function() {
         pendingGuestMatch = null;
+        clearAckError();
         document.getElementById('ackBtn').disabled = true;
         document.getElementById('ackResult').classList.remove('open');
         document.getElementById('ackResult').innerHTML = '';
@@ -1029,7 +1071,9 @@
       }
     });
     fetchPeopleDirectory().catch(function() {
-      // Keep page usable; name check will surface an explicit error if needed.
+      if (!alreadyAcknowledged) {
+        showAckError('Guest list is currently unavailable. If this persists, please refresh or contact Emma & Alex.');
+      }
     });
     initializeRsvpSection();
     setupHeroWatermark();
