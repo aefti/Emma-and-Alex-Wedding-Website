@@ -16,6 +16,10 @@ var ACKNOWLEDGEMENTS_SHEET_NAME = 'Acknowledgements';
 // Deters casual API abuse; visible in page source so not a cryptographic secret.
 var SITE_TOKEN = 'ea-2027-8mKxNpQvTz';
 
+// Email address to receive RSVP and check-in notifications.
+// Set this to the address you want to be notified at, then redeploy.
+var NOTIFICATION_EMAIL = 'your-email@gmail.com';
+
 function doGet(e) {
   try {
     var action = (e && e.parameter && e.parameter.action) ? String(e.parameter.action) : '';
@@ -52,17 +56,113 @@ function doPost(e) {
 
     if (eventType === 'acknowledgement') {
       appendAcknowledgementRow_(payload);
+      sendAcknowledgementEmail_(payload);
       return jsonResponse({ ok: true, eventType: 'acknowledgement' });
     }
 
     if (eventType === 'rsvp') {
       appendResponseRow_(payload);
+      sendRsvpEmail_(payload);
       return jsonResponse({ ok: true, eventType: 'rsvp' });
     }
 
     return jsonResponse({ ok: false, error: 'Unknown event type' });
   } catch (err) {
     return jsonResponse({ ok: false, error: 'Internal error' });
+  }
+}
+
+function sendRsvpEmail_(payload) {
+  if (!NOTIFICATION_EMAIL) { return; }
+  try {
+    var details = payload.details || {};
+    var partyResponses = Array.isArray(details.partyResponses) ? details.partyResponses : [];
+    var attendingCount = Number(details.attendingCount) || 0;
+    var declineCount = Number(details.declineCount) || 0;
+    var audience = toStringSafe_(payload.eventAudience || 'day');
+    var guestName = toStringSafe_(payload.name);
+    var guestEmail = toStringSafe_(payload._replyto);
+
+    var subject = '[Wedding RSVP] ' + guestName
+      + ' — ' + attendingCount + ' attending, ' + declineCount + ' not attending'
+      + ' (' + audience + ')';
+
+    var attendanceLines = partyResponses.length
+      ? partyResponses.map(function(p) {
+          return '  ' + (p.attending ? '✓' : '✗') + ' ' + toStringSafe_(p.name)
+            + ' — ' + (p.attending ? 'Attending' : 'Not attending');
+        }).join('\n')
+      : '  (no individual responses recorded)';
+
+    var body = [
+      'A new RSVP has been received for the Emma & Alex wedding.',
+      '',
+      'NAME:      ' + guestName,
+      'EMAIL:     ' + (guestEmail || '(not provided)'),
+      'PARTY ID:  ' + toStringSafe_(payload.partyId),
+      'AUDIENCE:  ' + audience,
+      '',
+      'ATTENDANCE:',
+      attendanceLines,
+      '',
+      'Attending:     ' + attendingCount,
+      'Not attending: ' + declineCount,
+      '',
+      'DIETARY / NOTES:',
+      toStringSafe_(details.notes) || '(none)',
+      '',
+      '———',
+      'Submitted:  ' + toStringSafe_(payload.submittedAtIso),
+      'Timezone:   ' + toStringSafe_(payload.tz),
+      'Page:       ' + toStringSafe_(payload.page),
+      'User agent: ' + toStringSafe_(payload.userAgent)
+    ].join('\n');
+
+    var options = { name: 'Emma & Alex Wedding Site' };
+    if (guestEmail) { options.replyTo = guestEmail; }
+    MailApp.sendEmail(NOTIFICATION_EMAIL, subject, body, options);
+  } catch (err) {
+    // Email failure must not break the RSVP submission.
+  }
+}
+
+function sendAcknowledgementEmail_(payload) {
+  if (!NOTIFICATION_EMAIL) { return; }
+  try {
+    var matchedName = toStringSafe_(payload.name || payload.matchedName);
+    var dayEvening = toStringSafe_(payload.dayEvening);
+    var childrenStr = Array.isArray(payload.children)
+      ? payload.children.join(', ')
+      : toStringSafe_(payload.children);
+
+    var subject = '[Wedding Check-in] ' + matchedName + ' (' + dayEvening + ')';
+
+    var body = [
+      'A guest has just checked in to the Emma & Alex wedding website.',
+      '',
+      'NAME:       ' + matchedName,
+      'PLUS-ONE:   ' + (toStringSafe_(payload.guestName) || '(none)'),
+      'CHILDREN:   ' + (childrenStr || '(none)'),
+      'DAY/EVE:    ' + dayEvening,
+      'PARTY ID:   ' + toStringSafe_(payload.partyId),
+      'RSVP FILED: ' + (payload.hasRsvped ? 'Yes' : 'No'),
+      '',
+      'MATCH DETAILS:',
+      '  Typed:      "' + toStringSafe_(payload.typedName) + '"',
+      '  Matched as: ' + matchedName,
+      '  Match type: ' + toStringSafe_(payload.matchType),
+      '  Matched by: ' + toStringSafe_(payload.matchedBy),
+      '',
+      '———',
+      'Submitted:  ' + toStringSafe_(payload.submittedAtIso),
+      'Timezone:   ' + toStringSafe_(payload.tz),
+      'Page:       ' + toStringSafe_(payload.page),
+      'User agent: ' + toStringSafe_(payload.userAgent)
+    ].join('\n');
+
+    MailApp.sendEmail(NOTIFICATION_EMAIL, subject, body, { name: 'Emma & Alex Wedding Site' });
+  } catch (err) {
+    // Email failure must not break the acknowledgement flow.
   }
 }
 
