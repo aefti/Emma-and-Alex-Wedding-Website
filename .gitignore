@@ -1,0 +1,17 @@
+# Claude Code
+.claude/
+CLAUDE.md
+
+# Architecture diagrams (not served)
+*.mmd
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
