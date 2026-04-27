@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self' https://formspree.io https://script.google.com https://script.googleusercontent.com; form-action 'none'; base-uri 'self'; object-src 'none';">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self' https://script.google.com https://script.googleusercontent.com; form-action 'none'; base-uri 'self'; object-src 'none';">
 <title>Emma & Alex — Evening Celebration</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -166,7 +166,6 @@
 <footer>Made with love for Emma & Alex · 6th November 2027 · Gaynes Park, Epping</footer>
 
 <script>
-  var FORMSPREE_ENDPOINT = 'https://formspree.io/f/mgorqjel';
   var GOOGLE_SHEETS_WEBHOOK = 'https://script.google.com/macros/s/AKfycbw6uOEq_XkBwU9IdQdvY7l8V5OnZNamyOgPD6MDd1TnhWo-YJOKNgh_VP77UDuwtZJedw/exec';
   var SITE_TOKEN = 'ea-2027-8mKxNpQvTz';
   var RSVP_STORAGE_PREFIX = 'ea_rsvp_';
@@ -180,17 +179,6 @@
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify(securedPayload)
     });
-  }
-
-  function postToEndpoints(payload) {
-    return Promise.allSettled([
-      fetch(FORMSPREE_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify(payload)
-      }),
-      postToGoogleSheets(payload)
-    ]);
   }
 
   function toggleFaq(btn) {
@@ -347,14 +335,7 @@
       }
     };
 
-    postToEndpoints(payload).then(function(results) {
-      var formspreeOk = results[0] && results[0].status === 'fulfilled' && results[0].value.ok;
-      if (!formspreeOk) {
-        alert('Something went wrong — please try again.');
-        btn.disabled = false;
-        btn.textContent = 'Send my RSVP';
-        return;
-      }
+    postToGoogleSheets(payload).then(function() {
       localStorage.setItem(getRsvpStorageKey(), '1');
       setRsvpLockedState(true);
       document.getElementById('rsvpForm').style.display = 'none';
