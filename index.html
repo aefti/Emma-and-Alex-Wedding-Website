@@ -5,28 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://script.google.com https://script.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self' https://script.google.com https://script.googleusercontent.com; form-action 'none'; base-uri 'self'; object-src 'none';">
 <title>Emma & Alex — 6th November 2027</title>
+<link rel="stylesheet" href="css/shared.css">
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  :root {
-    --orange: #c4600a;
-    --orange-dark: #a85208;
-    --orange-light: #f5e6d3;
-    --orange-glow: #e8a060;
-    --rust: #a83220;
-    --rust-light: #f5e0db;
-    --forest: #2d5016;
-    --forest-mid: #3d6b1f;
-    --forest-light: #e8f0dc;
-    --gold: #b8860b;
-    --cream: #fdf6ef;
-    --warm-white: #fff9f4;
-    --text-dark: #2c1a0e;
-    --text-mid: #5c3d28;
-    --text-light: #8a6a50;
-  }
-  html { scroll-behavior: smooth; }
-
-  body { font-family: 'Georgia', serif; background: var(--cream); color: var(--text-dark); line-height: 1.7; }
   body::before { content: ''; position: fixed; inset: 0; background: url('images/emi_alex_autumn_transparent.png') center 55% / min(70vw, 560px) no-repeat; opacity: 0; pointer-events: none; z-index: -1; transition: opacity 0.35s ease; }
   body.show-watermark::before { opacity: 0.08; }
 
@@ -59,14 +39,7 @@
   body.pre-ack { overflow: hidden; }
   body.pre-ack #siteContent > *:not(#ackModal) { opacity: 0; visibility: hidden; pointer-events: none; user-select: none; }
 
-
-  /* NAV */
-  nav { position: sticky; top: 0; z-index: 100; background: rgba(168,50,32,0.97); }
-  .nav-inner { display: flex; align-items: center; justify-content: space-between; max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; height: 54px; }
-  .nav-brand { font-size: 1.1rem; color: #fff3e6; letter-spacing: 0.08em; font-style: italic; text-decoration: none; }
-  .nav-links { display: flex; gap: 0; list-style: none; }
-  .nav-links a { display: block; padding: 0 0.9rem; height: 54px; line-height: 54px; font-family: Arial, sans-serif; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,243,230,0.8); text-decoration: none; transition: color 0.2s, background 0.2s; }
-  .nav-links a:hover { color: #fff; background: rgba(255,255,255,0.1); }
+  /* FUN MODE BUTTONS */
   .fun-toggle-btn { display: block; width: 100%; border: 0; background: transparent; color: rgba(255,243,230,0.8); font-family: Arial, sans-serif; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: none; font-style: italic; cursor: pointer; transition: color 0.2s, background 0.2s; }
   .nav-links .fun-toggle-btn { padding: 0 0.9rem; height: 54px; line-height: 54px; }
   .mobile-menu .fun-toggle-btn { padding: 0.65rem 0; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.12); font-size: 0.85rem; letter-spacing: 0.1em; color: #fff3e6; }
@@ -103,14 +76,6 @@
   .hero-scroll { font-family: Arial, sans-serif; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,243,230,0.45); display: flex; align-items: center; gap: 0.5rem; }
   .scroll-line { width: 40px; height: 1px; background: rgba(255,243,230,0.3); }
 
-  /* SECTIONS */
-  section { padding: 5rem 1.5rem; }
-  .section-inner { max-width: 900px; margin: 0 auto; }
-  .section-label { font-family: Arial, sans-serif; font-size: 0.7rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--orange); margin-bottom: 0.75rem; display: block; }
-  .section-title { font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 400; color: var(--text-dark); margin-bottom: 1.5rem; line-height: 1.2; }
-  .divider { width: 60px; height: 2px; background: linear-gradient(90deg, var(--orange), var(--rust)); margin: 1.5rem 0; }
-  .section-body { font-size: 1.05rem; color: var(--text-mid); max-width: 680px; line-height: 1.85; }
-
   /* OUR STORY */
   #story { background: var(--warm-white); }
   .story-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; margin-top: 2.5rem; }
@@ -133,13 +98,8 @@
   .timeline-event { font-size: 1.05rem; font-weight: 500; color: var(--text-dark); }
   .timeline-desc { font-size: 0.9rem; color: var(--text-light); margin-top: 0.2rem; }
 
-  /* VENUE — forest green accent */
-  #venue { background: var(--forest); color: var(--cream); }
-  #venue .section-label { color: var(--orange-glow); }
-  #venue .section-title { color: #fff8f0; }
-  #venue .section-body { color: rgba(245,235,220,0.85); }
+  /* VENUE — index-specific extras */
   .venue-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2.5rem; }
-  .venue-card { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); border-radius: 14px; padding: 1.5rem; }
   .venue-card-title { font-family: Arial, sans-serif; font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--orange-glow); margin-bottom: 0.75rem; display: block; }
   .venue-card p { font-size: 0.95rem; color: rgba(245,235,220,0.8); line-height: 1.7; }
   .venue-map-btn { display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 1rem; padding: 0.5rem 1.25rem; background: rgba(232,160,96,0.2); border: 1px solid rgba(232,160,96,0.4); border-radius: 8px; color: var(--orange-glow); font-family: Arial, sans-serif; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; text-decoration: none; transition: background 0.2s; }
@@ -163,45 +123,12 @@
   .registry-link:hover { background: var(--orange-dark); }
   .registry-note { text-align: center; font-size: 0.9rem; color: var(--text-light); font-style: italic; margin-top: 1.5rem; }
 
-  /* FAQ */
+  /* FAQ — index with background */
   #faq { background: var(--orange-light); }
   .faq-list { margin-top: 2.5rem; display: flex; flex-direction: column; gap: 0; }
-  .faq-item { border-bottom: 1px solid rgba(196,96,10,0.15); }
-  .faq-q { width: 100%; background: none; border: none; text-align: left; padding: 1.1rem 0; font-size: 1rem; font-family: Georgia, serif; color: var(--text-dark); cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
-  .faq-q:hover { color: var(--orange); }
-  .faq-chevron { width: 20px; height: 20px; flex-shrink: 0; transition: transform 0.3s; color: var(--orange); }
-  .faq-a { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; font-size: 0.95rem; color: var(--text-mid); line-height: 1.75; }
-  .faq-a.open { max-height: 300px; padding-bottom: 1rem; }
-  .faq-chevron.open { transform: rotate(180deg); }
 
-  /* RSVP — deep rust */
-  #rsvp { background: var(--rust); }
-  #rsvp .section-label { color: var(--orange-glow); }
-  #rsvp .section-title { color: #fff8f0; }
+  /* RSVP — index extras */
   #rsvp .section-body { color: rgba(255,243,230,0.8); }
-  .rsvp-form { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); border-radius: 18px; padding: 2.5rem; max-width: 560px; margin-top: 2.5rem; }
-  .rsvp-row { margin-bottom: 1.25rem; }
-  .rsvp-label { display: block; font-family: Arial, sans-serif; font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,243,230,0.6); margin-bottom: 0.4rem; }
-  .rsvp-input, .rsvp-select, .rsvp-textarea { width: 100%; padding: 0.7rem 1rem; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 9px; font-family: Georgia, serif; font-size: 0.95rem; color: #fff8f0; outline: none; transition: border-color 0.2s; -webkit-appearance: none; appearance: none; }
-  .rsvp-input::placeholder, .rsvp-textarea::placeholder { color: rgba(255,235,200,0.35); }
-  .rsvp-input:focus, .rsvp-select:focus, .rsvp-textarea:focus { border-color: rgba(232,160,96,0.6); }
-  .rsvp-select option { background: var(--rust); color: #fff8f0; }
-  .rsvp-radio-group { display: flex; gap: 0.75rem; flex-wrap: wrap; }
-  .rsvp-radio-label { display: flex; align-items: center; gap: 0.5rem; padding: 0.55rem 1rem; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; cursor: pointer; font-family: Arial, sans-serif; font-size: 0.85rem; color: rgba(255,243,230,0.75); transition: all 0.2s; }
-  .rsvp-radio-label.selected { background: rgba(232,160,96,0.25); border-color: rgba(232,160,96,0.5); color: var(--orange-glow); }
-  .rsvp-radio-label input { display: none; }
-  .rsvp-submit { width: 100%; padding: 0.9rem; background: var(--orange); border: none; border-radius: 10px; color: white; font-family: Arial, sans-serif; font-size: 0.85rem; letter-spacing: 0.15em; text-transform: uppercase; cursor: pointer; margin-top: 0.5rem; transition: background 0.2s; }
-  .rsvp-submit:hover { background: var(--orange-dark); }
-  .rsvp-success { display: none; text-align: center; padding: 2rem; font-size: 1.1rem; color: var(--orange-glow); font-style: italic; }
-  .rsvp-party-list { display: grid; gap: 0.8rem; }
-  .rsvp-person { border: 1px solid rgba(255,255,255,0.16); border-radius: 10px; padding: 0.8rem; background: rgba(255,255,255,0.04); }
-  .rsvp-person-name { font-size: 0.95rem; margin-bottom: 0.45rem; color: #fff6eb; }
-  .rsvp-inline-error { display: none; margin-top: 0.4rem; color: #ffc4b8; font-family: Arial, sans-serif; font-size: 0.78rem; }
-  .rsvp-inline-error.open { display: block; }
-  .rsvp-locked { display: none; margin-top: 1rem; border: 1px solid rgba(232,160,96,0.45); border-radius: 12px; background: rgba(232,160,96,0.15); padding: 1rem; }
-  .rsvp-locked.open { display: block; }
-  .rsvp-resubmit-btn { margin-top: 0.7rem; border: 1px solid rgba(255,255,255,0.4); background: transparent; color: #fff; border-radius: 9px; padding: 0.55rem 0.8rem; font-family: Arial, sans-serif; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.11em; cursor: pointer; }
-  .rsvp-disabled { opacity: 0.42; pointer-events: none; }
 
   /* FUN MODE: flying heads */
   .flying-head {
@@ -218,19 +145,13 @@
     will-change: transform;
   }
 
-  /* FOOTER */
-  footer { background: #3a1a0a; color: rgba(255,243,230,0.5); text-align: center; padding: 2.5rem 1.5rem; font-family: Arial, sans-serif; font-size: 0.8rem; letter-spacing: 0.05em; }
-  footer span { color: var(--orange-glow); }
-
   /* RESPONSIVE */
   @media (max-width: 700px) {
-    .nav-links { display: none; }
     .hamburger { display: block; }
     .story-grid { grid-template-columns: 1fr; }
     .story-img-placeholder { aspect-ratio: 16/9; }
     .venue-grid { grid-template-columns: 1fr; }
     .gallery-grid { grid-template-columns: repeat(2, 1fr); }
-    .rsvp-form { padding: 1.5rem; }
     .timeline-item { grid-template-columns: 70px 12px 1fr; gap: 0 1rem; }
     body.show-watermark::before { opacity: 0.06; background-size: min(92vw, 420px); background-position: center 28%; }
   }
@@ -542,11 +463,14 @@
 </div>
 
 <script>
-  var GOOGLE_SHEETS_WEBHOOK = 'https://script.google.com/macros/s/AKfycbw6uOEq_XkBwU9IdQdvY7l8V5OnZNamyOgPD6MDd1TnhWo-YJOKNgh_VP77UDuwtZJedw/exec';
-  // Shared token added to all API calls — deters automated abuse.
-  var SITE_TOKEN = 'ea-2027-8mKxNpQvTz';
   var pendingGuestMatch = null;
-  var RSVP_STORAGE_PREFIX = 'ea_rsvp_';
+  window.PAGE_CONFIG = {
+    source: 'wedding-site',
+    storageKeyFallback: 'anonymous'
+  };
+</script>
+<script src="js/shared.js"></script>
+<script>
   var HEAD_POP_ENABLED = false;
   var HEAD_IMAGE_CHOICES = ['images/alex_head.png', 'images/emma_head.png'];
   var activeFlyingHeads = [];
@@ -564,27 +488,6 @@
       'images/photos/small-6.jpg'
     ]
   };
-
-  function postToGoogleSheets(payload) {
-    if (!GOOGLE_SHEETS_WEBHOOK) {
-      return Promise.resolve({ skipped: true });
-    }
-    var securedPayload = Object.assign({}, payload, { token: SITE_TOKEN });
-    var body = JSON.stringify(securedPayload);
-
-    if (navigator.sendBeacon) {
-      var blob = new Blob([body], { type: 'text/plain;charset=UTF-8' });
-      var sent = navigator.sendBeacon(GOOGLE_SHEETS_WEBHOOK, blob);
-      return sent ? Promise.resolve({ beacon: true }) : Promise.reject(new Error('sendBeacon failed'));
-    }
-
-    return fetch(GOOGLE_SHEETS_WEBHOOK, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: body
-    });
-  }
 
   function normalizePhotoManifest(data) {
     if (!data || typeof data !== 'object') { return DEFAULT_PHOTO_MANIFEST; }
@@ -652,25 +555,6 @@
     }
   }
 
-  function toggleFaq(btn) {
-    var answer = btn.nextElementSibling;
-    var chevron = btn.querySelector('.faq-chevron');
-    var open = answer.classList.contains('open');
-    document.querySelectorAll('.faq-a').forEach(function(a) { a.classList.remove('open'); });
-    document.querySelectorAll('.faq-chevron').forEach(function(c) { c.classList.remove('open'); });
-    if (!open) { answer.classList.add('open'); chevron.classList.add('open'); }
-  }
-
-  function getSavedParty() {
-    var raw = localStorage.getItem('ea_ack_party');
-    if (!raw) { return null; }
-    try {
-      return JSON.parse(raw);
-    } catch (err) {
-      return null;
-    }
-  }
-
   function lookupGuestByName(name) {
     return new Promise(function(resolve, reject) {
       var callbackName = '__eaLookup_' + Date.now() + '_' + Math.floor(Math.random() * 1000000);
@@ -704,87 +588,6 @@
         + '&t=' + Date.now();
       document.head.appendChild(script);
     });
-  }
-
-  function currentPartyMembers() {
-    var party = getSavedParty() || pendingGuestMatch;
-    var members = [];
-    if (party && party.matchedName) { members.push(party.matchedName); }
-    if (party && party.guestName) { members.push(party.guestName); }
-    if (party && party.children && party.children.length) {
-      party.children.forEach(function(child) { members.push(child); });
-    }
-    if (!members.length) {
-      var typedName = document.getElementById('rsvp-name').value.trim();
-      members.push(typedName || 'Guest 1');
-    }
-    return members;
-  }
-
-  function getRsvpStorageKey() {
-    var party = getSavedParty() || pendingGuestMatch;
-    return RSVP_STORAGE_PREFIX + (party && party.partyId ? party.partyId : 'anonymous');
-  }
-
-  function renderIndividualRsvpChoices() {
-    var container = document.getElementById('individualRsvpList');
-    if (!container) { return; }
-    var members = currentPartyMembers();
-    container.innerHTML = '';
-    members.forEach(function(member, index) {
-      var item = document.createElement('div');
-      item.className = 'rsvp-person';
-      item.innerHTML =
-        '<p class="rsvp-person-name">' + escapeHtml(member) + '</p>' +
-        '<div class="rsvp-radio-group">' +
-          '<label class="rsvp-radio-label"><input type="radio" name="person_' + index + '" value="yes"> 🎉 Attending</label>' +
-          '<label class="rsvp-radio-label"><input type="radio" name="person_' + index + '" value="no"> 😢 Not attending</label>' +
-        '</div>';
-      item.querySelectorAll('input[type="radio"]').forEach(function(radio) {
-        radio.addEventListener('change', function() {
-          var labelNodes = item.querySelectorAll('.rsvp-radio-label');
-          labelNodes.forEach(function(label) {
-            var input = label.querySelector('input');
-            label.classList.toggle('selected', input.checked);
-          });
-        });
-      });
-      container.appendChild(item);
-    });
-  }
-
-  function collectIndividualRsvp() {
-    var members = currentPartyMembers();
-    var decisions = [];
-    for (var i = 0; i < members.length; i += 1) {
-      var selected = document.querySelector('input[name="person_' + i + '"]:checked');
-      if (!selected) { return null; }
-      decisions.push({ name: members[i], attending: selected.value === 'yes' });
-    }
-    return decisions;
-  }
-
-  function setRsvpLockedState(isLocked) {
-    var form = document.getElementById('rsvpForm');
-    var notice = document.getElementById('rsvpLockedNotice');
-    if (!form || !notice) { return; }
-    form.classList.toggle('rsvp-disabled', isLocked);
-    notice.classList.toggle('open', isLocked);
-  }
-
-  function resetRsvpSubmitButton() {
-    var btn = document.getElementById('rsvpSubmitBtn');
-    if (!btn) { return; }
-    btn.disabled = false;
-    btn.textContent = 'Send my RSVP';
-  }
-
-  function enableRsvpResubmission() {
-    localStorage.removeItem(getRsvpStorageKey());
-    setRsvpLockedState(false);
-    document.getElementById('rsvpSuccess').style.display = 'none';
-    document.getElementById('rsvpForm').style.display = 'block';
-    resetRsvpSubmitButton();
   }
 
   function initializeRsvpSection() {
@@ -907,15 +710,6 @@
     document.getElementById('ackBtn').disabled = false;
   }
 
-  function escapeHtml(str) {
-    return String(str || '')
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;');
-  }
-
   function unlockPage() {
     document.body.classList.remove('pre-ack');
     document.getElementById('ackModal').classList.remove('open');
@@ -938,54 +732,6 @@
 
   function confirmAcknowledgement() {
     submitAcknowledgement();
-  }
-
-  function submitRsvp() {
-    var name = document.getElementById('rsvp-name').value.trim();
-    var email = document.getElementById('rsvp-email').value.trim();
-    var partyResponses = collectIndividualRsvp();
-    var party = getSavedParty() || pendingGuestMatch || {};
-    var notes = document.getElementById('rsvp-notes').value;
-    if (!name || !email) {
-      alert('Please fill in your name and email.');
-      return;
-    }
-    if (!partyResponses) {
-      document.getElementById('individualRsvpError').classList.add('open');
-      alert('Please make an attendance choice for every person in your party.');
-      return;
-    }
-    document.getElementById('individualRsvpError').classList.remove('open');
-    var btn = document.getElementById('rsvpSubmitBtn');
-    btn.textContent = 'Sending...';
-    btn.disabled = true;
-
-    var payload = {
-      eventType: 'rsvp',
-      name: name,
-      _replyto: email,
-      partyId: party.partyId || '',
-      matchedName: party.matchedName || '',
-      submittedAtIso: new Date().toISOString(),
-      details: {
-        partyResponses: partyResponses,
-        attendingCount: partyResponses.filter(function(p) { return p.attending; }).length,
-        declineCount: partyResponses.filter(function(p) { return !p.attending; }).length,
-        notes: notes,
-        source: 'wedding-site'
-      }
-    };
-
-    postToGoogleSheets(payload).then(function() {
-      localStorage.setItem(getRsvpStorageKey(), '1');
-      setRsvpLockedState(true);
-      document.getElementById('rsvpForm').style.display = 'none';
-      document.getElementById('rsvpSuccess').style.display = 'block';
-    }).catch(function() {
-      alert('Could not send — please check your connection and try again.');
-      btn.textContent = 'Send my RSVP';
-      btn.disabled = false;
-    });
   }
 
   function setupHeroWatermark() {
@@ -1031,7 +777,7 @@
 
   function ensureFlyingHeadAnimation() {
     if (flyingHeadAnimationId) { return; }
-    var gravity = 1750; // px/s^2
+    var gravity = 1750;
     var last = performance.now();
 
     function tick(now) {
