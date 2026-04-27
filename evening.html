@@ -211,9 +211,9 @@
       }
     }
 
-    if (!party) {
-      renderIndividualRsvpChoices();
-      setRsvpLockedState(localStorage.getItem(getRsvpStorageKey()) === '1');
+    if (!party || party.dayEvening !== 'Evening') {
+      localStorage.clear();
+      window.location.href = 'index.html';
       return;
     }
 

@@ -1097,6 +1097,10 @@
       });
       ackNameInput.focus();
     } else {
+      if (savedParty && savedParty.dayEvening === 'Evening') {
+        window.location.href = 'evening.html';
+        return;
+      }
       unlockPage();
     }
     document.getElementById('rsvp-name').addEventListener('blur', function() {
