@@ -1,11 +1,6 @@
 /**
  * Emma & Alex Wedding Website - Unified Google Apps Script Web App
  *
- * This file combines functionality previously split across:
- * - Code.gs (generic response capture)
- * - Initialise.gs (guest directory + RSVP capture)
- * - acknowledgements.gs (acknowledgement capture)
- *
  * Required tabs:
  * 1) People
  *    PARTY_ID | DAY_EVENING | ... | LEAD_PERSON_FULL_NAME (col E) | ... | PERSON_2_FULL_NAME (col M) | CHILDREN (col N)
@@ -17,25 +12,31 @@ var PEOPLE_SHEET_NAME = 'People';
 var RESPONSES_SHEET_NAME = 'Responses';
 var ACKNOWLEDGEMENTS_SHEET_NAME = 'Acknowledgements';
 
+// Shared token — must match SITE_TOKEN in index.html and evening.html.
+// Deters casual API abuse; visible in page source so not a cryptographic secret.
+var SITE_TOKEN = 'ea-2027-8mKxNpQvTz';
+
 function doGet(e) {
   try {
     var action = (e && e.parameter && e.parameter.action) ? String(e.parameter.action) : '';
     var callback = (e && e.parameter && e.parameter.callback) ? String(e.parameter.callback) : '';
+    var token = (e && e.parameter && e.parameter.token) ? String(e.parameter.token) : '';
 
-    if (action === 'people') {
-      var payload = buildPeoplePayload_();
-      return callback ? jsonpResponse(payload, callback) : jsonResponse(payload);
+    if (action === 'lookup') {
+      if (!validateToken_(token)) {
+        var denied = { ok: false, error: 'Unauthorised' };
+        return callback ? jsonpResponse(denied, callback) : jsonResponse(denied);
+      }
+      var name = (e && e.parameter && e.parameter.name) ? String(e.parameter.name) : '';
+      var result = lookupGuest_(name);
+      return callback ? jsonpResponse(result, callback) : jsonResponse(result);
     }
 
-    var defaultPayload = {
-      ok: true,
-      actions: ['people'],
-      message: 'Use ?action=people to fetch guest directory with RSVP status.'
-    };
+    var defaultPayload = { ok: true, message: 'Wedding API' };
     return callback ? jsonpResponse(defaultPayload, callback) : jsonResponse(defaultPayload);
   } catch (err) {
-    var errorPayload = { ok: false, error: err.message, stack: err.stack };
     var fallbackCallback = (e && e.parameter && e.parameter.callback) ? String(e.parameter.callback) : '';
+    var errorPayload = { ok: false, error: 'Internal error' };
     return fallbackCallback ? jsonpResponse(errorPayload, fallbackCallback) : jsonResponse(errorPayload);
   }
 }
@@ -43,6 +44,10 @@ function doGet(e) {
 function doPost(e) {
   try {
     var payload = parseBody_(e);
+    var token = String((payload && payload.token) || '');
+    if (!validateToken_(token)) {
+      return jsonResponse({ ok: false, error: 'Unauthorised' });
+    }
     var eventType = String((payload && payload.eventType) || '').toLowerCase();
 
     if (eventType === 'acknowledgement') {
@@ -50,11 +55,137 @@ function doPost(e) {
       return jsonResponse({ ok: true, eventType: 'acknowledgement' });
     }
 
-    appendResponseRow_(payload);
-    return jsonResponse({ ok: true, eventType: eventType || 'unknown' });
+    if (eventType === 'rsvp') {
+      appendResponseRow_(payload);
+      return jsonResponse({ ok: true, eventType: 'rsvp' });
+    }
+
+    return jsonResponse({ ok: false, error: 'Unknown event type' });
   } catch (err) {
-    return jsonResponse({ ok: false, error: err.message, stack: err.stack });
+    return jsonResponse({ ok: false, error: 'Internal error' });
   }
+}
+
+function validateToken_(token) {
+  return String(token || '') === SITE_TOKEN;
+}
+
+function lookupGuest_(typedName) {
+  var normalizedQuery = normalizeNameServer_(typedName);
+  if (!normalizedQuery) {
+    return { ok: false, error: 'Name is required.' };
+  }
+
+  var payload = buildPeoplePayload_();
+  if (!payload.ok || !Array.isArray(payload.people) || !payload.people.length) {
+    return { ok: false, error: 'Guest list unavailable.' };
+  }
+
+  var index = [];
+  payload.people.forEach(function(row) {
+    var leadName = normalizeWhitespace_(row.leadFullName || '');
+    var guestName = normalizeWhitespace_(row.guestFullName || '');
+    if (leadName) {
+      index.push({
+        partyId: row.partyId,
+        dayEvening: row.dayEvening,
+        hasRsvped: row.hasRsvped,
+        matchedName: leadName,
+        matchedBy: 'Column E',
+        guestName: guestName,
+        children: row.children || '',
+        normalized: normalizeNameServer_(leadName)
+      });
+    }
+    if (guestName) {
+      index.push({
+        partyId: row.partyId,
+        dayEvening: row.dayEvening,
+        hasRsvped: row.hasRsvped,
+        matchedName: guestName,
+        matchedBy: 'Column M',
+        guestName: leadName,
+        children: row.children || '',
+        normalized: normalizeNameServer_(guestName)
+      });
+    }
+  });
+
+  var exact = null;
+  for (var i = 0; i < index.length; i++) {
+    if (index[i].normalized === normalizedQuery) {
+      exact = index[i];
+      break;
+    }
+  }
+
+  var best = exact;
+  var matchType = 'exact';
+
+  if (!best) {
+    var bestDistance = Infinity;
+    for (var j = 0; j < index.length; j++) {
+      var dist = levenshteinServer_(normalizedQuery, index[j].normalized);
+      if (dist < bestDistance) {
+        bestDistance = dist;
+        best = index[j];
+      }
+    }
+    matchType = 'fuzzy';
+  }
+
+  if (!best) {
+    return { ok: false, error: 'No match found.' };
+  }
+
+  var childrenArr = best.children
+    ? best.children.split(';').map(function(c) { return c.trim(); }).filter(Boolean)
+    : [];
+
+  return {
+    ok: true,
+    match: {
+      partyId: best.partyId,
+      dayEvening: best.dayEvening,
+      hasRsvped: best.hasRsvped,
+      matchedName: best.matchedName,
+      matchedBy: best.matchedBy,
+      guestName: best.guestName,
+      children: childrenArr,
+      matchType: matchType
+    }
+  };
+}
+
+function normalizeNameServer_(name) {
+  return String(name || '')
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g, ' ')
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .sort()
+    .join(' ');
+}
+
+function levenshteinServer_(a, b) {
+  var m = a.length;
+  var n = b.length;
+  var dp = [];
+  for (var i = 0; i <= m; i++) {
+    dp[i] = [];
+    dp[i][0] = i;
+  }
+  for (var j = 0; j <= n; j++) {
+    dp[0][j] = j;
+  }
+  for (var r = 1; r <= m; r++) {
+    for (var c = 1; c <= n; c++) {
+      var cost = a[r - 1] === b[c - 1] ? 0 : 1;
+      dp[r][c] = Math.min(dp[r - 1][c] + 1, dp[r][c - 1] + 1, dp[r - 1][c - 1] + cost);
+    }
+  }
+  return dp[m][n];
 }
 
 function buildPeoplePayload_() {
@@ -254,6 +385,9 @@ function ensureHeaderRow_(sheet, headers) {
 
 function parseBody_(e) {
   var raw = (e && e.postData && e.postData.contents) ? e.postData.contents : '{}';
+  if (raw.length > 65536) {
+    throw new Error('Payload too large');
+  }
   var payload = JSON.parse(raw);
   if (typeof payload !== 'object' || payload === null) {
     throw new Error('Invalid JSON payload');
