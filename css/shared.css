@@ -43,6 +43,7 @@ section { padding: 5rem 1.5rem; }
 /* VENUE */
 #venue { background: var(--forest); color: var(--cream); }
 #venue .section-label { color: var(--orange-glow); }
+#venue .section-title { color: #fff8f0; }
 #venue .section-body { color: rgba(245,235,220,0.85); }
 .venue-card { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); border-radius: 14px; padding: 1.5rem; }
 
