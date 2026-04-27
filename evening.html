@@ -12,7 +12,6 @@
     --rust: #a83220; --forest: #2d5016; --cream: #fdf6ef; --warm-white: #fff9f4;
     --text-dark: #2c1a0e; --text-mid: #5c3d28; --text-light: #8a6a50;
   }
-  html { scroll-behavior: smooth; }
   body { font-family: Georgia, serif; background: var(--cream); color: var(--text-dark); line-height: 1.7; }
   nav { position: sticky; top: 0; z-index: 100; background: rgba(168,50,32,0.97); }
   .nav-inner { display: flex; align-items: center; justify-content: space-between; max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; height: 54px; }
@@ -74,12 +73,6 @@
   .rsvp-success { display: none; margin-top: 1rem; color: #ffd8bd; }
   footer { background: #3a1a0a; color: rgba(255,243,230,0.6); text-align: center; padding: 2.2rem 1.5rem; font-family: Arial, sans-serif; font-size: 0.82rem; }
   @media (max-width: 700px) { .nav-links { display: none; } .hamburger { display: block; } .timeline-item { grid-template-columns: 72px 1fr; } }
-  @media (prefers-reduced-motion: reduce) {
-     html { scroll-behavior: auto; }
-     .faq-a {
-       transition: none !important;
-     }
-   }
 </style>
 </head>
 <body>
