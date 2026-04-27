@@ -7,9 +7,9 @@
 <title>Emma & Alex — 6th November 2027</title>
 <link rel="stylesheet" href="css/shared.css">
 <style>
-  body::before { content: ''; position: fixed; inset: 0; background: url('images/emi_alex_autumn_transparent.png') center 55% / min(70vw, 560px) no-repeat; opacity: 0; pointer-events: none; z-index: 0; transition: opacity 0.35s ease; }
+  body::before { content: ''; position: fixed; inset: 0; background: url('images/emi_alex_autumn_transparent.png') center 55% / min(35vw, 280px) no-repeat; opacity: 0; pointer-events: none; z-index: 0; transition: opacity 0.35s ease; filter: grayscale(1); }
   body.show-watermark::before ~ * { position: relative; }
-  body.show-watermark::before { opacity: 0.08; }
+  body.show-watermark::before { opacity: 0.1; }
 
   /* ACK MODAL */
   .ack-modal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background:
@@ -134,18 +134,17 @@
     .venue-grid { grid-template-columns: 1fr; }
     .gallery-grid { grid-template-columns: repeat(2, 1fr); }
     .timeline-item { grid-template-columns: 70px 12px 1fr; gap: 0 1rem; }
-    body.show-watermark::before { opacity: 0.06; background-size: min(92vw, 420px); background-position: center 28%; }
+    body.show-watermark::before { opacity: 0.08; background-size: min(50vw, 220px); background-position: center 28%; }
   }
 
   /* FLOATING LEAVES */
-  .hero-leaf { position: absolute; pointer-events: none; user-select: none; z-index: 1; opacity: 0; will-change: transform, opacity; }
+  .hero-leaf { position: absolute; top: 0; pointer-events: none; user-select: none; z-index: 1; opacity: 0; will-change: transform, opacity; }
   @keyframes leafDrift {
     0% { transform: translateY(-40px) translateX(0) rotate(0deg); opacity: 0; }
     8% { opacity: 1; }
     85% { opacity: 1; }
     100% { transform: translateY(calc(100vh + 40px)) translateX(var(--drift-x)) rotate(var(--spin)); opacity: 0; }
   }
-  @media (prefers-reduced-motion: reduce) { .hero-leaf { display: none; } }
 </style>
 </head>
 <body>
@@ -199,7 +198,6 @@
   </div>
   <div class="hero-scroll"><div class="scroll-line"></div>Scroll to explore<div class="scroll-line"></div></div>
 </section>
-<div class="wave-divider" style="background:#b8860b"><svg viewBox="0 0 1200 60" preserveAspectRatio="none"><path d="M0,30 C200,0 400,55 600,25 C800,0 1000,50 1200,20 L1200,60 L0,60 Z" fill="#fff9f4"/></svg></div>
 
 <!-- OUR STORY (rendered by shared.js) -->
 <div id="storyContainer"></div>
@@ -245,7 +243,6 @@
     </div>
   </div>
 </section>
-<div class="wave-divider" style="background:#fdf6ef"><svg viewBox="0 0 1200 60" preserveAspectRatio="none"><path d="M0,20 C300,55 600,5 900,40 C1050,55 1150,25 1200,35 L1200,60 L0,60 Z" fill="#2d5016"/></svg></div>
 
 <!-- VENUE -->
 <section id="venue">
@@ -275,7 +272,6 @@
     </div>
   </div>
 </section>
-<div class="wave-divider" style="background:#2d5016"><svg viewBox="0 0 1200 60" preserveAspectRatio="none"><path d="M0,30 C200,0 400,55 600,25 C800,0 1000,50 1200,20 L1200,60 L0,60 Z" fill="#fff9f4"/></svg></div>
 
 <!-- GALLERY (rendered by shared.js) -->
 <div id="galleryContainer"></div>
@@ -345,7 +341,6 @@
     </div>
   </div>
 </section>
-<div class="wave-divider" style="background:#f5e6d3"><svg viewBox="0 0 1200 60" preserveAspectRatio="none"><path d="M0,45 C400,10 800,55 1200,25 L1200,60 L0,60 Z" fill="#a83220"/></svg></div>
 
 <!-- RSVP -->
 <section id="rsvp">
@@ -751,7 +746,6 @@
   }
 
   function setupFloatingLeaves() {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { return; }
     var hero = document.querySelector('.hero');
     if (!hero) { return; }
     var leaves = ['🍂', '🍁', '🍃'];
