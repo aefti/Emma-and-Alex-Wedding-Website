@@ -206,6 +206,8 @@
   /* FOOTER */
   footer { background: #3a1a0a; color: rgba(255,243,230,0.5); text-align: center; padding: 2.5rem 1.5rem; font-family: Arial, sans-serif; font-size: 0.8rem; letter-spacing: 0.05em; }
   footer span { color: var(--orange-glow); }
+  .fun-mode-toggle { margin-top: 0.7rem; display: inline-flex; align-items: center; gap: 0.45rem; font-size: 0.72rem; letter-spacing: 0.06em; color: rgba(255,243,230,0.7); }
+  .fun-mode-toggle input { accent-color: var(--orange-glow); }
 
   /* RESPONSIVE */
   @media (max-width: 700px) {
@@ -521,6 +523,12 @@
 <!-- FOOTER -->
 <footer>
   Made with love for <span>Emma & Alex</span> &nbsp;·&nbsp; 6th November 2027 &nbsp;·&nbsp; Gaynes Park, Epping
+  <div>
+    <label class="fun-mode-toggle" for="funModeToggle">
+      <input type="checkbox" id="funModeToggle">
+      Fun mode
+    </label>
+  </div>
 </footer>
 </div>
 
@@ -530,7 +538,8 @@
   var SITE_TOKEN = 'ea-2027-8mKxNpQvTz';
   var pendingGuestMatch = null;
   var RSVP_STORAGE_PREFIX = 'ea_rsvp_';
-  var HEAD_POP_ENABLED = true;
+  var HEAD_POP_ENABLED = false;
+  var FUN_MODE_STORAGE_KEY = 'ea_fun_mode';
   var HEAD_IMAGE_CHOICES = ['images/alex_head.png', 'images/emma_head.png'];
   var activeFlyingHeads = [];
   var flyingHeadAnimationId = null;
@@ -563,7 +572,7 @@
 
     return fetch(GOOGLE_SHEETS_WEBHOOK, {
       method: 'POST',
-      mode: 'no-cors',
+      mode: 'no-cors',FF
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: body
     });
@@ -1037,6 +1046,11 @@
 
   function setFlyingHeadsEnabled(isEnabled) {
     HEAD_POP_ENABLED = Boolean(isEnabled);
+    try {
+      localStorage.setItem(FUN_MODE_STORAGE_KEY, HEAD_POP_ENABLED ? '1' : '0');
+    } catch (err) {}
+    var toggle = document.getElementById('funModeToggle');
+    if (toggle) { toggle.checked = HEAD_POP_ENABLED; }
     return HEAD_POP_ENABLED;
   }
 
@@ -1092,6 +1106,20 @@
     setupHeroWatermark();
     setupFlyingHeads();
     window.setFlyingHeadsEnabled = setFlyingHeadsEnabled;
+
+    var funModeToggle = document.getElementById('funModeToggle');
+    var savedFunMode = localStorage.getItem(FUN_MODE_STORAGE_KEY);
+    if (savedFunMode !== null) {
+      setFlyingHeadsEnabled(savedFunMode === '1');
+    } else {
+      setFlyingHeadsEnabled(HEAD_POP_ENABLED);
+    }
+    if (funModeToggle) {
+      funModeToggle.checked = HEAD_POP_ENABLED;
+      funModeToggle.addEventListener('change', function(event) {
+        setFlyingHeadsEnabled(event.target.checked);
+      });
+    }
     updateCountdown();
     setInterval(updateCountdown, 1000);
   });
