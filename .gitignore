@@ -15,3 +15,7 @@ desktop.ini
 .idea/
 *.swp
 *.swo
+
+# Google Apps Script (deployed separately)
+google-apps-script/
+*.gs
