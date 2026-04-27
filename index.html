@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://script.google.com https://script.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self' https://formspree.io https://script.google.com https://script.googleusercontent.com; form-action 'none'; base-uri 'self'; object-src 'none';">
 <title>Emma & Alex — 6th November 2027</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -525,12 +526,11 @@
 
 <script>
   var FORMSPREE_ENDPOINT = 'https://formspree.io/f/mgorqjel';
-  // Unified Google Apps Script Web App URL (people lookup + RSVP + acknowledgement).
   var GOOGLE_SHEETS_WEBHOOK = 'https://script.google.com/macros/s/AKfycbw6uOEq_XkBwU9IdQdvY7l8V5OnZNamyOgPD6MDd1TnhWo-YJOKNgh_VP77UDuwtZJedw/exec';
-  var GUEST_DIRECTORY = [];
+  // Shared token added to all API calls — deters automated abuse.
+  var SITE_TOKEN = 'ea-2027-8mKxNpQvTz';
   var pendingGuestMatch = null;
   var RSVP_STORAGE_PREFIX = 'ea_rsvp_';
-  var peopleSyncPromise = null;
   var HEAD_POP_ENABLED = true;
   var HEAD_IMAGE_CHOICES = ['images/alex_head.png', 'images/emma_head.png'];
   var activeFlyingHeads = [];
@@ -553,21 +553,20 @@
     if (!GOOGLE_SHEETS_WEBHOOK) {
       return Promise.resolve({ skipped: true });
     }
+    var securedPayload = Object.assign({}, payload, { token: SITE_TOKEN });
+    var body = JSON.stringify(securedPayload);
 
-    // Prefer sendBeacon for fire-and-forget delivery without CORS preflight.
     if (navigator.sendBeacon) {
-      var blob = new Blob([JSON.stringify(payload)], { type: 'text/plain;charset=UTF-8' });
+      var blob = new Blob([body], { type: 'text/plain;charset=UTF-8' });
       var sent = navigator.sendBeacon(GOOGLE_SHEETS_WEBHOOK, blob);
       return sent ? Promise.resolve({ beacon: true }) : Promise.reject(new Error('sendBeacon failed'));
     }
 
-    // Fallback: "simple request" + no-cors to avoid OPTIONS preflight failures
-    // against Apps Script web apps that don't return CORS headers.
     return fetch(GOOGLE_SHEETS_WEBHOOK, {
       method: 'POST',
       mode: 'no-cors',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify(payload)
+      body: body
     });
   }
 
@@ -647,33 +646,14 @@
     }
   }
 
-  function fetchPeopleDirectory() {
-    if (peopleSyncPromise) { return peopleSyncPromise; }
-
-    peopleSyncPromise = loadPeopleDirectoryWithJsonp()
-      .then(function(data) {
-        var normalized = normalizePeoplePayload(data);
-        if (!normalized || !Array.isArray(normalized.people)) {
-          throw new Error('People data format is invalid.');
-        }
-        GUEST_DIRECTORY = normalized.people;
-        return GUEST_DIRECTORY;
-      })
-      .catch(function(err) {
-        peopleSyncPromise = null;
-        throw err;
-      });
-    return peopleSyncPromise;
-  }
-
-  function loadPeopleDirectoryWithJsonp() {
+  function lookupGuestByName(name) {
     return new Promise(function(resolve, reject) {
-      var callbackName = '__eaPeopleCb_' + Date.now() + '_' + Math.floor(Math.random() * 1000000);
+      var callbackName = '__eaLookup_' + Date.now() + '_' + Math.floor(Math.random() * 1000000);
       var script = document.createElement('script');
       var timeoutId = setTimeout(function() {
         cleanup();
-        reject(new Error('Timed out loading guest directory.'));
-      }, 10000);
+        reject(new Error('Name lookup timed out. Please try again.'));
+      }, 12000);
 
       function cleanup() {
         clearTimeout(timeoutId);
@@ -688,22 +668,17 @@
 
       script.onerror = function() {
         cleanup();
-        reject(new Error('Could not load People tab data. Check Google Apps Script Web App access ("Anyone") and that the deployed URL is current.'));
+        reject(new Error('Could not reach guest lookup service. Please check your connection and try again.'));
       };
 
-      script.src = GOOGLE_SHEETS_WEBHOOK + '?action=people&callback=' + encodeURIComponent(callbackName) + '&t=' + Date.now();
+      script.src = GOOGLE_SHEETS_WEBHOOK
+        + '?action=lookup'
+        + '&name=' + encodeURIComponent(name)
+        + '&token=' + encodeURIComponent(SITE_TOKEN)
+        + '&callback=' + encodeURIComponent(callbackName)
+        + '&t=' + Date.now();
       document.head.appendChild(script);
     });
-  }
-
-  function normalizePeoplePayload(data) {
-    if (!data) { return null; }
-    if (Array.isArray(data.people)) { return data; }
-    if (data.ok && data.data && Array.isArray(data.data.people)) { return data.data; }
-    if (Array.isArray(data.data)) { return { people: data.data }; }
-    if (Array.isArray(data.guests)) { return { people: data.guests }; }
-    if (Array.isArray(data.rows)) { return { people: data.rows }; }
-    return data;
   }
 
   function currentPartyMembers() {
@@ -840,135 +815,46 @@
     });
   }
 
-  function normalizeName(name) {
-    return (name || '')
-      .toUpperCase()
-      .replace(/[^A-Z0-9]+/g, ' ')
-      .trim()
-      .split(/\s+/)
-      .filter(Boolean)
-      .sort()
-      .join(' ');
-  }
-
-  function levenshtein(a, b) {
-    var m = a.length;
-    var n = b.length;
-    var dp = [];
-    for (var i = 0; i <= m; i += 1) {
-      dp[i] = [];
-      dp[i][0] = i;
-    }
-    for (var j = 0; j <= n; j += 1) {
-      dp[0][j] = j;
-    }
-    for (var r = 1; r <= m; r += 1) {
-      for (var c = 1; c <= n; c += 1) {
-        var cost = a[r - 1] === b[c - 1] ? 0 : 1;
-        dp[r][c] = Math.min(
-          dp[r - 1][c] + 1,
-          dp[r][c - 1] + 1,
-          dp[r - 1][c - 1] + cost
-        );
-      }
-    }
-    return dp[m][n];
-  }
-
-  function childrenList(childrenRaw) {
-    if (!childrenRaw) { return []; }
-    return childrenRaw.split(';').map(function(c) { return c.trim(); }).filter(Boolean);
-  }
-
-  function buildNameIndex() {
-    var index = [];
-    GUEST_DIRECTORY.forEach(function(row) {
-      var leadFullName = normalizeWhitespaceClient_(row.leadFullName || row.leadName || row.primaryName || row.name || '');
-      var guestFullName = normalizeWhitespaceClient_(row.guestFullName || row.partnerName || row.secondaryName || '');
-      var rowChildren = row.children || row.kids || '';
-      var rowPartyId = row.partyId || row.partyID || row.id || '';
-      var rowDayEvening = row.dayEvening || row.audience || row.day_or_evening || '';
-      var rowHasRsvped = Boolean(row.hasRsvped || row.hasRSVPed || row.rsvpReceived);
-      if (leadFullName) {
-        index.push({
-          partyId: rowPartyId,
-          dayEvening: String(rowDayEvening).trim().toLowerCase() === 'evening' ? 'Evening' : 'Day',
-          hasRsvped: rowHasRsvped,
-          matchedBy: 'Column E',
-          matchedName: leadFullName,
-          guestName: guestFullName,
-          children: childrenList(rowChildren),
-          normalized: normalizeName(leadFullName)
-        });
-      }
-      if (guestFullName) {
-        index.push({
-          partyId: rowPartyId,
-          dayEvening: String(rowDayEvening).trim().toLowerCase() === 'evening' ? 'Evening' : 'Day',
-          hasRsvped: rowHasRsvped,
-          matchedBy: 'Column M',
-          matchedName: guestFullName,
-          guestName: leadFullName,
-          children: childrenList(rowChildren),
-          normalized: normalizeName(guestFullName)
-        });
-      }
-    });
-    return index;
-  }
-
-  function normalizeWhitespaceClient_(value) {
-    return String(value || '').replace(/\s+/g, ' ').trim();
-  }
-
   function checkNameMatch() {
     clearAckError();
     var inputEl = document.getElementById('ackName');
     var query = inputEl.value.trim();
-    var normalizedQuery = normalizeName(query);
-    if (!normalizedQuery) {
+    if (!query) {
       showAckError('Please type your name first.');
       inputEl.focus();
       return;
     }
 
-    fetchPeopleDirectory().then(function() {
-      var allNames = buildNameIndex();
-      var exact = allNames.find(function(entry) { return entry.normalized === normalizedQuery; });
-      var best = exact;
-      var matchType = 'exact';
+    var checkBtn = document.getElementById('checkNameBtn');
+    checkBtn.disabled = true;
+    checkBtn.textContent = 'Checking...';
 
-      if (!best) {
-        best = allNames.reduce(function(currentBest, entry) {
-          var distance = levenshtein(normalizedQuery, entry.normalized);
-          if (!currentBest || distance < currentBest.distance) {
-            return { entry: entry, distance: distance };
-          }
-          return currentBest;
-        }, null);
-        best = best ? best.entry : null;
-        matchType = 'fuzzy';
-      }
-
-      if (!best) {
-        showAckError('We could not find any names in the guest list yet.');
-        return;
-      }
-
-      pendingGuestMatch = {
-        partyId: best.partyId,
-        dayEvening: best.dayEvening,
-        hasRsvped: best.hasRsvped,
-        matchedBy: best.matchedBy,
-        matchType: matchType,
-        matchedName: best.matchedName,
-        guestName: best.guestName,
-        children: best.children
-      };
-      renderMatchResult(pendingGuestMatch);
-    }).catch(function(err) {
-      showAckError(err.message || 'Could not sync guest list from Google Sheets right now.');
-    });
+    lookupGuestByName(query)
+      .then(function(data) {
+        checkBtn.disabled = false;
+        checkBtn.textContent = 'Check Name';
+        if (!data || !data.ok || !data.match) {
+          showAckError(data && data.error ? data.error : "We couldn't find your name. Please check the spelling or contact Emma & Alex.");
+          return;
+        }
+        var m = data.match;
+        pendingGuestMatch = {
+          partyId: m.partyId,
+          dayEvening: m.dayEvening,
+          hasRsvped: m.hasRsvped,
+          matchedBy: m.matchedBy,
+          matchType: m.matchType,
+          matchedName: m.matchedName,
+          guestName: m.guestName,
+          children: m.children
+        };
+        renderMatchResult(pendingGuestMatch);
+      })
+      .catch(function(err) {
+        checkBtn.disabled = false;
+        checkBtn.textContent = 'Check Name';
+        showAckError(err.message || 'Could not check your name right now. Please try again.');
+      });
   }
 
   function renderMatchResult(match) {
@@ -1211,16 +1097,15 @@
       });
       ackNameInput.focus();
     } else {
+      if (savedParty && savedParty.dayEvening === 'Evening') {
+        window.location.href = 'evening.html';
+        return;
+      }
       unlockPage();
     }
     document.getElementById('rsvp-name').addEventListener('blur', function() {
       if (!getSavedParty()) {
         renderIndividualRsvpChoices();
-      }
-    });
-    fetchPeopleDirectory().catch(function() {
-      if (!alreadyAcknowledged) {
-        showAckError('Guest list is currently unavailable. If this persists, please refresh or contact Emma & Alex.');
       }
     });
     initializeRsvpSection();

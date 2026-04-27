@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self' https://formspree.io https://script.google.com https://script.googleusercontent.com; form-action 'none'; base-uri 'self'; object-src 'none';">
 <title>Emma & Alex — Evening Celebration</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -167,15 +168,17 @@
 <script>
   var FORMSPREE_ENDPOINT = 'https://formspree.io/f/mgorqjel';
   var GOOGLE_SHEETS_WEBHOOK = 'https://script.google.com/macros/s/AKfycbw6uOEq_XkBwU9IdQdvY7l8V5OnZNamyOgPD6MDd1TnhWo-YJOKNgh_VP77UDuwtZJedw/exec';
+  var SITE_TOKEN = 'ea-2027-8mKxNpQvTz';
   var RSVP_STORAGE_PREFIX = 'ea_rsvp_';
 
   function postToGoogleSheets(payload) {
     if (!GOOGLE_SHEETS_WEBHOOK) { return Promise.resolve({ skipped: true }); }
+    var securedPayload = Object.assign({}, payload, { token: SITE_TOKEN });
     return fetch(GOOGLE_SHEETS_WEBHOOK, {
       method: 'POST',
       mode: 'no-cors',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(securedPayload)
     });
   }
 
@@ -208,20 +211,20 @@
       }
     }
 
-    if (!party) {
-      renderIndividualRsvpChoices();
-      setRsvpLockedState(localStorage.getItem(getRsvpStorageKey()) === '1');
+    if (!party || party.dayEvening !== 'Evening') {
+      localStorage.clear();
+      window.location.href = 'index.html';
       return;
     }
 
     try {
       var banner = document.getElementById('guestBanner');
-      var parts = ['<div class="label">Welcome</div><div><strong>' + party.matchedName + '</strong></div>'];
+      var parts = ['<div class="label">Welcome</div><div><strong>' + escapeHtml(party.matchedName) + '</strong></div>'];
       if (party.guestName) {
-        parts.push('<div class="label">and Guest(s):</div><div>' + party.guestName + '</div>');
+        parts.push('<div class="label">and Guest(s):</div><div>' + escapeHtml(party.guestName) + '</div>');
       }
       if (party.children && party.children.length) {
-        parts.push('<div class="label">Children:</div><div>' + party.children.join(', ') + '</div>');
+        parts.push('<div class="label">Children:</div><div>' + escapeHtml(party.children.join(', ')) + '</div>');
       }
       banner.innerHTML = parts.join('');
       banner.style.display = 'block';
