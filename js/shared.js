@@ -184,10 +184,20 @@ function toggleFaq(btn) {
   var answer = btn.nextElementSibling;
   var chevron = btn.querySelector('.faq-chevron');
   var isOpen = answer.classList.contains('open');
-  document.querySelectorAll('.faq-a').forEach(function(a) { a.classList.remove('open'); });
-  document.querySelectorAll('.faq-chevron').forEach(function(c) { c.classList.remove('open'); });
+
+  document.querySelectorAll('.faq-a.open').forEach(function(a) {
+    a.style.maxHeight = a.scrollHeight + 'px';
+    void a.offsetHeight;
+    a.classList.remove('open');
+    a.style.maxHeight = '0';
+  });
+  document.querySelectorAll('.faq-chevron.open').forEach(function(c) {
+    c.classList.remove('open');
+  });
+
   if (!isOpen) {
     answer.classList.add('open');
+    answer.style.maxHeight = answer.scrollHeight + 'px';
     if (chevron) { chevron.classList.add('open'); }
   }
 }

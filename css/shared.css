@@ -58,8 +58,8 @@ section { padding: 5rem 1.5rem; }
 .faq-q { width: 100%; background: none; border: none; text-align: left; padding: 1.1rem 0; font-size: 1rem; font-family: Georgia, serif; color: var(--text-dark); cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
 .faq-q:hover { color: var(--orange); }
 .faq-chevron { width: 20px; height: 20px; flex-shrink: 0; transition: transform 0.3s; color: var(--orange); }
-.faq-a { max-height: 0; overflow: hidden; transition: max-height 0.35s ease; font-size: 0.95rem; color: var(--text-mid); line-height: 1.75; }
-.faq-a.open { max-height: 300px; padding-bottom: 1rem; }
+.faq-a { max-height: 0; overflow: hidden; transition: max-height 0.35s ease, padding 0.35s ease; font-size: 0.95rem; color: var(--text-mid); line-height: 1.75; }
+.faq-a.open { padding-bottom: 1rem; }
 .faq-chevron.open { transform: rotate(180deg); }
 
 /* RSVP */
