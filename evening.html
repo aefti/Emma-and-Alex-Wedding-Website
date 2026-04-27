@@ -66,6 +66,8 @@
   .rsvp-submit { width: 100%; border: none; border-radius: 8px; background: var(--orange); color: #fff; padding: 0.8rem; text-transform: uppercase; letter-spacing: 0.12em; font-family: Arial, sans-serif; cursor: pointer; }
   .rsvp-inline-error { display: none; color: #ffd7cb; margin-top: 0.35rem; font-family: Arial, sans-serif; font-size: 0.82rem; }
   .rsvp-inline-error.open { display: block; }
+  .rsvp-input.rsvp-field-error, .rsvp-textarea.rsvp-field-error { border-color: rgba(255, 138, 117, 0.95); box-shadow: 0 0 0 3px rgba(255, 138, 117, 0.2); }
+  .rsvp-person.rsvp-field-error { border-color: rgba(255, 138, 117, 0.95); background: rgba(168,50,32,0.24); }
   .rsvp-locked { display: none; margin-top: 1rem; border: 1px solid rgba(232,160,96,0.45); border-radius: 12px; background: rgba(232,160,96,0.15); padding: 1rem; max-width: 640px; }
   .rsvp-locked.open { display: block; }
   .rsvp-resubmit-btn { margin-top: 0.7rem; border: 1px solid rgba(255,255,255,0.4); background: transparent; color: #fff; border-radius: 9px; padding: 0.55rem 0.8rem; font-family: Arial, sans-serif; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.11em; cursor: pointer; }
@@ -161,6 +163,7 @@
       <div class="rsvp-row">
         <label class="rsvp-label">Email address</label>
         <input class="rsvp-input" type="email" id="rsvp-email" placeholder="your@email.com">
+        <div id="nameEmailError" class="rsvp-inline-error">Please fill in your name and email.</div>
       </div>
       <div class="rsvp-row">
         <label class="rsvp-label">Attendance per person (required for everyone in your party)</label>
@@ -172,6 +175,7 @@
         <textarea class="rsvp-textarea" id="rsvp-notes" rows="3" placeholder="Allergies, dietary needs, or a message for us..."></textarea>
       </div>
       <button class="rsvp-submit" id="rsvpSubmitBtn" type="button" onclick="submitRsvp()">Send my RSVP</button>
+      <div id="rsvpSubmitError" class="rsvp-inline-error">Could not send — please check your connection and try again.</div>
     </div>
     <div class="rsvp-success" id="rsvpSuccess">Thank you — we have received your RSVP.</div>
   </div>
@@ -249,6 +253,7 @@
       // Ignore malformed local storage.
     }
     renderIndividualRsvpChoices();
+    setupRsvpValidationHandlers();
     setRsvpLockedState(localStorage.getItem(getRsvpStorageKey()) === '1' || Boolean(party.hasRsvped));
   });
 
@@ -293,6 +298,7 @@
             var input = label.querySelector('input');
             label.classList.toggle('selected', input.checked);
           });
+         clearAttendanceError();
         });
       });
       container.appendChild(item);
@@ -335,22 +341,83 @@
     resetRsvpSubmitButton();
   }
 
+ function clearNameEmailError() {
+    var error = document.getElementById('nameEmailError');
+    if (error) { error.classList.remove('open'); }
+    document.getElementById('rsvp-name').classList.remove('rsvp-field-error');
+    document.getElementById('rsvp-email').classList.remove('rsvp-field-error');
+  }
+
+  function clearAttendanceError() {
+    var error = document.getElementById('individualRsvpError');
+    if (error) { error.classList.remove('open'); }
+    document.querySelectorAll('#individualRsvpList .rsvp-person').forEach(function(item) {
+      item.classList.remove('rsvp-field-error');
+    });
+  }
+
+  function clearSubmitError() {
+    var error = document.getElementById('rsvpSubmitError');
+    if (error) { error.classList.remove('open'); }
+  }
+
+  function setupRsvpValidationHandlers() {
+    var nameInput = document.getElementById('rsvp-name');
+    var emailInput = document.getElementById('rsvp-email');
+    var notesInput = document.getElementById('rsvp-notes');
+    if (nameInput) {
+      nameInput.addEventListener('input', function() {
+        clearSubmitError();
+        if (nameInput.value.trim() && emailInput && emailInput.value.trim()) {
+          clearNameEmailError();
+        } else {
+          nameInput.classList.remove('rsvp-field-error');
+        }
+      });
+    }
+    if (emailInput) {
+      emailInput.addEventListener('input', function() {
+        clearSubmitError();
+        if (emailInput.value.trim() && nameInput && nameInput.value.trim()) {
+          clearNameEmailError();
+        } else {
+          emailInput.classList.remove('rsvp-field-error');
+        }
+      });
+    }
+    if (notesInput) {
+      notesInput.addEventListener('input', clearSubmitError);
+    }
+  }
+
   function submitRsvp() {
-    var name = document.getElementById('rsvp-name').value.trim();
-    var email = document.getElementById('rsvp-email').value.trim();
+    var nameInput = document.getElementById('rsvp-name');
+    var emailInput = document.getElementById('rsvp-email');
+    var name = nameInput.value.trim();
+    var email = emailInput.value.trim();
     var partyResponses = collectIndividualRsvp();
     var party = getSavedParty() || {};
     var notes = document.getElementById('rsvp-notes').value;
+    clearSubmitError();
     if (!name || !email) {
-      alert('Please fill in your name and email.');
+      document.getElementById('nameEmailError').classList.add('open');
+      nameInput.classList.toggle('rsvp-field-error', !name);
+      emailInput.classList.toggle('rsvp-field-error', !email);
+      (!name ? nameInput : emailInput).focus();
       return;
     }
+    clearNameEmailError();
     if (!partyResponses) {
       document.getElementById('individualRsvpError').classList.add('open');
-      alert('Please make an attendance choice for every person in your party.');
+      document.querySelectorAll('#individualRsvpList .rsvp-person').forEach(function(item) {
+        var hasChecked = item.querySelector('input[type="radio"]:checked');
+        item.classList.toggle('rsvp-field-error', !hasChecked);
+      });
+      var firstMissing = document.querySelector('#individualRsvpList .rsvp-person.rsvp-field-error input[type="radio"]');
+      if (firstMissing) { firstMissing.focus(); }
       return;
     }
-    document.getElementById('individualRsvpError').classList.remove('open');
+    clearAttendanceError();
 
     var btn = document.getElementById('rsvpSubmitBtn');
     btn.disabled = true;
@@ -378,7 +445,7 @@
       document.getElementById('rsvpForm').style.display = 'none';
       document.getElementById('rsvpSuccess').style.display = 'block';
     }).catch(function() {
-      alert('Could not send — please check your connection and try again.');
+      document.getElementById('rsvpSubmitError').classList.add('open');
       btn.disabled = false;
       btn.textContent = 'Send my RSVP';
     });
