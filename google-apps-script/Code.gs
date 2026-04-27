@@ -11,6 +11,7 @@
 var PEOPLE_SHEET_NAME = 'People';
 var RESPONSES_SHEET_NAME = 'Responses';
 var ACKNOWLEDGEMENTS_SHEET_NAME = 'Acknowledgements';
+var EMAIL_LOG_SHEET_NAME = 'EmailLog';
 
 // Shared token — must match SITE_TOKEN in index.html and evening.html.
 // Deters casual API abuse; visible in page source so not a cryptographic secret.
@@ -74,6 +75,7 @@ function doPost(e) {
 
 function sendRsvpEmail_(payload) {
   if (!NOTIFICATION_EMAIL) { return; }
+  var emailSubject = '';
   try {
     var details = payload.details || {};
     var partyResponses = Array.isArray(details.partyResponses) ? details.partyResponses : [];
@@ -86,6 +88,7 @@ function sendRsvpEmail_(payload) {
     var subject = '[Wedding RSVP] ' + guestName
       + ' — ' + attendingCount + ' attending, ' + declineCount + ' not attending'
       + ' (' + audience + ')';
+    emailSubject = subject;
 
     var attendanceLines = partyResponses.length
       ? partyResponses.map(function(p) {
@@ -121,13 +124,15 @@ function sendRsvpEmail_(payload) {
     var options = { name: 'Emma & Alex Wedding Site' };
     if (guestEmail) { options.replyTo = guestEmail; }
     MailApp.sendEmail(NOTIFICATION_EMAIL, subject, body, options);
+    logEmailAttempt_('rsvp', 'success', subject, payload, '');
   } catch (err) {
-    // Email failure must not break the RSVP submission.
+    logEmailAttempt_('rsvp', 'failure', emailSubject, payload, err);
   }
 }
 
 function sendAcknowledgementEmail_(payload) {
   if (!NOTIFICATION_EMAIL) { return; }
+  var emailSubject = '';
   try {
     var matchedName = toStringSafe_(payload.name || payload.matchedName);
     var dayEvening = toStringSafe_(payload.dayEvening);
@@ -136,6 +141,7 @@ function sendAcknowledgementEmail_(payload) {
       : toStringSafe_(payload.children);
 
     var subject = '[Wedding Check-in] ' + matchedName + ' (' + dayEvening + ')';
+    emailSubject = subject;
 
     var body = [
       'A guest has just checked in to the Emma & Alex wedding website.',
@@ -161,8 +167,46 @@ function sendAcknowledgementEmail_(payload) {
     ].join('\n');
 
     MailApp.sendEmail(NOTIFICATION_EMAIL, subject, body, { name: 'Emma & Alex Wedding Site' });
+    logEmailAttempt_('acknowledgement', 'success', subject, payload, '');
   } catch (err) {
-    // Email failure must not break the acknowledgement flow.
+    logEmailAttempt_('acknowledgement', 'failure', emailSubject, payload, err);
+  }
+}
+
+function logEmailAttempt_(eventType, status, subject, payload, err) {
+  try {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    if (!ss) { return; }
+    var sheet = ss.getSheetByName(EMAIL_LOG_SHEET_NAME) || ss.insertSheet(EMAIL_LOG_SHEET_NAME);
+
+    var headers = [
+      'timestamp',
+      'eventType',
+      'status',
+      'to',
+      'subject',
+      'partyId',
+      'name',
+      'errorMessage',
+      'payloadJson'
+    ];
+    ensureHeaderRow_(sheet, headers);
+
+    var errorMessage = err && err.message ? String(err.message) : toStringSafe_(err);
+    var row = [
+      new Date(),
+      toStringSafe_(eventType),
+      toStringSafe_(status),
+      toStringSafe_(NOTIFICATION_EMAIL),
+      toStringSafe_(subject),
+      toStringSafe_(payload && payload.partyId),
+      toStringSafe_(payload && (payload.name || payload.matchedName || payload.typedName)),
+      errorMessage,
+      JSON.stringify(payload || {})
+    ];
+    sheet.appendRow(row);
+  } catch (loggingErr) {
+    // Intentionally ignore logging errors to avoid breaking form submissions.
   }
 }
 
