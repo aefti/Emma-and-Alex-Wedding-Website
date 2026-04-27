@@ -18,10 +18,6 @@
   .nav-brand { font-size: 1.1rem; color: #fff3e6; letter-spacing: 0.08em; font-style: italic; text-decoration: none; }
   .nav-links { display: flex; list-style: none; }
   .nav-links a { display: block; padding: 0 0.9rem; height: 54px; line-height: 54px; font-family: Arial, sans-serif; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,243,230,0.8); text-decoration: none; }
-  .hamburger { display: none; background: none; border: none; cursor: pointer; padding: 8px; }
-  .hamburger span { display: block; width: 22px; height: 2px; background: #fff3e6; margin: 5px 0; }
-  .mobile-menu { display: none; background: var(--rust); padding: 1rem 1.5rem; }
-  .mobile-menu a { display: block; color: #fff3e6; text-decoration: none; padding: 0.65rem 0; font-family: Arial, sans-serif; font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.12); }
   .hero { min-height: 72vh; background: linear-gradient(160deg, #7a2010 0%, #c4600a 45%, #b8860b 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 5rem 1.2rem 4rem; }
   .hero-img { width: min(280px, 72vw); margin-bottom: 1rem; }
   .hero-eyebrow, .hero-date { font-family: Arial, sans-serif; text-transform: uppercase; color: rgba(255,243,230,0.9); letter-spacing: 0.2em; }
@@ -66,15 +62,13 @@
   .rsvp-submit { width: 100%; border: none; border-radius: 8px; background: var(--orange); color: #fff; padding: 0.8rem; text-transform: uppercase; letter-spacing: 0.12em; font-family: Arial, sans-serif; cursor: pointer; }
   .rsvp-inline-error { display: none; color: #ffd7cb; margin-top: 0.35rem; font-family: Arial, sans-serif; font-size: 0.82rem; }
   .rsvp-inline-error.open { display: block; }
-  .rsvp-input.rsvp-field-error, .rsvp-textarea.rsvp-field-error { border-color: rgba(255, 138, 117, 0.95); box-shadow: 0 0 0 3px rgba(255, 138, 117, 0.2); }
-  .rsvp-person.rsvp-field-error { border-color: rgba(255, 138, 117, 0.95); background: rgba(168,50,32,0.24); }
   .rsvp-locked { display: none; margin-top: 1rem; border: 1px solid rgba(232,160,96,0.45); border-radius: 12px; background: rgba(232,160,96,0.15); padding: 1rem; max-width: 640px; }
   .rsvp-locked.open { display: block; }
   .rsvp-resubmit-btn { margin-top: 0.7rem; border: 1px solid rgba(255,255,255,0.4); background: transparent; color: #fff; border-radius: 9px; padding: 0.55rem 0.8rem; font-family: Arial, sans-serif; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.11em; cursor: pointer; }
   .rsvp-disabled { opacity: 0.42; pointer-events: none; }
   .rsvp-success { display: none; margin-top: 1rem; color: #ffd8bd; }
   footer { background: #3a1a0a; color: rgba(255,243,230,0.6); text-align: center; padding: 2.2rem 1.5rem; font-family: Arial, sans-serif; font-size: 0.82rem; }
-  @media (max-width: 700px) { .nav-links { display: none; } .hamburger { display: block; } .timeline-item { grid-template-columns: 72px 1fr; } }
+  @media (max-width: 700px) { .nav-links { display: none; } .timeline-item { grid-template-columns: 72px 1fr; } }
 </style>
 </head>
 <body>
@@ -87,16 +81,6 @@
       <li><a href="#faq">FAQ</a></li>
       <li><a href="#rsvp">RSVP</a></li>
     </ul>
-    <button class="hamburger" onclick="toggleMenu()" aria-label="Menu">
-      <span></span><span></span><span></span>
-    </button>
-  </div>
-  <div class="mobile-menu" id="mobileMenu">
-    <a href="#schedule" onclick="toggleMenu()">Evening</a>
-    <a href="#venue" onclick="toggleMenu()">Venue</a>
-    <a href="#faq" onclick="toggleMenu()">FAQ</a>
-    <a href="#rsvp" onclick="toggleMenu()">RSVP</a>
-  </div>
   </div>
 </nav>
 
@@ -139,9 +123,9 @@
     <span class="section-label">Good to know</span>
     <h2 class="section-title">Evening FAQ</h2>
     <div class="divider"></div>
-    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)" aria-controls="evening-faq-panel-arrival" aria-expanded="false">What time should evening guests arrive?</button><div class="faq-a" id="evening-faq-panel-arrival" aria-hidden="true">Please arrive from 7:30 pm so we can welcome you before first dance celebrations begin.</div></div>
-    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)" aria-controls="evening-faq-panel-parking" aria-expanded="false">Is parking available?</button><div class="faq-a" id="evening-faq-panel-parking" aria-hidden="true">Yes, there is free parking at Gaynes Park.</div></div>
-    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)" aria-controls="evening-faq-panel-rsvp-update" aria-expanded="false">Can I update my RSVP later?</button><div class="faq-a" id="evening-faq-panel-rsvp-update" aria-hidden="true">Absolutely. Please message us directly if anything changes after you RSVP.</div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">What time should evening guests arrive?</button><div class="faq-a">Please arrive from 7:30 pm so we can welcome you before first dance celebrations begin.</div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Is parking available?</button><div class="faq-a">Yes, there is free parking at Gaynes Park.</div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Can I update my RSVP later?</button><div class="faq-a">Absolutely. Please message us directly if anything changes after you RSVP.</div></div>
   </div>
 </section>
 
@@ -163,7 +147,6 @@
       <div class="rsvp-row">
         <label class="rsvp-label">Email address</label>
         <input class="rsvp-input" type="email" id="rsvp-email" placeholder="your@email.com">
-        <div id="nameEmailError" class="rsvp-inline-error">Please fill in your name and email.</div>
       </div>
       <div class="rsvp-row">
         <label class="rsvp-label">Attendance per person (required for everyone in your party)</label>
@@ -175,7 +158,6 @@
         <textarea class="rsvp-textarea" id="rsvp-notes" rows="3" placeholder="Allergies, dietary needs, or a message for us..."></textarea>
       </div>
       <button class="rsvp-submit" id="rsvpSubmitBtn" type="button" onclick="submitRsvp()">Send my RSVP</button>
-      <div id="rsvpSubmitError" class="rsvp-inline-error">Could not send — please check your connection and try again.</div>
     </div>
     <div class="rsvp-success" id="rsvpSuccess">Thank you — we have received your RSVP.</div>
   </div>
@@ -199,26 +181,11 @@
     });
   }
 
-  function toggleMenu() {
-    var m = document.getElementById('mobileMenu');
-    m.style.display = m.style.display === 'block' ? 'none' : 'block';
-  }
-  
   function toggleFaq(btn) {
     var answer = btn.nextElementSibling;
     var open = answer.classList.contains('open');
-    document.querySelectorAll('.faq-a').forEach(function(a) {
-      a.classList.remove('open');
-      a.setAttribute('aria-hidden', 'true');
-    });
-    document.querySelectorAll('.faq-q').forEach(function(q) {
-      q.setAttribute('aria-expanded', 'false');
-    });
-    if (!open) {
-      answer.classList.add('open');
-      answer.setAttribute('aria-hidden', 'false');
-      btn.setAttribute('aria-expanded', 'true');
-    }
+    document.querySelectorAll('.faq-a').forEach(function(a) { a.classList.remove('open'); });
+    if (!open) { answer.classList.add('open'); }
   }
 
   document.addEventListener('DOMContentLoaded', function() {
@@ -253,7 +220,6 @@
       // Ignore malformed local storage.
     }
     renderIndividualRsvpChoices();
-    setupRsvpValidationHandlers();
     setRsvpLockedState(localStorage.getItem(getRsvpStorageKey()) === '1' || Boolean(party.hasRsvped));
   });
 
@@ -298,7 +264,6 @@
             var input = label.querySelector('input');
             label.classList.toggle('selected', input.checked);
           });
-         clearAttendanceError();
         });
       });
       container.appendChild(item);
@@ -341,83 +306,22 @@
     resetRsvpSubmitButton();
   }
 
- function clearNameEmailError() {
-    var error = document.getElementById('nameEmailError');
-    if (error) { error.classList.remove('open'); }
-    document.getElementById('rsvp-name').classList.remove('rsvp-field-error');
-    document.getElementById('rsvp-email').classList.remove('rsvp-field-error');
-  }
-
-  function clearAttendanceError() {
-    var error = document.getElementById('individualRsvpError');
-    if (error) { error.classList.remove('open'); }
-    document.querySelectorAll('#individualRsvpList .rsvp-person').forEach(function(item) {
-      item.classList.remove('rsvp-field-error');
-    });
-  }
-
-  function clearSubmitError() {
-    var error = document.getElementById('rsvpSubmitError');
-    if (error) { error.classList.remove('open'); }
-  }
-
-  function setupRsvpValidationHandlers() {
-    var nameInput = document.getElementById('rsvp-name');
-    var emailInput = document.getElementById('rsvp-email');
-    var notesInput = document.getElementById('rsvp-notes');
-    if (nameInput) {
-      nameInput.addEventListener('input', function() {
-        clearSubmitError();
-        if (nameInput.value.trim() && emailInput && emailInput.value.trim()) {
-          clearNameEmailError();
-        } else {
-          nameInput.classList.remove('rsvp-field-error');
-        }
-      });
-    }
-    if (emailInput) {
-      emailInput.addEventListener('input', function() {
-        clearSubmitError();
-        if (emailInput.value.trim() && nameInput && nameInput.value.trim()) {
-          clearNameEmailError();
-        } else {
-          emailInput.classList.remove('rsvp-field-error');
-        }
-      });
-    }
-    if (notesInput) {
-      notesInput.addEventListener('input', clearSubmitError);
-    }
-  }
-
   function submitRsvp() {
-    var nameInput = document.getElementById('rsvp-name');
-    var emailInput = document.getElementById('rsvp-email');
-    var name = nameInput.value.trim();
-    var email = emailInput.value.trim();
+    var name = document.getElementById('rsvp-name').value.trim();
+    var email = document.getElementById('rsvp-email').value.trim();
     var partyResponses = collectIndividualRsvp();
     var party = getSavedParty() || {};
     var notes = document.getElementById('rsvp-notes').value;
-    clearSubmitError();
     if (!name || !email) {
-      document.getElementById('nameEmailError').classList.add('open');
-      nameInput.classList.toggle('rsvp-field-error', !name);
-      emailInput.classList.toggle('rsvp-field-error', !email);
-      (!name ? nameInput : emailInput).focus();
+      alert('Please fill in your name and email.');
       return;
     }
-    clearNameEmailError();
     if (!partyResponses) {
       document.getElementById('individualRsvpError').classList.add('open');
-      document.querySelectorAll('#individualRsvpList .rsvp-person').forEach(function(item) {
-        var hasChecked = item.querySelector('input[type="radio"]:checked');
-        item.classList.toggle('rsvp-field-error', !hasChecked);
-      });
-      var firstMissing = document.querySelector('#individualRsvpList .rsvp-person.rsvp-field-error input[type="radio"]');
-      if (firstMissing) { firstMissing.focus(); }
+      alert('Please make an attendance choice for every person in your party.');
       return;
     }
-    clearAttendanceError();
+    document.getElementById('individualRsvpError').classList.remove('open');
 
     var btn = document.getElementById('rsvpSubmitBtn');
     btn.disabled = true;
@@ -445,7 +349,7 @@
       document.getElementById('rsvpForm').style.display = 'none';
       document.getElementById('rsvpSuccess').style.display = 'block';
     }).catch(function() {
-      document.getElementById('rsvpSubmitError').classList.add('open');
+      alert('Could not send — please check your connection and try again.');
       btn.disabled = false;
       btn.textContent = 'Send my RSVP';
     });
