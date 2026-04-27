@@ -18,7 +18,7 @@ var SITE_TOKEN = 'ea-2027-8mKxNpQvTz';
 
 // Email address to receive RSVP and check-in notifications.
 // Set this to the address you want to be notified at, then redeploy.
-var NOTIFICATION_EMAIL = 'your-email@gmail.com';
+var NOTIFICATION_EMAIL = 'alex.edwards.1491@gmail.com';
 
 function doGet(e) {
   try {
