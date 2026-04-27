@@ -452,6 +452,10 @@
 
   function lookupGuestByName(name) {
     return new Promise(function(resolve, reject) {
+      if (!SESSION_TOKEN) {
+        reject(new Error('Session not established. Please refresh the page.'));
+        return;
+      }
       var callbackName = '__eaLookup_' + Date.now() + '_' + Math.floor(Math.random() * 1000000);
       var script = document.createElement('script');
       var timeoutId = setTimeout(function() {
@@ -478,7 +482,7 @@
       script.src = GOOGLE_SHEETS_WEBHOOK
         + '?action=lookup'
         + '&name=' + encodeURIComponent(name)
-        + '&token=' + encodeURIComponent(SITE_TOKEN)
+        + '&token=' + encodeURIComponent(SESSION_TOKEN)
         + '&callback=' + encodeURIComponent(callbackName)
         + '&t=' + Date.now();
       document.head.appendChild(script);
@@ -552,32 +556,57 @@
     checkBtn.disabled = true;
     checkBtn.textContent = 'Checking...';
 
-    lookupGuestByName(query)
-      .then(function(data) {
-        checkBtn.disabled = false;
-        checkBtn.textContent = 'Check Name';
-        if (!data || !data.ok || !data.match) {
-          showAckError(data && data.error ? data.error : "We couldn't find your name. Please check the spelling or contact Emma & Alex.");
-          return;
-        }
-        var m = data.match;
-        pendingGuestMatch = {
-          partyId: m.partyId,
-          dayEvening: m.dayEvening,
-          hasRsvped: m.hasRsvped,
-          matchedBy: m.matchedBy,
-          matchType: m.matchType,
-          matchedName: m.matchedName,
-          guestName: m.guestName,
-          children: m.children
-        };
-        renderMatchResult(pendingGuestMatch);
-      })
-      .catch(function(err) {
+    function processLookupResult(data) {
+      checkBtn.disabled = false;
+      checkBtn.textContent = 'Check Name';
+      if (!data) {
+        showAckError('No response received. Please try again.');
+        return;
+      }
+      if (data.error === 'Unauthorised') {
+        SESSION_TOKEN = null;
+        ensureSession().then(function() {
+          checkBtn.disabled = true;
+          checkBtn.textContent = 'Checking...';
+          lookupGuestByName(query).then(processLookupResult).catch(function(retryErr) {
+            checkBtn.disabled = false;
+            checkBtn.textContent = 'Check Name';
+            showAckError(retryErr.message || 'Please refresh and try again.');
+          });
+        }).catch(function() {
+          showSessionError('Session expired. Please refresh the page.');
+        });
+        return;
+      }
+      if (!data.ok || !data.match) {
+        showAckError(data && data.error ? data.error : "We couldn't find your name. Please check the spelling or contact Emma & Alex.");
+        return;
+      }
+      var m = data.match;
+      pendingGuestMatch = {
+        partyId: m.partyId,
+        dayEvening: m.dayEvening,
+        hasRsvped: m.hasRsvped,
+        matchedBy: m.matchedBy,
+        matchType: m.matchType,
+        matchedName: m.matchedName,
+        guestName: m.guestName,
+        children: m.children
+      };
+      renderMatchResult(pendingGuestMatch);
+    }
+
+    ensureSession().then(function() {
+      lookupGuestByName(query).then(processLookupResult).catch(function(err) {
         checkBtn.disabled = false;
         checkBtn.textContent = 'Check Name';
         showAckError(err.message || 'Could not check your name right now. Please try again.');
       });
+    }).catch(function() {
+      checkBtn.disabled = false;
+      checkBtn.textContent = 'Check Name';
+      showSessionError();
+    });
   }
 
   function renderMatchResult(match) {
@@ -742,6 +771,8 @@
   }
 
   document.addEventListener('DOMContentLoaded', function() {
+    ensureSession().catch(showSessionError);
+
     var savedParty = getSavedParty();
     var alreadyAcknowledged = localStorage.getItem('ea_ack_v2') === '1' && Boolean(savedParty && savedParty.matchedName);
     if (!alreadyAcknowledged) {

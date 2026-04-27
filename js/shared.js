@@ -1,27 +1,91 @@
 /* Emma & Alex Wedding — Shared JavaScript */
 
 var GOOGLE_SHEETS_WEBHOOK = 'https://script.google.com/macros/s/AKfycbw6uOEq_XkBwU9IdQdvY7l8V5OnZNamyOgPD6MDd1TnhWo-YJOKNgh_VP77UDuwtZJedw/exec';
-var SITE_TOKEN = 'ea-2027-8mKxNpQvTz';
+var SESSION_TOKEN = null;
+var SESSION_TIMESTAMP = 0;
 var RSVP_STORAGE_PREFIX = 'ea_rsvp_';
 
 var PAGE_CONFIG = window.PAGE_CONFIG || {};
 
+function initSession() {
+  return new Promise(function(resolve, reject) {
+    var callbackName = '__eaSession_' + Date.now() + '_' + Math.floor(Math.random() * 1000000);
+    var script = document.createElement('script');
+    var timeoutId = setTimeout(function() {
+      cleanup();
+      reject(new Error('Session init timed out.'));
+    }, 10000);
+
+    function cleanup() {
+      clearTimeout(timeoutId);
+      if (script.parentNode) { script.parentNode.removeChild(script); }
+      try { delete window[callbackName]; } catch (err) { window[callbackName] = undefined; }
+    }
+
+    window[callbackName] = function(data) {
+      cleanup();
+      if (data && data.ok && data.sessionToken) {
+        SESSION_TOKEN = data.sessionToken;
+        SESSION_TIMESTAMP = Date.now();
+        resolve(SESSION_TOKEN);
+      } else {
+        reject(new Error('Invalid session response.'));
+      }
+    };
+
+    script.onerror = function() {
+      cleanup();
+      reject(new Error('Could not reach session service.'));
+    };
+
+    script.src = GOOGLE_SHEETS_WEBHOOK
+      + '?action=session'
+      + '&callback=' + encodeURIComponent(callbackName)
+      + '&t=' + Date.now();
+    document.head.appendChild(script);
+  });
+}
+
+function ensureSession() {
+  if (SESSION_TOKEN && (Date.now() - SESSION_TIMESTAMP) < 480000) {
+    return Promise.resolve(SESSION_TOKEN);
+  }
+  SESSION_TOKEN = null;
+  return initSession().catch(function(err) {
+    return new Promise(function(resolve) {
+      setTimeout(function() { resolve(initSession()); }, 2000);
+    });
+  });
+}
+
+function showSessionError(message) {
+  var existing = document.getElementById('sessionErrorBanner');
+  if (existing) { return; }
+  var banner = document.createElement('div');
+  banner.id = 'sessionErrorBanner';
+  banner.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#a83220;color:#fff;font-family:Arial,sans-serif;font-size:0.9rem;padding:1rem;text-align:center;z-index:99999;';
+  banner.textContent = message || 'Could not connect. Please refresh the page.';
+  document.body.appendChild(banner);
+}
+
 function postToGoogleSheets(payload) {
   if (!GOOGLE_SHEETS_WEBHOOK) { return Promise.resolve({ skipped: true }); }
-  var securedPayload = Object.assign({}, payload, { token: SITE_TOKEN });
-  var body = JSON.stringify(securedPayload);
+  return ensureSession().then(function(token) {
+    var securedPayload = Object.assign({}, payload, { token: token });
+    var body = JSON.stringify(securedPayload);
 
-  if (navigator.sendBeacon) {
-    var blob = new Blob([body], { type: 'text/plain;charset=UTF-8' });
-    var sent = navigator.sendBeacon(GOOGLE_SHEETS_WEBHOOK, blob);
-    return sent ? Promise.resolve({ beacon: true }) : Promise.reject(new Error('sendBeacon failed'));
-  }
+    if (navigator.sendBeacon) {
+      var blob = new Blob([body], { type: 'text/plain;charset=UTF-8' });
+      var sent = navigator.sendBeacon(GOOGLE_SHEETS_WEBHOOK, blob);
+      return sent ? Promise.resolve({ beacon: true }) : Promise.reject(new Error('sendBeacon failed'));
+    }
 
-  return fetch(GOOGLE_SHEETS_WEBHOOK, {
-    method: 'POST',
-    mode: 'no-cors',
-    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-    body: body
+    return fetch(GOOGLE_SHEETS_WEBHOOK, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: body
+    });
   });
 }
 
