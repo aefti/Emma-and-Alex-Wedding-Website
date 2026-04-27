@@ -7,7 +7,8 @@
 <title>Emma & Alex — 6th November 2027</title>
 <link rel="stylesheet" href="css/shared.css">
 <style>
-  body::before { content: ''; position: fixed; inset: 0; background: url('images/emi_alex_autumn_transparent.png') center 55% / min(70vw, 560px) no-repeat; opacity: 0; pointer-events: none; z-index: -1; transition: opacity 0.35s ease; }
+  body::before { content: ''; position: fixed; inset: 0; background: url('images/emi_alex_autumn_transparent.png') center 55% / min(70vw, 560px) no-repeat; opacity: 0; pointer-events: none; z-index: 0; transition: opacity 0.35s ease; }
+  body.show-watermark::before ~ * { position: relative; }
   body.show-watermark::before { opacity: 0.08; }
 
   /* ACK MODAL */
@@ -198,7 +199,7 @@
   </div>
   <div class="hero-scroll"><div class="scroll-line"></div>Scroll to explore<div class="scroll-line"></div></div>
 </section>
-<div class="wave-divider"><svg viewBox="0 0 1200 60" preserveAspectRatio="none"><path d="M0,30 C200,0 400,55 600,25 C800,0 1000,50 1200,20 L1200,60 L0,60 Z" fill="#fff9f4"/></svg></div>
+<div class="wave-divider" style="background:#b8860b"><svg viewBox="0 0 1200 60" preserveAspectRatio="none"><path d="M0,30 C200,0 400,55 600,25 C800,0 1000,50 1200,20 L1200,60 L0,60 Z" fill="#fff9f4"/></svg></div>
 
 <!-- OUR STORY (rendered by shared.js) -->
 <div id="storyContainer"></div>
@@ -244,7 +245,7 @@
     </div>
   </div>
 </section>
-<div class="wave-divider"><svg viewBox="0 0 1200 60" preserveAspectRatio="none"><path d="M0,20 C300,55 600,5 900,40 C1050,55 1150,25 1200,35 L1200,60 L0,60 Z" fill="#2d5016"/></svg></div>
+<div class="wave-divider" style="background:#fdf6ef"><svg viewBox="0 0 1200 60" preserveAspectRatio="none"><path d="M0,20 C300,55 600,5 900,40 C1050,55 1150,25 1200,35 L1200,60 L0,60 Z" fill="#2d5016"/></svg></div>
 
 <!-- VENUE -->
 <section id="venue">
@@ -274,7 +275,7 @@
     </div>
   </div>
 </section>
-<div class="wave-divider"><svg viewBox="0 0 1200 60" preserveAspectRatio="none"><path d="M0,30 C200,0 400,55 600,25 C800,0 1000,50 1200,20 L1200,60 L0,60 Z" fill="#fff9f4"/></svg></div>
+<div class="wave-divider" style="background:#2d5016"><svg viewBox="0 0 1200 60" preserveAspectRatio="none"><path d="M0,30 C200,0 400,55 600,25 C800,0 1000,50 1200,20 L1200,60 L0,60 Z" fill="#fff9f4"/></svg></div>
 
 <!-- GALLERY (rendered by shared.js) -->
 <div id="galleryContainer"></div>
@@ -344,7 +345,7 @@
     </div>
   </div>
 </section>
-<div class="wave-divider"><svg viewBox="0 0 1200 60" preserveAspectRatio="none"><path d="M0,45 C400,10 800,55 1200,25 L1200,60 L0,60 Z" fill="#a83220"/></svg></div>
+<div class="wave-divider" style="background:#f5e6d3"><svg viewBox="0 0 1200 60" preserveAspectRatio="none"><path d="M0,45 C400,10 800,55 1200,25 L1200,60 L0,60 Z" fill="#a83220"/></svg></div>
 
 <!-- RSVP -->
 <section id="rsvp">

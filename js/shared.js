@@ -268,21 +268,16 @@ function setupHeroParallax() {
   }, { passive: true });
 }
 
-/* Countdown with flip animation */
-var cdPrev = { 'cd-days': null, 'cd-hours': null, 'cd-mins': null, 'cd-secs': null };
-
+/* Countdown with transition */
 function flipDigit(el, newVal) {
+  if (!el) { return; }
   var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var oldVal = el.textContent;
   if (oldVal === newVal) { return; }
   el.textContent = newVal;
   if (reducedMotion || oldVal === '–') { return; }
-  el.innerHTML = '<span class="flip-top"><span>' + escapeHtml(oldVal) + '</span></span><span class="flip-bottom"><span>' + escapeHtml(newVal) + '</span></span>' + escapeHtml(newVal);
-  el.classList.add('flipping');
-  setTimeout(function() {
-    el.classList.remove('flipping');
-    el.textContent = newVal;
-  }, 600);
+  el.classList.add('cd-tick');
+  setTimeout(function() { el.classList.remove('cd-tick'); }, 300);
 }
 
 function updateCountdown() {

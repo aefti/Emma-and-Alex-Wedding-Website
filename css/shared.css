@@ -109,8 +109,7 @@ section { padding: 5rem 1.5rem; }
 .gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-top: 2.5rem; }
 .gallery-cell { aspect-ratio: 1; border-radius: 10px; border: 1px solid rgba(196,96,10,0.2); position: relative; perspective: 800px; cursor: pointer; }
 .gallery-flip-inner { position: relative; width: 100%; height: 100%; transition: transform 0.5s ease; transform-style: preserve-3d; }
-.gallery-cell:hover .gallery-flip-inner,
-.gallery-cell.flipped .gallery-flip-inner { transform: rotateY(180deg); }
+@media (hover: hover) { .gallery-cell:hover .gallery-flip-inner { transform: rotateY(180deg); } }
 .gallery-flip-front,
 .gallery-flip-back { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 10px; overflow: hidden; }
 .gallery-flip-front { z-index: 2; background: linear-gradient(135deg, var(--orange-light), var(--rust-light)); }
@@ -131,30 +130,23 @@ footer span { color: var(--orange-glow); }
   .gallery-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
-/* COUNTDOWN FLIP */
-.countdown-num { position: relative; display: inline-block; }
-.countdown-num .flip-top,
-.countdown-num .flip-bottom { position: absolute; left: 0; right: 0; overflow: hidden; }
-.countdown-num .flip-top { top: 0; height: 50%; }
-.countdown-num .flip-top span { display: block; }
-.countdown-num .flip-bottom { bottom: 0; height: 50%; }
-.countdown-num .flip-bottom span { display: block; transform: translateY(-50%); }
-.countdown-num.flipping .flip-top { animation: flipTopOut 0.3s ease-in forwards; transform-origin: bottom; }
-.countdown-num.flipping .flip-bottom { animation: flipBottomIn 0.3s ease-out 0.3s forwards; transform-origin: top; }
-@keyframes flipTopOut { 0% { transform: rotateX(0); } 100% { transform: rotateX(-90deg); } }
-@keyframes flipBottomIn { 0% { transform: rotateX(90deg); } 100% { transform: rotateX(0); } }
-@media (prefers-reduced-motion: reduce) { .countdown-num.flipping .flip-top, .countdown-num.flipping .flip-bottom { animation: none; } }
+/* COUNTDOWN TRANSITION */
+.countdown-num { transition: transform 0.15s ease, opacity 0.15s ease; }
+.countdown-num.cd-tick { transform: scale(1.15); opacity: 0.7; }
+@media (prefers-reduced-motion: reduce) { .countdown-num.cd-tick { transform: none; opacity: 1; } }
 
 /* WAVE DIVIDERS */
-.wave-divider { position: relative; z-index: 2; margin-top: -1px; }
-.wave-divider svg { display: block; width: 100%; height: 50px; }
+.wave-divider { position: relative; z-index: 2; margin-top: -50px; margin-bottom: -1px; }
+.wave-divider svg { display: block; width: 100%; height: 50px; position: relative; z-index: 1; }
 
 /* LIGHTBOX */
-.lightbox { position: fixed; inset: 0; z-index: 10000; background: rgba(0,0,0,0.88); display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: opacity 0.25s, visibility 0.25s; }
+.lightbox { position: fixed; inset: 0; z-index: 10000; background: rgba(0,0,0,0.88); display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; }
 .lightbox.open { opacity: 1; visibility: visible; }
 .lightbox-content { text-align: center; max-width: 90vw; }
-.lightbox-img { max-width: 90vw; max-height: 70vh; object-fit: contain; border-radius: 8px; display: block; margin: 0 auto; }
-.lightbox-caption { color: rgba(255,255,255,0.8); font-size: 0.95rem; margin-top: 1rem; line-height: 1.6; }
+.lightbox-img { max-width: 90vw; max-height: 70vh; object-fit: contain; border-radius: 8px; display: block; margin: 0 auto; opacity: 0; transform: scale(0.92); transition: opacity 0.35s ease 0.1s, transform 0.35s ease 0.1s; }
+.lightbox.open .lightbox-img { opacity: 1; transform: scale(1); }
+.lightbox-caption { color: rgba(255,255,255,0.8); font-size: 0.95rem; margin-top: 1rem; line-height: 1.6; opacity: 0; transition: opacity 0.3s ease 0.25s; }
+.lightbox.open .lightbox-caption { opacity: 1; }
 .lightbox-close { position: absolute; top: 1rem; right: 1.5rem; background: none; border: none; color: rgba(255,255,255,0.8); font-size: 2rem; cursor: pointer; padding: 0.5rem; line-height: 1; }
 .lightbox-close:hover { color: #fff; }
 .lightbox-prev, .lightbox-next { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.12); border: none; color: #fff; font-size: 2.5rem; cursor: pointer; padding: 0.5rem 0.8rem; border-radius: 8px; line-height: 1; }
