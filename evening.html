@@ -137,9 +137,9 @@
     <span class="section-label">Good to know</span>
     <h2 class="section-title">Evening FAQ</h2>
     <div class="divider"></div>
-    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">What time should evening guests arrive?</button><div class="faq-a">Please arrive from 7:30 pm so we can welcome you before first dance celebrations begin.</div></div>
-    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Is parking available?</button><div class="faq-a">Yes, there is free parking at Gaynes Park.</div></div>
-    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Can I update my RSVP later?</button><div class="faq-a">Absolutely. Please message us directly if anything changes after you RSVP.</div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)" aria-controls="evening-faq-panel-arrival" aria-expanded="false">What time should evening guests arrive?</button><div class="faq-a" id="evening-faq-panel-arrival" aria-hidden="true">Please arrive from 7:30 pm so we can welcome you before first dance celebrations begin.</div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)" aria-controls="evening-faq-panel-parking" aria-expanded="false">Is parking available?</button><div class="faq-a" id="evening-faq-panel-parking" aria-hidden="true">Yes, there is free parking at Gaynes Park.</div></div>
+    <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)" aria-controls="evening-faq-panel-rsvp-update" aria-expanded="false">Can I update my RSVP later?</button><div class="faq-a" id="evening-faq-panel-rsvp-update" aria-hidden="true">Absolutely. Please message us directly if anything changes after you RSVP.</div></div>
   </div>
 </section>
 
@@ -203,8 +203,18 @@
   function toggleFaq(btn) {
     var answer = btn.nextElementSibling;
     var open = answer.classList.contains('open');
-    document.querySelectorAll('.faq-a').forEach(function(a) { a.classList.remove('open'); });
-    if (!open) { answer.classList.add('open'); }
+    document.querySelectorAll('.faq-a').forEach(function(a) {
+      a.classList.remove('open');
+      a.setAttribute('aria-hidden', 'true');
+    });
+    document.querySelectorAll('.faq-q').forEach(function(q) {
+      q.setAttribute('aria-expanded', 'false');
+    });
+    if (!open) {
+      answer.classList.add('open');
+      answer.setAttribute('aria-hidden', 'false');
+      btn.setAttribute('aria-expanded', 'true');
+    }
   }
 
   document.addEventListener('DOMContentLoaded', function() {
