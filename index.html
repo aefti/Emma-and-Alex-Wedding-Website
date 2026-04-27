@@ -135,6 +135,16 @@
     .timeline-item { grid-template-columns: 70px 12px 1fr; gap: 0 1rem; }
     body.show-watermark::before { opacity: 0.06; background-size: min(92vw, 420px); background-position: center 28%; }
   }
+
+  /* FLOATING LEAVES */
+  .hero-leaf { position: absolute; pointer-events: none; user-select: none; z-index: 1; opacity: 0; will-change: transform, opacity; }
+  @keyframes leafDrift {
+    0% { transform: translateY(-40px) translateX(0) rotate(0deg); opacity: 0; }
+    8% { opacity: 1; }
+    85% { opacity: 1; }
+    100% { transform: translateY(calc(100vh + 40px)) translateX(var(--drift-x)) rotate(var(--spin)); opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) { .hero-leaf { display: none; } }
 </style>
 </head>
 <body>
@@ -188,6 +198,7 @@
   </div>
   <div class="hero-scroll"><div class="scroll-line"></div>Scroll to explore<div class="scroll-line"></div></div>
 </section>
+<div class="wave-divider"><svg viewBox="0 0 1200 60" preserveAspectRatio="none"><path d="M0,30 C200,0 400,55 600,25 C800,0 1000,50 1200,20 L1200,60 L0,60 Z" fill="#fff9f4"/></svg></div>
 
 <!-- OUR STORY (rendered by shared.js) -->
 <div id="storyContainer"></div>
@@ -233,6 +244,7 @@
     </div>
   </div>
 </section>
+<div class="wave-divider"><svg viewBox="0 0 1200 60" preserveAspectRatio="none"><path d="M0,20 C300,55 600,5 900,40 C1050,55 1150,25 1200,35 L1200,60 L0,60 Z" fill="#2d5016"/></svg></div>
 
 <!-- VENUE -->
 <section id="venue">
@@ -262,6 +274,7 @@
     </div>
   </div>
 </section>
+<div class="wave-divider"><svg viewBox="0 0 1200 60" preserveAspectRatio="none"><path d="M0,30 C200,0 400,55 600,25 C800,0 1000,50 1200,20 L1200,60 L0,60 Z" fill="#fff9f4"/></svg></div>
 
 <!-- GALLERY (rendered by shared.js) -->
 <div id="galleryContainer"></div>
@@ -331,6 +344,7 @@
     </div>
   </div>
 </section>
+<div class="wave-divider"><svg viewBox="0 0 1200 60" preserveAspectRatio="none"><path d="M0,45 C400,10 800,55 1200,25 L1200,60 L0,60 Z" fill="#a83220"/></svg></div>
 
 <!-- RSVP -->
 <section id="rsvp">
@@ -706,18 +720,24 @@
     return HEAD_POP_ENABLED;
   }
 
-  function updateCountdown() {
-    var target = new Date('2027-11-06T14:00:00');
-    var now = new Date();
-    var diff = target - now;
-    if (diff <= 0) {
-      ['cd-days','cd-hours','cd-mins','cd-secs'].forEach(function(id) { document.getElementById(id).textContent = '0'; });
-      return;
+  function setupFloatingLeaves() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { return; }
+    var hero = document.querySelector('.hero');
+    if (!hero) { return; }
+    var leaves = ['🍂', '🍁', '🍃'];
+    for (var i = 0; i < 5; i++) {
+      var el = document.createElement('span');
+      el.className = 'hero-leaf';
+      el.textContent = leaves[Math.floor(Math.random() * leaves.length)];
+      el.style.left = (8 + Math.random() * 84) + '%';
+      el.style.fontSize = (16 + Math.random() * 14) + 'px';
+      el.style.setProperty('--drift-x', (Math.random() > 0.5 ? '' : '-') + (20 + Math.random() * 50) + 'px');
+      el.style.setProperty('--spin', (Math.random() > 0.5 ? '' : '-') + (120 + Math.random() * 240) + 'deg');
+      var dur = 14 + Math.random() * 12;
+      el.style.animation = 'leafDrift ' + dur + 's ' + (Math.random() * dur) + 's linear infinite';
+      el.style.opacity = '0';
+      hero.appendChild(el);
     }
-    document.getElementById('cd-days').textContent = Math.floor(diff / 86400000);
-    document.getElementById('cd-hours').textContent = Math.floor((diff % 86400000) / 3600000);
-    document.getElementById('cd-mins').textContent = Math.floor((diff % 3600000) / 60000);
-    document.getElementById('cd-secs').textContent = Math.floor((diff % 60000) / 1000);
   }
 
   document.addEventListener('DOMContentLoaded', function() {
@@ -756,9 +776,13 @@
     renderHeroCredit();
     renderStorySection();
     renderGallerySection();
+    setupScrollReveal();
+    setupActiveNav();
     initializeRsvpSection();
     loadPhotoManifest();
     setupHeroWatermark();
+    setupHeroParallax();
+    setupFloatingLeaves();
     setupFlyingHeads();
     window.setFlyingHeadsEnabled = setFlyingHeadsEnabled;
     updateFunModeButtons();

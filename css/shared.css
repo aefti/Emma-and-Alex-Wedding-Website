@@ -31,10 +31,16 @@ nav { position: sticky; top: 0; z-index: 100; background: rgba(168,50,32,0.97); 
 .nav-links { display: flex; gap: 0; list-style: none; }
 .nav-links a { display: block; padding: 0 0.9rem; height: 54px; line-height: 54px; font-family: Arial, sans-serif; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,243,230,0.8); text-decoration: none; transition: color 0.2s, background 0.2s; }
 .nav-links a:hover { color: #fff; background: rgba(255,255,255,0.1); }
+.nav-links a.nav-active { color: #fff; border-bottom: 2px solid var(--orange-glow); }
+.mobile-menu a.nav-active { color: #fff; border-left: 3px solid var(--orange-glow); padding-left: calc(1.5rem - 3px); }
 
 /* SECTIONS */
 section { padding: 5rem 1.5rem; }
 .section-inner { max-width: 900px; margin: 0 auto; }
+.section-inner.reveal-hidden { opacity: 0; transform: translateY(28px); }
+.section-inner.reveal-visible { opacity: 1; transform: translateY(0); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
+
+/* HERO CREDIT */
 .section-label { font-family: Arial, sans-serif; font-size: 0.7rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--orange); margin-bottom: 0.75rem; display: block; }
 .section-title { font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 400; color: var(--text-dark); margin-bottom: 1.5rem; line-height: 1.2; }
 .divider { width: 60px; height: 2px; background: linear-gradient(90deg, var(--orange), var(--rust)); margin: 1.5rem 0; }
@@ -123,4 +129,42 @@ footer span { color: var(--orange-glow); }
   .rsvp-form { padding: 1.5rem; }
   .story-grid { grid-template-columns: 1fr; }
   .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* COUNTDOWN FLIP */
+.countdown-num { position: relative; display: inline-block; }
+.countdown-num .flip-top,
+.countdown-num .flip-bottom { position: absolute; left: 0; right: 0; overflow: hidden; }
+.countdown-num .flip-top { top: 0; height: 50%; }
+.countdown-num .flip-top span { display: block; }
+.countdown-num .flip-bottom { bottom: 0; height: 50%; }
+.countdown-num .flip-bottom span { display: block; transform: translateY(-50%); }
+.countdown-num.flipping .flip-top { animation: flipTopOut 0.3s ease-in forwards; transform-origin: bottom; }
+.countdown-num.flipping .flip-bottom { animation: flipBottomIn 0.3s ease-out 0.3s forwards; transform-origin: top; }
+@keyframes flipTopOut { 0% { transform: rotateX(0); } 100% { transform: rotateX(-90deg); } }
+@keyframes flipBottomIn { 0% { transform: rotateX(90deg); } 100% { transform: rotateX(0); } }
+@media (prefers-reduced-motion: reduce) { .countdown-num.flipping .flip-top, .countdown-num.flipping .flip-bottom { animation: none; } }
+
+/* WAVE DIVIDERS */
+.wave-divider { position: relative; z-index: 2; margin-top: -1px; }
+.wave-divider svg { display: block; width: 100%; height: 50px; }
+
+/* LIGHTBOX */
+.lightbox { position: fixed; inset: 0; z-index: 10000; background: rgba(0,0,0,0.88); display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: opacity 0.25s, visibility 0.25s; }
+.lightbox.open { opacity: 1; visibility: visible; }
+.lightbox-content { text-align: center; max-width: 90vw; }
+.lightbox-img { max-width: 90vw; max-height: 70vh; object-fit: contain; border-radius: 8px; display: block; margin: 0 auto; }
+.lightbox-caption { color: rgba(255,255,255,0.8); font-size: 0.95rem; margin-top: 1rem; line-height: 1.6; }
+.lightbox-close { position: absolute; top: 1rem; right: 1.5rem; background: none; border: none; color: rgba(255,255,255,0.8); font-size: 2rem; cursor: pointer; padding: 0.5rem; line-height: 1; }
+.lightbox-close:hover { color: #fff; }
+.lightbox-prev, .lightbox-next { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.12); border: none; color: #fff; font-size: 2.5rem; cursor: pointer; padding: 0.5rem 0.8rem; border-radius: 8px; line-height: 1; }
+.lightbox-prev { left: 1rem; }
+.lightbox-next { right: 1rem; }
+.lightbox-prev:hover, .lightbox-next:hover { background: rgba(255,255,255,0.25); }
+@media (max-width: 700px) {
+  .lightbox-prev, .lightbox-next { font-size: 2rem; padding: 0.8rem; top: auto; bottom: 1.5rem; transform: none; }
+  .lightbox-prev { left: 1.5rem; }
+  .lightbox-next { right: 1.5rem; }
+  .lightbox-img { max-height: 55vh; }
+  .lightbox-close { top: 0.5rem; right: 0.5rem; font-size: 1.8rem; }
 }

@@ -31,6 +31,10 @@
   .rsvp-submit { border-radius: 8px; padding: 0.8rem; }
   .rsvp-success { margin-top: 1rem; color: #ffd8bd; }
   .rsvp-locked { max-width: 640px; }
+  .countdown { display: flex; gap: 1.2rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1.5rem; }
+  .countdown-item { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 0.8rem 1.2rem; min-width: 72px; text-align: center; }
+  .countdown-num { display: block; font-size: 2rem; color: #fff; font-weight: 300; line-height: 1; }
+  .countdown-label { font-family: Arial, sans-serif; font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(255,243,230,0.65); margin-top: 0.3rem; display: block; }
   @media (max-width: 700px) { .timeline-item { grid-template-columns: 72px 1fr; } }
 </style>
 </head>
@@ -54,7 +58,14 @@
   <img class="hero-img" src="images/emi_alex_autumn_transparent.png" alt="Emma and Alex autumn illustration">
   <p class="hero-date">6th November 2027 · Evening Reception</p>
   <p class="hero-venue">Gaynes Park, Epping</p>
+  <div class="countdown">
+    <div class="countdown-item"><span class="countdown-num" id="cd-days">–</span><span class="countdown-label">Days</span></div>
+    <div class="countdown-item"><span class="countdown-num" id="cd-hours">–</span><span class="countdown-label">Hours</span></div>
+    <div class="countdown-item"><span class="countdown-num" id="cd-mins">–</span><span class="countdown-label">Minutes</span></div>
+    <div class="countdown-item"><span class="countdown-num" id="cd-secs">–</span><span class="countdown-label">Seconds</span></div>
+  </div>
 </section>
+<div class="wave-divider"><svg viewBox="0 0 1200 60" preserveAspectRatio="none"><path d="M0,30 C200,0 400,55 600,25 C800,0 1000,50 1200,20 L1200,60 L0,60 Z" fill="#fff9f4"/></svg></div>
 
 <div class="guest-banner" id="guestBanner" style="display:none;"></div>
 
@@ -75,6 +86,7 @@
     </div>
   </div>
 </section>
+<div class="wave-divider"><svg viewBox="0 0 1200 60" preserveAspectRatio="none"><path d="M0,20 C300,55 600,5 900,40 C1050,55 1150,25 1200,35 L1200,60 L0,60 Z" fill="#2d5016"/></svg></div>
 
 <section id="venue">
   <div class="section-inner">
@@ -85,6 +97,7 @@
     <div class="venue-card">Epping station is around 10 minutes by taxi. Free on-site parking is available.</div>
   </div>
 </section>
+<div class="wave-divider"><svg viewBox="0 0 1200 60" preserveAspectRatio="none"><path d="M0,30 C200,0 400,55 600,25 C800,0 1000,50 1200,20 L1200,60 L0,60 Z" fill="#fff9f4"/></svg></div>
 
 <!-- GALLERY (rendered by shared.js) -->
 <div id="galleryContainer"></div>
@@ -99,6 +112,7 @@
     <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Can I update my RSVP later?</button><div class="faq-a">Absolutely. Please message us directly if anything changes after you RSVP.</div></div>
   </div>
 </section>
+<div class="wave-divider"><svg viewBox="0 0 1200 60" preserveAspectRatio="none"><path d="M0,45 C400,10 800,55 1200,25 L1200,60 L0,60 Z" fill="#a83220"/></svg></div>
 
 <section id="rsvp">
   <div class="section-inner">
@@ -180,8 +194,13 @@
     renderHeroCredit();
     renderStorySection();
     renderGallerySection();
+    setupScrollReveal();
+    setupActiveNav();
+    setupHeroParallax();
     renderIndividualRsvpChoices();
     loadPhotoManifest();
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
     setRsvpLockedState(localStorage.getItem(getRsvpStorageKey()) === '1' || Boolean(party.hasRsvped));
   });
 </script>
