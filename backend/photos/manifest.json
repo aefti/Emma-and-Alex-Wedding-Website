@@ -1,11 +1,32 @@
 {
-  "mainPhoto": "images/photos/main.jpg",
+  "mainPhoto": {
+    "url": "images/photos/main.jpg",
+    "subtext": "Sunset over Fistral Beach | Newquay, Cornwall | Evening of June 1st, 2025, the evening of the day we got engaged."
+  },
   "galleryPhotos": [
-    "images/photos/small-1.jpg",
-    "images/photos/small-2.jpg",
-    "images/photos/small-3.jpg",
-    "images/photos/small-4.jpg",
-    "images/photos/small-5.jpg",
-    "images/photos/small-6.jpg"
+    {
+      "url": "images/photos/small-1.jpg",
+      "subtext": "Sunrise from Roy's Peak | Lake Wanaka, New Zealand South Island | July 2025."
+    },
+    {
+      "url": "images/photos/small-2.jpg",
+      "subtext": "Nyhavn | Copenhagen, Denmark | June 2023."
+    },
+    {
+      "url": "images/photos/small-3.jpg",
+      "subtext": "Shimanami Kaido | Seto Inland Sea, Japan | September 2025."
+    },
+    {
+      "url": "images/photos/small-4.jpg",
+      "subtext": "e.g..."
+    },
+    {
+      "url": "images/photos/small-5.jpg",
+      "subtext": "Sunrise Kayak in Sydney Harbour | Lake Wanaka, New Zealand South Island | July 2025."
+    },
+    {
+      "url": "images/photos/small-6.jpg",
+      "subtext": "e.g..."
+    }
   ]
 }

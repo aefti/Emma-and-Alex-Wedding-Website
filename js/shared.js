@@ -185,3 +185,157 @@ function submitRsvp() {
     btn.disabled = false;
   });
 }
+
+/* Photo manifest */
+var PHOTO_MANIFEST_PATH = 'backend/photos/manifest.json';
+var DEFAULT_PHOTO_MANIFEST = {
+  mainPhoto: { url: 'images/photos/main.jpg', subtext: '' },
+  galleryPhotos: [
+    { url: 'images/photos/small-1.jpg', subtext: '' },
+    { url: 'images/photos/small-2.jpg', subtext: '' },
+    { url: 'images/photos/small-3.jpg', subtext: '' },
+    { url: 'images/photos/small-4.jpg', subtext: '' },
+    { url: 'images/photos/small-5.jpg', subtext: '' },
+    { url: 'images/photos/small-6.jpg', subtext: '' }
+  ]
+};
+
+function normalizePhotoEntry(entry, fallback) {
+  if (!entry) { return fallback; }
+  if (typeof entry === 'string') { return { url: entry, subtext: '' }; }
+  return { url: entry.url || fallback.url, subtext: entry.subtext || '' };
+}
+
+function normalizePhotoManifest(data) {
+  if (!data || typeof data !== 'object') { return DEFAULT_PHOTO_MANIFEST; }
+  var rawGallery = Array.isArray(data.galleryPhotos) ? data.galleryPhotos : DEFAULT_PHOTO_MANIFEST.galleryPhotos;
+  var galleryPhotos = rawGallery.slice(0, 6).map(function(entry, i) {
+    return normalizePhotoEntry(entry, DEFAULT_PHOTO_MANIFEST.galleryPhotos[i]);
+  });
+  return {
+    mainPhoto: normalizePhotoEntry(data.mainPhoto, DEFAULT_PHOTO_MANIFEST.mainPhoto),
+    galleryPhotos: galleryPhotos
+  };
+}
+
+function applyPhotoManifest(manifest) {
+  var normalized = normalizePhotoManifest(manifest);
+  var mainPhoto = document.getElementById('storyMainPhoto');
+  if (mainPhoto) {
+    mainPhoto.src = normalized.mainPhoto.url;
+  }
+  var galleryImages = document.querySelectorAll('#galleryGrid .gallery-photo');
+  var galleryTexts = document.querySelectorAll('#galleryGrid .gallery-flip-text');
+  galleryImages.forEach(function(photo, index) {
+    var entry = normalized.galleryPhotos[index] || DEFAULT_PHOTO_MANIFEST.galleryPhotos[index];
+    photo.src = entry.url;
+    if (galleryTexts[index]) {
+      galleryTexts[index].textContent = entry.subtext || '';
+    }
+  });
+}
+
+function loadPhotoManifest() {
+  return fetch(PHOTO_MANIFEST_PATH, { cache: 'no-store' })
+    .then(function(response) {
+      if (!response.ok) {
+        throw new Error('Photo manifest not found.');
+      }
+      return response.json();
+    })
+    .then(function(data) {
+      applyPhotoManifest(data);
+    })
+    .catch(function() {
+      applyPhotoManifest(DEFAULT_PHOTO_MANIFEST);
+    });
+}
+
+/* Shared section builders */
+
+function renderHeroCredit() {
+  var heroImg = document.querySelector('.hero-img');
+  if (!heroImg) { return; }
+  var parent = heroImg.parentElement;
+  if (!parent) { return; }
+  var credit = document.createElement('p');
+  credit.className = 'hero-credit';
+  credit.innerHTML = 'Illustration by <a href="https://www.instagram.com/alice_krieits/" target="_blank">@alice_krieits</a>';
+  parent.insertBefore(credit, heroImg.nextSibling);
+}
+
+function renderStorySection() {
+  var container = document.getElementById('storyContainer');
+  if (!container) { return; }
+  container.innerHTML =
+    '<section id="story">' +
+      '<div class="section-inner">' +
+        '<span class="section-label">The beginning</span>' +
+        '<h2 class="section-title">Our Story</h2>' +
+        '<div class="divider"></div>' +
+        '<div class="story-grid">' +
+          '<div class="story-photo-wrap">' +
+            '<img id="storyMainPhoto" class="story-main-photo" src="images/photos/main.jpg" alt="Emma and Alex main photo" loading="lazy">' +
+          '</div>' +
+          '<div>' +
+            '<p class="section-body" style="margin-bottom: 2rem;">Every great love story has a first chapter. Ours began somewhere unexpected, grew through laughter and late nights, and led us here — ready to begin the best chapter yet.</p>' +
+            '<div class="story-milestones">' +
+              '<div class="milestone">' +
+                '<div class="milestone-dot"></div>' +
+                '<div><span class="milestone-year">Add your year</span><p class="milestone-text">Where it all began — how did you meet?</p></div>' +
+              '</div>' +
+              '<div class="milestone">' +
+                '<div class="milestone-dot" style="background:var(--rust)"></div>' +
+                '<div><span class="milestone-year" style="color:var(--rust)">Add your year</span><p class="milestone-text">A milestone along the way — first trip, moving in together, etc.</p></div>' +
+              '</div>' +
+              '<div class="milestone">' +
+                '<div class="milestone-dot" style="background:var(--forest)"></div>' +
+                '<div><span class="milestone-year" style="color:var(--forest-mid)">Add your year</span><p class="milestone-text">The proposal — where, when, and how it happened</p></div>' +
+              '</div>' +
+              '<div class="milestone">' +
+                '<div class="milestone-dot" style="background:var(--gold)"></div>' +
+                '<div><span class="milestone-year" style="color:var(--gold)">6 Nov 2027</span><p class="milestone-text">We say "I do" surrounded by the people we love most</p></div>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</section>';
+}
+
+function renderGallerySection() {
+  var container = document.getElementById('galleryContainer');
+  if (!container) { return; }
+  var photos = DEFAULT_PHOTO_MANIFEST.galleryPhotos;
+  var cells = '';
+  for (var i = 0; i < photos.length; i++) {
+    cells +=
+      '<div class="gallery-cell">' +
+        '<div class="gallery-flip-inner">' +
+          '<div class="gallery-flip-front">' +
+            '<img class="gallery-photo" src="' + photos[i].url + '" alt="Emma and Alex gallery photo ' + (i + 1) + '" loading="lazy">' +
+          '</div>' +
+          '<div class="gallery-flip-back">' +
+            '<p class="gallery-flip-text">' + escapeHtml(photos[i].subtext || '') + '</p>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+  }
+  container.innerHTML =
+    '<section id="gallery">' +
+      '<div class="section-inner">' +
+        '<span class="section-label">Us</span>' +
+        '<h2 class="section-title">Photo Gallery</h2>' +
+        '<div class="divider"></div>' +
+        '<p class="section-body">A few of our favourite moments together — more to come as the big day approaches!</p>' +
+        '<div class="gallery-grid" id="galleryGrid">' +
+          cells +
+        '</div>' +
+        '<p class="gallery-note">Drop your files in <strong>images/photos</strong> and they will auto-load from <strong>backend/photos/manifest.json</strong>.</p>' +
+      '</div>' +
+    '</section>';
+  container.addEventListener('click', function(e) {
+    var cell = e.target.closest('.gallery-cell');
+    if (cell) { cell.classList.toggle('flipped'); }
+  });
+}

@@ -64,8 +64,6 @@
   .hero { min-height: 100vh; background: linear-gradient(160deg, #7a2010 0%, #c4600a 45%, #b8860b 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 6rem 2rem 4rem; position: relative; overflow: hidden; }
   .leaf-bg { position: absolute; inset: 0; pointer-events: none; opacity: 0.12; display: flex; flex-wrap: wrap; gap: 2.5rem; padding: 3rem; align-content: space-around; justify-content: space-around; font-size: 2.8rem; }
   .hero-img { width: min(300px, 72vw); height: auto; }
-  .hero-credit { font-family: Arial, sans-serif; font-size: 0.62rem; letter-spacing: 0.1em; color: rgba(255,243,230,0.5); margin-top: 0.4rem; }
-  .hero-credit a { color: rgba(255,243,230,0.7); text-decoration: underline; }
   .hero-eyebrow { font-family: Arial, sans-serif; font-size: 0.75rem; letter-spacing: 0.25em; text-transform: uppercase; color: rgba(255,243,230,0.85); margin-bottom: 1.5rem; }
   .hero-date { font-family: Arial, sans-serif; font-size: 1rem; letter-spacing: 0.2em; color: rgba(255,243,230,0.9); margin: 1.5rem 0; text-transform: uppercase; }
   .hero-venue { font-size: 1.1rem; color: rgba(255,243,230,0.75); font-style: italic; margin-bottom: 2.5rem; }
@@ -75,17 +73,6 @@
   .countdown-label { font-family: Arial, sans-serif; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(255,243,230,0.65); margin-top: 0.3rem; display: block; }
   .hero-scroll { font-family: Arial, sans-serif; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,243,230,0.45); display: flex; align-items: center; gap: 0.5rem; }
   .scroll-line { width: 40px; height: 1px; background: rgba(255,243,230,0.3); }
-
-  /* OUR STORY */
-  #story { background: var(--warm-white); }
-  .story-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; margin-top: 2.5rem; }
-  .story-photo-wrap { aspect-ratio: 4/5; border-radius: 16px; overflow: hidden; background: linear-gradient(135deg, var(--orange-light), var(--rust-light)); border: 1px solid rgba(196,96,10,0.22); box-shadow: 0 12px 28px rgba(92,61,40,0.12); }
-  .story-main-photo { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .story-milestones { display: flex; flex-direction: column; gap: 1.5rem; }
-  .milestone { display: flex; gap: 1rem; align-items: flex-start; }
-  .milestone-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--orange); margin-top: 6px; flex-shrink: 0; }
-  .milestone-year { font-family: Arial, sans-serif; font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--orange); display: block; }
-  .milestone-text { font-size: 0.95rem; color: var(--text-mid); }
 
   /* SCHEDULE */
   #schedule { background: var(--cream); }
@@ -104,13 +91,6 @@
   .venue-card p { font-size: 0.95rem; color: rgba(245,235,220,0.8); line-height: 1.7; }
   .venue-map-btn { display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 1rem; padding: 0.5rem 1.25rem; background: rgba(232,160,96,0.2); border: 1px solid rgba(232,160,96,0.4); border-radius: 8px; color: var(--orange-glow); font-family: Arial, sans-serif; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; text-decoration: none; transition: background 0.2s; }
   .venue-map-btn:hover { background: rgba(232,160,96,0.3); }
-
-  /* GALLERY */
-  #gallery { background: var(--warm-white); }
-  .gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-top: 2.5rem; }
-  .gallery-cell { aspect-ratio: 1; background: linear-gradient(135deg, var(--orange-light), var(--rust-light)); border-radius: 10px; border: 1px solid rgba(196,96,10,0.2); overflow: hidden; position: relative; }
-  .gallery-photo { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .gallery-note { text-align: center; margin-top: 1.25rem; font-family: Arial, sans-serif; font-size: 0.8rem; color: var(--text-light); font-style: italic; }
 
   /* REGISTRY */
   #registry { background: var(--cream); }
@@ -197,7 +177,6 @@
   <p class="hero-eyebrow">You are warmly invited to celebrate the marriage of</p>
   <div style="text-align:center; margin-bottom: 1.5rem; position: relative; z-index: 1;">
     <img class="hero-img" src="images/emi_alex_autumn_transparent.png" alt="Emma and Alex autumn illustration by Alice Krieits">
-    <p class="hero-credit">Illustration by <a href="https://www.instagram.com/alice_krieits/" target="_blank">@alice_krieits</a></p>
   </div>
   <p class="hero-date">6th November 2027</p>
   <p class="hero-venue">Gaynes Park, Epping</p>
@@ -210,40 +189,8 @@
   <div class="hero-scroll"><div class="scroll-line"></div>Scroll to explore<div class="scroll-line"></div></div>
 </section>
 
-<!-- OUR STORY -->
-<section id="story">
-  <div class="section-inner">
-    <span class="section-label">The beginning</span>
-    <h2 class="section-title">Our Story</h2>
-    <div class="divider"></div>
-    <div class="story-grid">
-      <div class="story-photo-wrap">
-        <img id="storyMainPhoto" class="story-main-photo" src="images/photos/main.jpg" alt="Emma and Alex main photo" loading="lazy">
-      </div>
-      <div>
-        <p class="section-body" style="margin-bottom: 2rem;">Every great love story has a first chapter. Ours began somewhere unexpected, grew through laughter and late nights, and led us here — ready to begin the best chapter yet.</p>
-        <div class="story-milestones">
-          <div class="milestone">
-            <div class="milestone-dot"></div>
-            <div><span class="milestone-year">Add your year</span><p class="milestone-text">Where it all began — how did you meet?</p></div>
-          </div>
-          <div class="milestone">
-            <div class="milestone-dot" style="background:var(--rust)"></div>
-            <div><span class="milestone-year" style="color:var(--rust)">Add your year</span><p class="milestone-text">A milestone along the way — first trip, moving in together, etc.</p></div>
-          </div>
-          <div class="milestone">
-            <div class="milestone-dot" style="background:var(--forest)"></div>
-            <div><span class="milestone-year" style="color:var(--forest-mid)">Add your year</span><p class="milestone-text">The proposal — where, when, and how it happened</p></div>
-          </div>
-          <div class="milestone">
-            <div class="milestone-dot" style="background:var(--gold)"></div>
-            <div><span class="milestone-year" style="color:var(--gold)">6 Nov 2027</span><p class="milestone-text">We say "I do" surrounded by the people we love most</p></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+<!-- OUR STORY (rendered by shared.js) -->
+<div id="storyContainer"></div>
 
 <!-- SCHEDULE -->
 <section id="schedule">
@@ -316,24 +263,8 @@
   </div>
 </section>
 
-<!-- GALLERY -->
-<section id="gallery">
-  <div class="section-inner">
-    <span class="section-label">Us</span>
-    <h2 class="section-title">Photo Gallery</h2>
-    <div class="divider"></div>
-    <p class="section-body">A few of our favourite moments together — more to come as the big day approaches!</p>
-    <div class="gallery-grid" id="galleryGrid">
-      <div class="gallery-cell"><img class="gallery-photo" src="images/photos/small-1.jpg" alt="Emma and Alex gallery photo 1" loading="lazy"></div>
-      <div class="gallery-cell"><img class="gallery-photo" src="images/photos/small-2.jpg" alt="Emma and Alex gallery photo 2" loading="lazy"></div>
-      <div class="gallery-cell"><img class="gallery-photo" src="images/photos/small-3.jpg" alt="Emma and Alex gallery photo 3" loading="lazy"></div>
-      <div class="gallery-cell"><img class="gallery-photo" src="images/photos/small-4.jpg" alt="Emma and Alex gallery photo 4" loading="lazy"></div>
-      <div class="gallery-cell"><img class="gallery-photo" src="images/photos/small-5.jpg" alt="Emma and Alex gallery photo 5" loading="lazy"></div>
-      <div class="gallery-cell"><img class="gallery-photo" src="images/photos/small-6.jpg" alt="Emma and Alex gallery photo 6" loading="lazy"></div>
-    </div>
-    <p class="gallery-note">Drop your files in <strong>images/photos</strong> and they will auto-load from <strong>backend/photos/manifest.json</strong>.</p>
-  </div>
-</section>
+<!-- GALLERY (rendered by shared.js) -->
+<div id="galleryContainer"></div>
 
 <!-- REGISTRY -->
 <section id="registry">
@@ -476,57 +407,6 @@
   var activeFlyingHeads = [];
   var flyingHeadAnimationId = null;
   var lastHeadTimestamp = 0;
-  var PHOTO_MANIFEST_PATH = 'backend/photos/manifest.json';
-  var DEFAULT_PHOTO_MANIFEST = {
-    mainPhoto: 'images/photos/main.jpg',
-    galleryPhotos: [
-      'images/photos/small-1.jpg',
-      'images/photos/small-2.jpg',
-      'images/photos/small-3.jpg',
-      'images/photos/small-4.jpg',
-      'images/photos/small-5.jpg',
-      'images/photos/small-6.jpg'
-    ]
-  };
-
-  function normalizePhotoManifest(data) {
-    if (!data || typeof data !== 'object') { return DEFAULT_PHOTO_MANIFEST; }
-    var galleryPhotos = Array.isArray(data.galleryPhotos) ? data.galleryPhotos : DEFAULT_PHOTO_MANIFEST.galleryPhotos;
-    return {
-      mainPhoto: data.mainPhoto || DEFAULT_PHOTO_MANIFEST.mainPhoto,
-      galleryPhotos: galleryPhotos.slice(0, 6)
-    };
-  }
-
-  function applyPhotoManifest(manifest) {
-    var normalized = normalizePhotoManifest(manifest);
-    var mainPhoto = document.getElementById('storyMainPhoto');
-    if (mainPhoto) {
-      mainPhoto.src = normalized.mainPhoto;
-    }
-
-    var galleryImages = document.querySelectorAll('#galleryGrid .gallery-photo');
-    galleryImages.forEach(function(photo, index) {
-      var src = normalized.galleryPhotos[index] || DEFAULT_PHOTO_MANIFEST.galleryPhotos[index];
-      photo.src = src;
-    });
-  }
-
-  function loadPhotoManifest() {
-    return fetch(PHOTO_MANIFEST_PATH, { cache: 'no-store' })
-      .then(function(response) {
-        if (!response.ok) {
-          throw new Error('Photo manifest not found.');
-        }
-        return response.json();
-      })
-      .then(function(data) {
-        applyPhotoManifest(data);
-      })
-      .catch(function() {
-        applyPhotoManifest(DEFAULT_PHOTO_MANIFEST);
-      });
-  }
 
   function toggleMenu() {
     var m = document.getElementById('mobileMenu');
@@ -873,6 +753,9 @@
         renderIndividualRsvpChoices();
       }
     });
+    renderHeroCredit();
+    renderStorySection();
+    renderGallerySection();
     initializeRsvpSection();
     loadPhotoManifest();
     setupHeroWatermark();

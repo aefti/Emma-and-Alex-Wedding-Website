@@ -39,8 +39,10 @@
   <div class="nav-inner">
     <a class="nav-brand" href="#top">Emma & Alex</a>
     <ul class="nav-links">
+      <li><a href="#story">Our Story</a></li>
       <li><a href="#schedule">Evening</a></li>
       <li><a href="#venue">Venue</a></li>
+      <li><a href="#gallery">Gallery</a></li>
       <li><a href="#faq">FAQ</a></li>
       <li><a href="#rsvp">RSVP</a></li>
     </ul>
@@ -55,6 +57,9 @@
 </section>
 
 <div class="guest-banner" id="guestBanner" style="display:none;"></div>
+
+<!-- OUR STORY (rendered by shared.js) -->
+<div id="storyContainer"></div>
 
 <section id="schedule">
   <div class="section-inner">
@@ -80,6 +85,9 @@
     <div class="venue-card">Epping station is around 10 minutes by taxi. Free on-site parking is available.</div>
   </div>
 </section>
+
+<!-- GALLERY (rendered by shared.js) -->
+<div id="galleryContainer"></div>
 
 <section id="faq">
   <div class="section-inner">
@@ -169,7 +177,11 @@
     } catch (err) {
       // Ignore malformed local storage.
     }
+    renderHeroCredit();
+    renderStorySection();
+    renderGallerySection();
     renderIndividualRsvpChoices();
+    loadPhotoManifest();
     setRsvpLockedState(localStorage.getItem(getRsvpStorageKey()) === '1' || Boolean(party.hasRsvped));
   });
 </script>
