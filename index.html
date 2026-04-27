@@ -492,7 +492,7 @@
         <label class="rsvp-label">Dietary requirements or anything else we should know</label>
         <textarea class="rsvp-textarea" rows="3" placeholder="Allergies, dietary needs, or a message for us..." id="rsvp-notes"></textarea>
       </div>
-      <button class="rsvp-submit" onclick="submitRsvp()">Send my RSVP</button>
+      <button class="rsvp-submit" id="rsvpSubmitBtn" onclick="submitRsvp()">Send my RSVP</button>
     </div>
     <div class="rsvp-success" id="rsvpSuccess">
       <p style="font-size:2rem; margin-bottom:0.75rem">🍂</p>
@@ -733,11 +733,19 @@
     notice.classList.toggle('open', isLocked);
   }
 
+  function resetRsvpSubmitButton() {
+    var btn = document.getElementById('rsvpSubmitBtn');
+    if (!btn) { return; }
+    btn.disabled = false;
+    btn.textContent = 'Send my RSVP';
+  }
+
   function enableRsvpResubmission() {
     localStorage.removeItem(getRsvpStorageKey());
     setRsvpLockedState(false);
     document.getElementById('rsvpSuccess').style.display = 'none';
     document.getElementById('rsvpForm').style.display = 'block';
+    resetRsvpSubmitButton();
   }
 
   function initializeRsvpSection() {
@@ -909,7 +917,7 @@
       return;
     }
     document.getElementById('individualRsvpError').classList.remove('open');
-    var btn = document.querySelector('.rsvp-submit');
+    var btn = document.getElementById('rsvpSubmitBtn');
     btn.textContent = 'Sending...';
     btn.disabled = true;
 
