@@ -183,8 +183,6 @@
   .rsvp-person-name { font-size: 0.95rem; margin-bottom: 0.45rem; color: #fff6eb; }
   .rsvp-inline-error { display: none; margin-top: 0.4rem; color: #ffc4b8; font-family: Arial, sans-serif; font-size: 0.78rem; }
   .rsvp-inline-error.open { display: block; }
-  .rsvp-input.rsvp-field-error, .rsvp-textarea.rsvp-field-error, .rsvp-select.rsvp-field-error { border-color: rgba(255, 138, 117, 0.95); box-shadow: 0 0 0 3px rgba(255, 138, 117, 0.2); }
-  .rsvp-person.rsvp-field-error { border-color: rgba(255, 138, 117, 0.95); background: rgba(168,50,32,0.24); }
   .rsvp-locked { display: none; margin-top: 1rem; border: 1px solid rgba(232,160,96,0.45); border-radius: 12px; background: rgba(232,160,96,0.15); padding: 1rem; }
   .rsvp-locked.open { display: block; }
   .rsvp-resubmit-btn { margin-top: 0.7rem; border: 1px solid rgba(255,255,255,0.4); background: transparent; color: #fff; border-radius: 9px; padding: 0.55rem 0.8rem; font-family: Arial, sans-serif; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.11em; cursor: pointer; }
@@ -208,8 +206,6 @@
   /* FOOTER */
   footer { background: #3a1a0a; color: rgba(255,243,230,0.5); text-align: center; padding: 2.5rem 1.5rem; font-family: Arial, sans-serif; font-size: 0.8rem; letter-spacing: 0.05em; }
   footer span { color: var(--orange-glow); }
-  .fun-mode-toggle { margin-top: 0.7rem; display: inline-flex; align-items: center; gap: 0.45rem; font-size: 0.72rem; letter-spacing: 0.06em; color: rgba(255,243,230,0.7); }
-  .fun-mode-toggle input { accent-color: var(--orange-glow); }
 
   /* RESPONSIVE */
   @media (max-width: 700px) {
@@ -440,28 +436,28 @@
     <div class="divider"></div>
     <div class="faq-list">
       <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)" aria-controls="faq-panel-plus-one" aria-expanded="false">Can I bring a plus one?<svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
-        <div class="faq-a" id="faq-panel-plus-one" aria-hidden="true">Your invitation will clearly state whether you have a plus one included. If you're unsure, please get in touch with us directly and we'll be happy to clarify.</div>
+        <button class="faq-q" onclick="toggleFaq(this)">Can I bring a plus one?<svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+        <div class="faq-a">Your invitation will clearly state whether you have a plus one included. If you're unsure, please get in touch with us directly and we'll be happy to clarify.</div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)" aria-controls="faq-panel-children" aria-expanded="false">Are children welcome?<svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
-        <div class="faq-a" id="faq-panel-children" aria-hidden="true">We love your little ones! Named children on your invite are very welcome. If you're unsure whether your children are included, please check with us — we're happy to help you sort arrangements.</div>
+        <button class="faq-q" onclick="toggleFaq(this)">Are children welcome?<svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+        <div class="faq-a">We love your little ones! Named children on your invite are very welcome. If you're unsure whether your children are included, please check with us — we're happy to help you sort arrangements.</div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)" aria-controls="faq-panel-arrive-time" aria-expanded="false">What time should I arrive?<svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
-        <div class="faq-a" id="faq-panel-arrive-time" aria-hidden="true">Please aim to arrive by 2:00 pm so we can seat everyone comfortably before the ceremony begins at 2:30 pm. There'll be a welcome drink waiting for you!</div>
+        <button class="faq-q" onclick="toggleFaq(this)">What time should I arrive?<svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+        <div class="faq-a">Please aim to arrive by 2:00 pm so we can seat everyone comfortably before the ceremony begins at 2:30 pm. There'll be a welcome drink waiting for you!</div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)" aria-controls="faq-panel-parking" aria-expanded="false">Is there parking at Gaynes Park?<svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
-        <div class="faq-a" id="faq-panel-parking" aria-hidden="true">Yes — there is free parking available on site. If you're planning to drink, please arrange alternative transport for the return journey. Taxis and rideshare apps work well from Epping.</div>
+        <button class="faq-q" onclick="toggleFaq(this)">Is there parking at Gaynes Park?<svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+        <div class="faq-a">Yes — there is free parking available on site. If you're planning to drink, please arrange alternative transport for the return journey. Taxis and rideshare apps work well from Epping.</div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)" aria-controls="faq-panel-photos" aria-expanded="false">Can I take photos during the ceremony?<svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
-        <div class="faq-a" id="faq-panel-photos" aria-hidden="true">We're having an unplugged ceremony — we kindly ask that you put phones and cameras away so you can be fully present with us. Our photographer will capture everything beautifully, and we'll share photos with everyone afterwards.</div>
+        <button class="faq-q" onclick="toggleFaq(this)">Can I take photos during the ceremony?<svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+        <div class="faq-a">We're having an unplugged ceremony — we kindly ask that you put phones and cameras away so you can be fully present with us. Our photographer will capture everything beautifully, and we'll share photos with everyone afterwards.</div>
       </div>
       <div class="faq-item">
-        <button class="faq-q" onclick="toggleFaq(this)" aria-controls="faq-panel-dietary" aria-expanded="false">What if I have dietary requirements?<svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
-        <div class="faq-a" id="faq-panel-dietary" aria-hidden="true">Please let us know about any dietary requirements or allergies in your RSVP — there's a notes field for exactly this. We want everyone to eat well and enjoy the day!</div>
+        <button class="faq-q" onclick="toggleFaq(this)">What if I have dietary requirements?<svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+        <div class="faq-a">Please let us know about any dietary requirements or allergies in your RSVP — there's a notes field for exactly this. We want everyone to eat well and enjoy the day!</div>
       </div>
     </div>
   </div>
@@ -486,7 +482,6 @@
       <div class="rsvp-row">
         <label class="rsvp-label">Email address</label>
         <input class="rsvp-input" type="email" placeholder="your@email.com" id="rsvp-email">
-        <div id="nameEmailError" class="rsvp-inline-error">Please fill in your name and email.</div>
       </div>
       <div class="rsvp-row">
         <label class="rsvp-label">Attendance per person (required for everyone in your party)</label>
@@ -498,7 +493,6 @@
         <textarea class="rsvp-textarea" rows="3" placeholder="Allergies, dietary needs, or a message for us..." id="rsvp-notes"></textarea>
       </div>
       <button class="rsvp-submit" id="rsvpSubmitBtn" onclick="submitRsvp()">Send my RSVP</button>
-      <div id="rsvpSubmitError" class="rsvp-inline-error">Could not send — please check your connection and try again.</div>
     </div>
     <div class="rsvp-success" id="rsvpSuccess">
       <p style="font-size:2rem; margin-bottom:0.75rem">🍂</p>
@@ -527,12 +521,6 @@
 <!-- FOOTER -->
 <footer>
   Made with love for <span>Emma & Alex</span> &nbsp;·&nbsp; 6th November 2027 &nbsp;·&nbsp; Gaynes Park, Epping
-  <div>
-    <label class="fun-mode-toggle" for="funModeToggle">
-      <input type="checkbox" id="funModeToggle">
-      Fun mode
-    </label>
-  </div>
 </footer>
 </div>
 
@@ -542,8 +530,7 @@
   var SITE_TOKEN = 'ea-2027-8mKxNpQvTz';
   var pendingGuestMatch = null;
   var RSVP_STORAGE_PREFIX = 'ea_rsvp_';
-  var HEAD_POP_ENABLED = false;
-  var FUN_MODE_STORAGE_KEY = 'ea_fun_mode';
+  var HEAD_POP_ENABLED = true;
   var HEAD_IMAGE_CHOICES = ['images/alex_head.png', 'images/emma_head.png'];
   var activeFlyingHeads = [];
   var flyingHeadAnimationId = null;
@@ -630,19 +617,18 @@
     var answer = btn.nextElementSibling;
     var chevron = btn.querySelector('.faq-chevron');
     var open = answer.classList.contains('open');
-    document.querySelectorAll('.faq-a').forEach(function(a) {
-      a.classList.remove('open');
-      a.setAttribute('aria-hidden', 'true');
-    });
-    document.querySelectorAll('.faq-q').forEach(function(q) {
-      q.setAttribute('aria-expanded', 'false');
-    });
+    document.querySelectorAll('.faq-a').forEach(function(a) { a.classList.remove('open'); });
     document.querySelectorAll('.faq-chevron').forEach(function(c) { c.classList.remove('open'); });
-    if (!open) {
-      answer.classList.add('open');
-      answer.setAttribute('aria-hidden', 'false');
-      btn.setAttribute('aria-expanded', 'true');
-      chevron.classList.add('open');
+    if (!open) { answer.classList.add('open'); chevron.classList.add('open'); }
+  }
+
+  function getSavedParty() {
+    var raw = localStorage.getItem('ea_ack_party');
+    if (!raw) { return null; }
+    try {
+      return JSON.parse(raw);
+    } catch (err) {
+      return null;
     }
   }
 
@@ -722,7 +708,6 @@
             var input = label.querySelector('input');
             label.classList.toggle('selected', input.checked);
           });
-         clearAttendanceError();
         });
       });
       container.appendChild(item);
@@ -765,61 +750,9 @@
 
   function initializeRsvpSection() {
     renderIndividualRsvpChoices();
-    setupRsvpValidationHandlers();
     var party = getSavedParty();
     var alreadyRsvped = localStorage.getItem(getRsvpStorageKey()) === '1' || (party && party.hasRsvped);
     setRsvpLockedState(Boolean(alreadyRsvped));
-  }
-
-  function clearNameEmailError() {
-    var nameError = document.getElementById('nameEmailError');
-    if (nameError) { nameError.classList.remove('open'); }
-    var nameInput = document.getElementById('rsvp-name');
-    var emailInput = document.getElementById('rsvp-email');
-    if (nameInput) { nameInput.classList.remove('rsvp-field-error'); }
-    if (emailInput) { emailInput.classList.remove('rsvp-field-error'); }
-  }
-
-  function clearAttendanceError() {
-    var attendanceError = document.getElementById('individualRsvpError');
-    if (attendanceError) { attendanceError.classList.remove('open'); }
-    document.querySelectorAll('#individualRsvpList .rsvp-person').forEach(function(item) {
-      item.classList.remove('rsvp-field-error');
-    });
-  }
-
-  function clearSubmitError() {
-    var submitError = document.getElementById('rsvpSubmitError');
-    if (submitError) { submitError.classList.remove('open'); }
-  }
-
-  function setupRsvpValidationHandlers() {
-    var nameInput = document.getElementById('rsvp-name');
-    var emailInput = document.getElementById('rsvp-email');
-    var notesInput = document.getElementById('rsvp-notes');
-    if (nameInput) {
-      nameInput.addEventListener('input', function() {
-        clearSubmitError();
-        if (nameInput.value.trim() && emailInput && emailInput.value.trim()) {
-          clearNameEmailError();
-        } else {
-          nameInput.classList.remove('rsvp-field-error');
-        }
-      });
-    }
-    if (emailInput) {
-      emailInput.addEventListener('input', function() {
-        clearSubmitError();
-        if (emailInput.value.trim() && nameInput && nameInput.value.trim()) {
-          clearNameEmailError();
-        } else {
-          emailInput.classList.remove('rsvp-field-error');
-        }
-      });
-    }
-    if (notesInput) {
-      notesInput.addEventListener('input', clearSubmitError);
-    }
   }
 
   function submitAcknowledgement() {
@@ -969,33 +902,21 @@
   }
 
   function submitRsvp() {
-    var nameInput = document.getElementById('rsvp-name');
-    var emailInput = document.getElementById('rsvp-email');
-    var name = nameInput.value.trim();
-    var email = emailInput.value.trim();
+    var name = document.getElementById('rsvp-name').value.trim();
+    var email = document.getElementById('rsvp-email').value.trim();
     var partyResponses = collectIndividualRsvp();
     var party = getSavedParty() || pendingGuestMatch || {};
     var notes = document.getElementById('rsvp-notes').value;
-    clearSubmitError();
     if (!name || !email) {
-      document.getElementById('nameEmailError').classList.add('open');
-      nameInput.classList.toggle('rsvp-field-error', !name);
-      emailInput.classList.toggle('rsvp-field-error', !email);
-      (!name ? nameInput : emailInput).focus();
+      alert('Please fill in your name and email.');
       return;
     }
-    clearNameEmailError();
     if (!partyResponses) {
       document.getElementById('individualRsvpError').classList.add('open');
-      document.querySelectorAll('#individualRsvpList .rsvp-person').forEach(function(item) {
-        var hasChecked = item.querySelector('input[type="radio"]:checked');
-        item.classList.toggle('rsvp-field-error', !hasChecked);
-      });
-      var firstMissing = document.querySelector('#individualRsvpList .rsvp-person.rsvp-field-error input[type="radio"]');
-      if (firstMissing) { firstMissing.focus(); }
+      alert('Please make an attendance choice for every person in your party.');
       return;
     }
-    clearAttendanceError();
+    document.getElementById('individualRsvpError').classList.remove('open');
     var btn = document.getElementById('rsvpSubmitBtn');
     btn.textContent = 'Sending...';
     btn.disabled = true;
@@ -1022,7 +943,7 @@
       document.getElementById('rsvpForm').style.display = 'none';
       document.getElementById('rsvpSuccess').style.display = 'block';
     }).catch(function() {
-      document.getElementById('rsvpSubmitError').classList.add('open');
+      alert('Could not send — please check your connection and try again.');
       btn.textContent = 'Send my RSVP';
       btn.disabled = false;
     });
@@ -1116,11 +1037,6 @@
 
   function setFlyingHeadsEnabled(isEnabled) {
     HEAD_POP_ENABLED = Boolean(isEnabled);
-    try {
-      localStorage.setItem(FUN_MODE_STORAGE_KEY, HEAD_POP_ENABLED ? '1' : '0');
-    } catch (err) {}
-    var toggle = document.getElementById('funModeToggle');
-    if (toggle) { toggle.checked = HEAD_POP_ENABLED; }
     return HEAD_POP_ENABLED;
   }
 
@@ -1176,20 +1092,6 @@
     setupHeroWatermark();
     setupFlyingHeads();
     window.setFlyingHeadsEnabled = setFlyingHeadsEnabled;
-
-    var funModeToggle = document.getElementById('funModeToggle');
-    var savedFunMode = localStorage.getItem(FUN_MODE_STORAGE_KEY);
-    if (savedFunMode !== null) {
-      setFlyingHeadsEnabled(savedFunMode === '1');
-    } else {
-      setFlyingHeadsEnabled(HEAD_POP_ENABLED);
-    }
-    if (funModeToggle) {
-      funModeToggle.checked = HEAD_POP_ENABLED;
-      funModeToggle.addEventListener('change', function(event) {
-        setFlyingHeadsEnabled(event.target.checked);
-      });
-    }
     updateCountdown();
     setInterval(updateCountdown, 1000);
   });
