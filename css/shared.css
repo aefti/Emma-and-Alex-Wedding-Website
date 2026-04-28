@@ -73,8 +73,9 @@ section { padding: 5rem 1.5rem; }
 .rsvp-input::placeholder, .rsvp-textarea::placeholder { color: rgba(255,235,200,0.35); }
 .rsvp-input:focus, .rsvp-select:focus, .rsvp-textarea:focus { border-color: rgba(232,160,96,0.6); }
 .rsvp-radio-group { display: flex; gap: 0.75rem; flex-wrap: wrap; }
-.rsvp-radio-label { display: flex; align-items: center; gap: 0.5rem; padding: 0.55rem 1rem; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 8px; cursor: pointer; font-family: Arial, sans-serif; font-size: 0.85rem; color: rgba(255,243,230,0.75); transition: all 0.2s; }
-.rsvp-radio-label.selected { background: rgba(232,160,96,0.25); border-color: rgba(232,160,96,0.5); color: var(--orange-glow); }
+.rsvp-radio-label { display: flex; align-items: center; gap: 0.5rem; padding: 0.55rem 1rem; background: rgba(255,255,255,0.06); border: 2px solid rgba(255,255,255,0.15); border-radius: 8px; cursor: pointer; font-family: Arial, sans-serif; font-size: 0.85rem; color: rgba(255,243,230,0.75); transition: all 0.2s; }
+.rsvp-radio-label.selected { background: rgba(255,255,255,0.15); border-color: #fff; color: #fff; }
+.rsvp-person:has(.rsvp-radio-label.selected) .rsvp-radio-label:not(.selected) { opacity: 0.35; border-color: rgba(255,255,255,0.06); }
 .rsvp-radio-label input { display: none; }
 .rsvp-submit { width: 100%; padding: 0.9rem; background: var(--orange); border: none; border-radius: 10px; color: white; font-family: Arial, sans-serif; font-size: 0.85rem; letter-spacing: 0.15em; text-transform: uppercase; cursor: pointer; margin-top: 0.5rem; transition: background 0.2s; }
 .rsvp-submit:hover { background: var(--orange-dark); }
