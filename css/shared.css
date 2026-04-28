@@ -81,8 +81,8 @@ section { padding: 5rem 1.5rem; }
 .rsvp-submit:hover { background: var(--orange-dark); }
 .rsvp-success { display: none; text-align: center; padding: 2rem; font-size: 1.1rem; color: var(--orange-glow); font-style: italic; }
 .rsvp-party-list { display: grid; gap: 0.8rem; }
-.rsvp-person { border: 1px solid rgba(255,255,255,0.16); border-radius: 10px; padding: 0.8rem; background: rgba(255,255,255,0.04); }
-.rsvp-person-name { font-size: 0.95rem; margin-bottom: 0.45rem; color: #fff6eb; }
+.rsvp-person { border: 1px solid rgba(255,255,255,0.16); border-radius: 10px; padding: 0.8rem; background: rgba(255,255,255,0.04); text-align: left; }
+.rsvp-person-name { font-size: 0.95rem; margin-bottom: 0.45rem; color: #fff6eb; text-align: left; }
 .rsvp-inline-error { display: none; margin-top: 0.4rem; color: #ffc4b8; font-family: Arial, sans-serif; font-size: 0.78rem; }
 .rsvp-inline-error.open { display: block; }
 .rsvp-locked { display: none; margin-top: 1rem; border: 1px solid rgba(232,160,96,0.45); border-radius: 12px; background: rgba(232,160,96,0.15); padding: 1rem; }
