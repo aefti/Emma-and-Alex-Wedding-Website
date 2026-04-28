@@ -125,8 +125,8 @@ function renderIndividualRsvpChoices() {
     item.innerHTML =
       '<p class="rsvp-person-name">' + escapeHtml(member) + '</p>' +
       '<div class="rsvp-radio-group">' +
-        '<label class="rsvp-radio-label"><input type="radio" name="person_' + index + '" value="yes"> 🎉 Attending</label>' +
-        '<label class="rsvp-radio-label"><input type="radio" name="person_' + index + '" value="no"> 😢 Not attending</label>' +
+        '<label class="rsvp-radio-label"><input type="radio" name="person_' + index + '" value="yes">Attending</label>' +
+        '<label class="rsvp-radio-label"><input type="radio" name="person_' + index + '" value="no">Not Attending</label>' +
       '</div>';
     item.querySelectorAll('input[type="radio"]').forEach(function(radio) {
       radio.addEventListener('change', function() {
