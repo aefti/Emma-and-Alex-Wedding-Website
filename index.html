@@ -32,6 +32,9 @@
   .ack-error.open { display: block; }
   .ack-actions { display: flex; gap: 0.6rem; }
   .ack-secondary-btn { padding: 0.82rem 1.1rem; border: 1px solid rgba(196,96,10,0.32); border-radius: 11px; background: #fff; color: var(--text-mid); font-family: Arial, sans-serif; font-size: 0.72rem; letter-spacing: 0.11em; text-transform: uppercase; cursor: pointer; flex: 1; }
+  body::before { content: ''; position: fixed; inset: 0; background: url('images/emi_alex_autumn_transparent.png') center 55% / min(35vw, 280px) no-repeat; opacity: 0; pointer-events: none; z-index: 0; transition: opacity 0.35s ease; filter: grayscale(1); }
+  body.show-watermark::before ~ * { position: relative; }
+  body.show-watermark::before { opacity: 0.1; }
   #siteContent { opacity: 1; transition: opacity 0.25s ease; }
   body.pre-ack { overflow: hidden; }
   body.pre-ack #siteContent > *:not(#ackModal) { opacity: 0; visibility: hidden; pointer-events: none; user-select: none; }
@@ -58,6 +61,7 @@
 
   /* HERO */
   .hero { min-height: 100vh; background: linear-gradient(160deg, #7a2010 0%, #c4600a 45%, #b8860b 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 6rem 2rem 4rem; position: relative; overflow: hidden; }
+  .leaf-bg { position: absolute; inset: 0; pointer-events: none; opacity: 0.12; display: flex; flex-wrap: wrap; gap: 2.5rem; padding: 3rem; align-content: space-around; justify-content: space-around; font-size: 2.8rem; }
   .hero-img { width: min(300px, 72vw); height: auto; }
   .hero-eyebrow { font-family: Arial, sans-serif; font-size: 0.75rem; letter-spacing: 0.25em; text-transform: uppercase; color: rgba(255,243,230,0.85); margin-bottom: 1.5rem; }
   .hero-date { font-family: Arial, sans-serif; font-size: 1rem; letter-spacing: 0.2em; color: rgba(255,243,230,0.9); margin: 1.5rem 0; text-transform: uppercase; }
@@ -109,6 +113,16 @@
     .hamburger { display: block; }
     .venue-grid { grid-template-columns: 1fr; }
     .key-details-grid { grid-template-columns: 1fr; }
+    body.show-watermark::before { opacity: 0.08; background-size: min(50vw, 220px); background-position: center 28%; }
+  }
+
+  /* FLOATING LEAVES */
+  .hero-leaf { position: absolute; top: 0; pointer-events: none; user-select: none; z-index: 1; opacity: 0; will-change: transform, opacity; }
+  @keyframes leafDrift {
+    0% { transform: translateY(-40px) translateX(0) rotate(0deg); opacity: 0; }
+    8% { opacity: 1; }
+    85% { opacity: 1; }
+    100% { transform: translateY(calc(100vh + 40px)) translateX(var(--drift-x)) rotate(var(--spin)); opacity: 0; }
   }
 </style>
 </head>
@@ -138,6 +152,9 @@
 
 <!-- HERO -->
 <section class="hero" id="top">
+  <div class="leaf-bg" aria-hidden="true">
+    &#127810;&#127809;&#127811;&#127810;&#127809;&#127811;&#127810;&#127809;&#127811;&#127810;&#127809;&#127811;&#127810;&#127809;&#127811;&#127810;&#127809;&#127811;&#127810;&#127809;&#127811;&#127810;&#127809;&#127811;&#127810;&#127809;&#127811;&#127810;&#127809;&#127811;&#127810;&#127809;&#127811;&#127810;&#127809;&#127811;&#127810;&#127809;&#127811;&#127810;&#127809;&#127811;
+  </div>
   <p class="hero-eyebrow">You are warmly invited to celebrate the marriage of</p>
   <div style="text-align:center; margin-bottom: 1.5rem; position: relative; z-index: 1;">
     <img class="hero-img" src="images/emi_alex_autumn_transparent.png" alt="Emma and Alex autumn illustration by Alice Krieits">
@@ -646,6 +663,38 @@
     return HEAD_POP_ENABLED;
   }
 
+  function setupHeroWatermark() {
+    var heroImage = document.querySelector('.hero-img');
+    if (!heroImage || !('IntersectionObserver' in window)) { return; }
+
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        document.body.classList.toggle('show-watermark', !entry.isIntersecting);
+      });
+    }, { threshold: 0.05 });
+
+    observer.observe(heroImage);
+  }
+
+  function setupFloatingLeaves() {
+    var hero = document.querySelector('.hero');
+    if (!hero) { return; }
+    var leaves = ['\u{1F342}', '\u{1F341}', '\u{1F343}'];
+    for (var i = 0; i < 5; i++) {
+      var el = document.createElement('span');
+      el.className = 'hero-leaf';
+      el.textContent = leaves[Math.floor(Math.random() * leaves.length)];
+      el.style.left = (8 + Math.random() * 84) + '%';
+      el.style.fontSize = (16 + Math.random() * 14) + 'px';
+      el.style.setProperty('--drift-x', (Math.random() > 0.5 ? '' : '-') + (20 + Math.random() * 50) + 'px');
+      el.style.setProperty('--spin', (Math.random() > 0.5 ? '' : '-') + (120 + Math.random() * 240) + 'deg');
+      var dur = 14 + Math.random() * 12;
+      el.style.animation = 'leafDrift ' + dur + 's ' + (Math.random() * dur) + 's linear infinite';
+      el.style.opacity = '0';
+      hero.appendChild(el);
+    }
+  }
+
   /* Init */
   document.addEventListener('DOMContentLoaded', function() {
     ensureSession().catch(showSessionError);
@@ -685,6 +734,8 @@
     setupActiveNav();
     setupHeroParallax();
     setupFlyingHeads();
+    setupHeroWatermark();
+    setupFloatingLeaves();
     loadKeyDetailsPhoto();
 
     window.setFlyingHeadsEnabled = setFlyingHeadsEnabled;
