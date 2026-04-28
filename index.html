@@ -198,7 +198,7 @@
 </div>
 
 <!-- FOOTER -->
-<footer id="siteFooter" style="display:none;">
+<footer id="siteFooter">
   Made with love for <span>Emma & Alex</span> &nbsp;&middot;&nbsp; <button type="button" class="fun-toggle-btn" id="funModeToggleFooter" onclick="toggleFunMode()">Fun Mode?</button>
 </footer>
 </div>
@@ -604,18 +604,6 @@
 
     window.setFlyingHeadsEnabled = setFlyingHeadsEnabled;
     updateFunModeButtons();
-
-    // Show footer when RSVP success message appears
-    var rsvpSuccess = document.getElementById('rsvpSuccess');
-    if (rsvpSuccess) {
-      var footerObserver = new MutationObserver(function() {
-        if (rsvpSuccess.style.display === 'block') {
-          var footer = document.getElementById('siteFooter');
-          if (footer) { footer.style.display = ''; }
-        }
-      });
-      footerObserver.observe(rsvpSuccess, { attributes: true, attributeFilter: ['style'] });
-    }
 
     updateCountdown();
     setInterval(updateCountdown, 1000);
