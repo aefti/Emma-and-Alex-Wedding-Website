@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://script.google.com https://script.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self' https://script.google.com https://script.googleusercontent.com; form-action 'none'; base-uri 'self'; object-src 'none';">
+<title>Emma & Alex — RSVP</title>
+<link rel="stylesheet" href="css/shared.css">
+<style>
+  /* ACK MODAL */
+  .ack-modal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background:
+      radial-gradient(circle at 18% 18%, rgba(255, 200, 140, 0.16), transparent 42%),
+      radial-gradient(circle at 82% 78%, rgba(140, 255, 180, 0.08), transparent 45%),
+      rgba(16, 8, 4, 0.82); backdrop-filter: blur(12px); z-index: 9999; padding: 1rem; }
+  .ack-modal.open { display: flex; }
+  .ack-card { width: min(560px, 100%); background: linear-gradient(180deg, #fffefc 0%, #fff8f0 100%); border: 1px solid rgba(196,96,10,0.18); border-radius: 18px; box-shadow: 0 22px 90px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.75); padding: 1.5rem 1.4rem 1.2rem; text-align: center; }
+  .ack-title { font-size: clamp(1.15rem, 4vw, 1.65rem); margin-bottom: 0.5rem; color: var(--text-dark); letter-spacing: 0.01em; }
+  .ack-text { font-family: Arial, sans-serif; font-size: 0.92rem; color: var(--text-mid); margin-bottom: 1rem; line-height: 1.55; }
+  .ack-input-wrap { text-align: left; margin: 0.2rem 0 0.95rem; }
+  .ack-label { display: block; margin-bottom: 0.42rem; font-family: Arial, sans-serif; font-size: 0.67rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-light); }
+  .ack-input { width: 100%; padding: 0.8rem 0.95rem; border: 1px solid rgba(196,96,10,0.24); border-radius: 11px; font-family: Georgia, serif; font-size: 0.98rem; color: var(--text-dark); background: #fff; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
+  .ack-input:focus { border-color: rgba(196,96,10,0.7); box-shadow: 0 0 0 4px rgba(196,96,10,0.12); }
+  .ack-btn { padding: 0.82rem 1.1rem; border: none; border-radius: 11px; background: linear-gradient(180deg, #d06f18 0%, #be5e0b 100%); color: #fff; font-family: Arial, sans-serif; font-size: 0.76rem; letter-spacing: 0.13em; text-transform: uppercase; cursor: pointer; width: 100%; box-shadow: 0 10px 24px rgba(164,82,8,0.32); }
+  .ack-btn:hover { filter: brightness(1.04); }
+  .ack-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+  .ack-result { display: none; text-align: left; border: 1px solid rgba(196,96,10,0.2); border-radius: 11px; background: rgba(196,96,10,0.05); padding: 0.8rem 0.9rem; margin-bottom: 0.95rem; }
+  .ack-result.open { display: block; }
+  .ack-result p { margin: 0.2rem 0; font-family: Arial, sans-serif; font-size: 0.9rem; color: var(--text-mid); }
+  .ack-result .ack-name-primary { color: var(--text-dark); font-size: 1rem; }
+  .ack-result .ack-inline-label { color: var(--text-light); text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.65rem; display: block; margin-top: 0.55rem; }
+  .ack-error { display: none; margin-bottom: 0.95rem; padding: 0.8rem 0.9rem; border-radius: 11px; text-align: left; border: 1px solid rgba(168,50,32,0.34); background: rgba(168,50,32,0.1); color: #7a1f0f; font-family: Arial, sans-serif; font-size: 0.87rem; line-height: 1.45; }
+  .ack-error.open { display: block; }
+  .ack-actions { display: flex; gap: 0.6rem; }
+  .ack-secondary-btn { padding: 0.82rem 1.1rem; border: 1px solid rgba(196,96,10,0.32); border-radius: 11px; background: #fff; color: var(--text-mid); font-family: Arial, sans-serif; font-size: 0.72rem; letter-spacing: 0.11em; text-transform: uppercase; cursor: pointer; flex: 1; }
+  #siteContent { opacity: 1; transition: opacity 0.25s ease; }
+  body.pre-ack { overflow: hidden; }
+  body.pre-ack #siteContent > *:not(#ackModal) { opacity: 0; visibility: hidden; pointer-events: none; user-select: none; }
+
+  /* FUN MODE BUTTONS */
+  .fun-toggle-btn { display: block; width: 100%; border: 0; background: transparent; color: rgba(255,243,230,0.8); font-family: Arial, sans-serif; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: none; font-style: italic; cursor: pointer; transition: color 0.2s, background 0.2s; }
+  .nav-links .fun-toggle-btn { padding: 0 0.9rem; height: 54px; line-height: 54px; }
+  .mobile-menu .fun-toggle-btn { padding: 0.65rem 0; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.12); font-size: 0.85rem; letter-spacing: 0.1em; color: #fff3e6; }
+  .fun-toggle-btn:hover { color: #fff; background: rgba(255,255,255,0.1); }
+  .fun-toggle-btn.active { color: #fff; background: rgba(255,255,255,0.15); }
+  .fun-toggle-btn.active { font-style: normal; animation: funRainbowFlicker 0.85s steps(2, end) infinite; }
+  @keyframes funRainbowFlicker {
+    0% { color: #ff4d4d; text-shadow: 0 0 5px rgba(255,77,77,0.8); opacity: 1; }
+    20% { color: #ffa64d; text-shadow: 0 0 5px rgba(255,166,77,0.8); opacity: 0.65; }
+    40% { color: #ffee4d; text-shadow: 0 0 5px rgba(255,238,77,0.8); opacity: 1; }
+    60% { color: #66ff66; text-shadow: 0 0 5px rgba(102,255,102,0.8); opacity: 0.7; }
+    80% { color: #4db8ff; text-shadow: 0 0 5px rgba(77,184,255,0.8); opacity: 1; }
+    100% { color: #cc66ff; text-shadow: 0 0 5px rgba(204,102,255,0.8); opacity: 0.75; }
+  }
+  .hamburger { display: none; background: none; border: none; cursor: pointer; padding: 8px; }
+  .hamburger span { display: block; width: 22px; height: 2px; background: #fff3e6; margin: 5px 0; }
+  .mobile-menu { display: none; background: var(--rust); padding: 1rem 1.5rem; }
+  .mobile-menu a { display: block; color: #fff3e6; text-decoration: none; padding: 0.65rem 0; font-family: Arial, sans-serif; font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.12); }
+
+  /* HERO */
+  .hero { min-height: 100vh; background: linear-gradient(160deg, #7a2010 0%, #c4600a 45%, #b8860b 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 6rem 2rem 4rem; position: relative; overflow: hidden; }
+  .hero-img { width: min(300px, 72vw); height: auto; }
+  .hero-eyebrow { font-family: Arial, sans-serif; font-size: 0.75rem; letter-spacing: 0.25em; text-transform: uppercase; color: rgba(255,243,230,0.85); margin-bottom: 1.5rem; }
+  .hero-date { font-family: Arial, sans-serif; font-size: 1rem; letter-spacing: 0.2em; color: rgba(255,243,230,0.9); margin: 1.5rem 0; text-transform: uppercase; }
+  .hero-venue { font-size: 1.1rem; color: rgba(255,243,230,0.75); font-style: italic; margin-bottom: 2.5rem; }
+  .countdown { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin-bottom: 3rem; }
+  .countdown-item { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 1rem 1.5rem; min-width: 80px; text-align: center; }
+  .countdown-num { display: block; font-size: 2.2rem; color: #fff; font-weight: 300; line-height: 1; }
+  .countdown-label { font-family: Arial, sans-serif; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(255,243,230,0.65); margin-top: 0.3rem; display: block; }
+  .hero-scroll { font-family: Arial, sans-serif; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,243,230,0.45); display: flex; align-items: center; gap: 0.5rem; }
+  .scroll-line { width: 40px; height: 1px; background: rgba(255,243,230,0.3); }
+
+  /* VENUE */
+  .venue-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2.5rem; }
+  .venue-card-title { font-family: Arial, sans-serif; font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--orange-glow); margin-bottom: 0.75rem; display: block; }
+  .venue-card p { font-size: 0.95rem; color: rgba(245,235,220,0.8); line-height: 1.7; }
+  .venue-map-btn { display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 1rem; padding: 0.5rem 1.25rem; background: rgba(232,160,96,0.2); border: 1px solid rgba(232,160,96,0.4); border-radius: 8px; color: var(--orange-glow); font-family: Arial, sans-serif; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; text-decoration: none; transition: background 0.2s; }
+  .venue-map-btn:hover { background: rgba(232,160,96,0.3); }
+
+  /* KEY DETAILS */
+  #key-details { background: var(--warm-white); }
+  .key-details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; align-items: center; margin-top: 2.5rem; }
+  .key-details-photo { aspect-ratio: 4/5; border-radius: 16px; overflow: hidden; border: 1px solid rgba(196,96,10,0.18); box-shadow: 0 12px 28px rgba(92,61,40,0.12); }
+  .key-details-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  /* FAQ */
+  #faq { background: var(--orange-light); }
+  .faq-list { margin-top: 2.5rem; display: flex; flex-direction: column; gap: 0; }
+
+  /* RSVP */
+  #rsvp .section-body { color: rgba(255,243,230,0.8); }
+
+  /* FUN MODE: flying heads */
+  .flying-head {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 72px;
+    height: 72px;
+    object-fit: cover;
+    border-radius: 50%;
+    pointer-events: none;
+    user-select: none;
+    z-index: 10001;
+    will-change: transform;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 700px) {
+    .hamburger { display: block; }
+    .venue-grid { grid-template-columns: 1fr; }
+    .key-details-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div id="siteContent">
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-brand" href="#top">Emma & Alex</a>
+    <ul class="nav-links">
+      <li><a href="#venue">Venue</a></li>
+      <li><a href="#faq">FAQ</a></li>
+      <li><a href="#rsvp">RSVP</a></li>
+      <li><button type="button" class="fun-toggle-btn" id="funModeToggleDesktop" onclick="toggleFunMode()">Fun Mode?</button></li>
+    </ul>
+    <button class="hamburger" onclick="toggleMenu()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#venue" onclick="toggleMenu()">Venue</a>
+    <a href="#faq" onclick="toggleMenu()">FAQ</a>
+    <a href="#rsvp" onclick="toggleMenu()">RSVP</a>
+    <button type="button" class="fun-toggle-btn" id="funModeToggleMobile" onclick="toggleFunMode()">Fun Mode?</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="top">
+  <p class="hero-eyebrow">You are warmly invited to celebrate the marriage of</p>
+  <div style="text-align:center; margin-bottom: 1.5rem; position: relative; z-index: 1;">
+    <img class="hero-img" src="images/emi_alex_autumn_transparent.png" alt="Emma and Alex autumn illustration by Alice Krieits">
+  </div>
+  <p class="hero-date">6th November 2027</p>
+  <p class="hero-venue">Gaynes Park, Epping</p>
+  <div class="countdown">
+    <div class="countdown-item"><span class="countdown-num" id="cd-days">&ndash;</span><span class="countdown-label">Days</span></div>
+    <div class="countdown-item"><span class="countdown-num" id="cd-hours">&ndash;</span><span class="countdown-label">Hours</span></div>
+    <div class="countdown-item"><span class="countdown-num" id="cd-mins">&ndash;</span><span class="countdown-label">Minutes</span></div>
+    <div class="countdown-item"><span class="countdown-num" id="cd-secs">&ndash;</span><span class="countdown-label">Seconds</span></div>
+  </div>
+  <div class="hero-scroll"><div class="scroll-line"></div>Scroll to explore<div class="scroll-line"></div></div>
+</section>
+
+<!-- KEY DETAILS -->
+<section id="key-details">
+  <div class="section-inner">
+    <span class="section-label">The day</span>
+    <h2 class="section-title">Key Details</h2>
+    <div class="divider"></div>
+    <div class="key-details-grid">
+      <div>
+        <p class="section-body">
+          <strong>Start:</strong> 2:00 pm &mdash; guests arrive for welcome drinks<br>
+          <strong>Finish:</strong> 11:30 pm &mdash; carriages home<br><br>
+          We'd love you to join us for a day of celebration at Gaynes Park. Please aim to arrive by 2:00 pm so we can seat everyone comfortably before the ceremony begins at 2:30 pm.
+        </p>
+      </div>
+      <div class="key-details-photo">
+        <img id="keyDetailsPhoto" src="images/photos/main.jpg" alt="Emma and Alex">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VENUE -->
+<section id="venue">
+  <div class="section-inner">
+    <span class="section-label">Getting here</span>
+    <h2 class="section-title">Venue & Travel</h2>
+    <div class="divider" style="background:linear-gradient(90deg,var(--orange-glow),var(--orange))"></div>
+    <p class="section-body">Gaynes Park is a stunning country estate set in the heart of the Essex countryside.</p>
+    <div class="venue-grid">
+      <div class="venue-card">
+        <span class="venue-card-title">Address</span>
+        <p>Gaynes Park<br>Theydon Garnon<br>Epping, Essex<br>CM16 7ES</p>
+        <a class="venue-map-btn" href="https://maps.google.com/?q=Gaynes+Park+Epping+Essex+CM16+7ES" target="_blank">Open in Google Maps</a>
+      </div>
+      <div class="venue-card">
+        <span class="venue-card-title">By Train</span>
+        <p>Epping station (Central Line) is the nearest stop, approximately 10 minutes by taxi from the venue.</p>
+      </div>
+      <div class="venue-card">
+        <span class="venue-card-title">By Car</span>
+        <p>Easily reached via the M11 or M25. Free parking is available on site.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="section-inner">
+    <span class="section-label">Good to know</span>
+    <h2 class="section-title">FAQ</h2>
+    <div class="divider"></div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">Can I bring a plus one?<svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+        <div class="faq-a">Your invitation will clearly state whether you have a plus one included. If you're unsure, please get in touch with us directly and we'll be happy to clarify.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">Are children welcome?<svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+        <div class="faq-a">We love your little ones! Named children on your invite are very welcome. If you're unsure whether your children are included, please check with us.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">What time should I arrive?<svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+        <div class="faq-a">Please aim to arrive by 2:00 pm so we can seat everyone comfortably before the ceremony begins at 2:30 pm.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">Is there parking at Gaynes Park?<svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+        <div class="faq-a">Yes &mdash; there is free parking available on site. If you're planning to drink, please arrange alternative transport for the return journey.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">Can I take photos during the ceremony?<svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+        <div class="faq-a">We're having an unplugged ceremony &mdash; we kindly ask that you put phones and cameras away so you can be fully present. Our photographer will capture everything beautifully.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">What if I have dietary requirements?<svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
+        <div class="faq-a">Please let us know about any dietary requirements or allergies in your RSVP &mdash; there's a notes field for exactly this. We want everyone to eat well and enjoy the day!</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RSVP -->
+<section id="rsvp">
+  <div class="section-inner">
+    <span class="section-label">Will you join us?</span>
+    <h2 class="section-title">RSVP</h2>
+    <div class="divider" style="background:linear-gradient(90deg,var(--orange-glow),var(--orange))"></div>
+    <p class="section-body">Please let us know by <strong style="color:var(--orange-glow)">1st September 2027</strong> so we can plan the perfect day for everyone.</p>
+    <div class="rsvp-locked" id="rsvpLockedNotice">
+      <p style="color:#fff8f0;">You have already RSVPd.</p>
+      <button type="button" class="rsvp-resubmit-btn" onclick="enableRsvpResubmission()">I would like to resubmit my RSVP</button>
+    </div>
+    <div class="rsvp-form" id="rsvpForm">
+      <div class="rsvp-row">
+        <label class="rsvp-label">Your full name</label>
+        <input class="rsvp-input" type="text" placeholder="e.g. Sarah & James Thompson" id="rsvp-name">
+      </div>
+      <div class="rsvp-row">
+        <label class="rsvp-label">Email address</label>
+        <input class="rsvp-input" type="email" placeholder="your@email.com" id="rsvp-email">
+      </div>
+      <div class="rsvp-row">
+        <label class="rsvp-label">Attendance per person (required for everyone in your party)</label>
+        <div id="individualRsvpList" class="rsvp-party-list"></div>
+        <div id="individualRsvpError" class="rsvp-inline-error">Please choose attending or not attending for every person in your party.</div>
+      </div>
+      <div class="rsvp-row">
+        <label class="rsvp-label">Dietary requirements or anything else we should know</label>
+        <textarea class="rsvp-textarea" rows="3" placeholder="Allergies, dietary needs, or a message for us..." id="rsvp-notes"></textarea>
+      </div>
+      <button class="rsvp-submit" id="rsvpSubmitBtn" onclick="submitRsvp()">Send my RSVP</button>
+    </div>
+    <div class="rsvp-success" id="rsvpSuccess">
+      <p style="font-size:2rem; margin-bottom:0.75rem">&#127810;</p>
+      <p>Thank you! We've received your RSVP and can't wait to celebrate with you.</p>
+    </div>
+  </div>
+</section>
+
+<div class="ack-modal" id="ackModal" aria-hidden="true" role="dialog" aria-labelledby="ackTitle">
+  <div class="ack-card">
+    <h2 class="ack-title" id="ackTitle">Quick check-in</h2>
+    <p class="ack-text">Please type your name and click <strong>Check Name</strong>. We will only show the single best match, then ask you to confirm before you continue.</p>
+    <div class="ack-input-wrap">
+      <label class="ack-label" for="ackName">Your name</label>
+      <input class="ack-input" id="ackName" type="text" placeholder="e.g. Sarah Thompson" autocomplete="name">
+    </div>
+    <div id="ackError" class="ack-error" aria-live="polite"></div>
+    <div id="ackResult" class="ack-result" aria-live="polite"></div>
+    <div class="ack-actions">
+      <button class="ack-secondary-btn" id="checkNameBtn" type="button" onclick="checkNameMatch()">Check Name</button>
+      <button class="ack-btn" id="ackBtn" type="button" onclick="confirmAcknowledgement()" disabled>Confirm & Enter</button>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  Made with love for <span>Emma & Alex</span> &nbsp;&middot;&nbsp; 6th November 2027 &nbsp;&middot;&nbsp; Gaynes Park, Epping
+</footer>
+</div>
+
+<script>
+  var pendingGuestMatch = null;
+  window.PAGE_CONFIG = {
+    source: 'wedding-site-rsvp',
+    storageKeyFallback: 'anonymous'
+  };
+</script>
+<script src="js/shared.js"></script>
+<script>
+  /* Fun mode */
+  var HEAD_POP_ENABLED = false;
+  var HEAD_IMAGE_CHOICES = ['images/alex_head.png', 'images/emma_head.png'];
+  var activeFlyingHeads = [];
+  var flyingHeadAnimationId = null;
+  var lastHeadTimestamp = 0;
+
+  function toggleMenu() {
+    var m = document.getElementById('mobileMenu');
+    m.style.display = m.style.display === 'block' ? 'none' : 'block';
+  }
+
+  function updateFunModeButtons() {
+    var labels = HEAD_POP_ENABLED ? 'Fun Mode!' : 'Fun Mode?';
+    ['funModeToggleDesktop', 'funModeToggleMobile'].forEach(function(id) {
+      var button = document.getElementById(id);
+      if (!button) { return; }
+      button.textContent = labels;
+      button.classList.toggle('active', HEAD_POP_ENABLED);
+      button.setAttribute('aria-pressed', HEAD_POP_ENABLED ? 'true' : 'false');
+    });
+  }
+
+  function toggleFunMode() {
+    setFlyingHeadsEnabled(!HEAD_POP_ENABLED);
+    updateFunModeButtons();
+    if (window.matchMedia('(max-width: 700px)').matches) {
+      var menu = document.getElementById('mobileMenu');
+      if (menu && menu.style.display === 'block') {
+        menu.style.display = 'none';
+      }
+    }
+  }
+
+  /* Guest lookup */
+  function lookupGuestByName(name) {
+    return new Promise(function(resolve, reject) {
+      if (!SESSION_TOKEN) {
+        reject(new Error('Session not established. Please refresh the page.'));
+        return;
+      }
+      var callbackName = '__eaLookup_' + Date.now() + '_' + Math.floor(Math.random() * 1000000);
+      var script = document.createElement('script');
+      var timeoutId = setTimeout(function() {
+        cleanup();
+        reject(new Error('Name lookup timed out. Please try again.'));
+      }, 12000);
+
+      function cleanup() {
+        clearTimeout(timeoutId);
+        if (script.parentNode) { script.parentNode.removeChild(script); }
+        try { delete window[callbackName]; } catch (err) { window[callbackName] = undefined; }
+      }
+
+      window[callbackName] = function(data) {
+        cleanup();
+        resolve(data);
+      };
+
+      script.onerror = function() {
+        cleanup();
+        reject(new Error('Could not reach guest lookup service. Please check your connection and try again.'));
+      };
+
+      script.src = GOOGLE_SHEETS_WEBHOOK
+        + '?action=lookup'
+        + '&name=' + encodeURIComponent(name)
+        + '&token=' + encodeURIComponent(SESSION_TOKEN)
+        + '&callback=' + encodeURIComponent(callbackName)
+        + '&t=' + Date.now();
+      document.head.appendChild(script);
+    });
+  }
+
+  /* RSVP setup */
+  function initializeRsvpSection() {
+    renderIndividualRsvpChoices();
+    var party = getSavedParty();
+    var alreadyRsvped = localStorage.getItem(getRsvpStorageKey()) === '1' || (party && party.hasRsvped);
+    setRsvpLockedState(Boolean(alreadyRsvped));
+  }
+
+  /* Acknowledgement — no evening redirect */
+  function submitAcknowledgement() {
+    if (!pendingGuestMatch) {
+      showAckError('Please click "Check Name" and confirm the suggested match first.');
+      return;
+    }
+
+    var btn = document.getElementById('ackBtn');
+    var checkBtn = document.getElementById('checkNameBtn');
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+    checkBtn.disabled = true;
+
+    var payload = {
+      eventType: 'acknowledgement',
+      typedName: document.getElementById('ackName').value.trim(),
+      matchedName: pendingGuestMatch.matchedName,
+      matchedBy: pendingGuestMatch.matchedBy,
+      matchType: pendingGuestMatch.matchType,
+      partyId: pendingGuestMatch.partyId,
+      dayEvening: pendingGuestMatch.dayEvening,
+      hasRsvped: pendingGuestMatch.hasRsvped,
+      guestName: pendingGuestMatch.guestName,
+      children: pendingGuestMatch.children,
+      submittedAtIso: new Date().toISOString(),
+      page: window.location.href,
+      userAgent: navigator.userAgent,
+      tz: Intl.DateTimeFormat().resolvedOptions().timeZone
+    };
+
+    postToGoogleSheets(payload).then(function() {
+      localStorage.setItem('ea_ack_v2', '1');
+      localStorage.setItem('ea_ack_name', pendingGuestMatch.matchedName);
+      localStorage.setItem('ea_ack_party', JSON.stringify(pendingGuestMatch));
+      unlockPage();
+    }).catch(function() {
+      showAckError('Connection issue. Please try again.');
+      btn.disabled = false;
+      btn.textContent = 'Confirm & Enter';
+      checkBtn.disabled = false;
+    });
+  }
+
+  function checkNameMatch() {
+    clearAckError();
+    var inputEl = document.getElementById('ackName');
+    var query = inputEl.value.trim();
+    if (!query) {
+      showAckError('Please type your name first.');
+      inputEl.focus();
+      return;
+    }
+
+    var checkBtn = document.getElementById('checkNameBtn');
+    checkBtn.disabled = true;
+    checkBtn.textContent = 'Checking...';
+
+    function processLookupResult(data) {
+      checkBtn.disabled = false;
+      checkBtn.textContent = 'Check Name';
+      if (!data) {
+        showAckError('No response received. Please try again.');
+        return;
+      }
+      if (data.error === 'Unauthorised') {
+        SESSION_TOKEN = null;
+        ensureSession().then(function() {
+          checkBtn.disabled = true;
+          checkBtn.textContent = 'Checking...';
+          lookupGuestByName(query).then(processLookupResult).catch(function(retryErr) {
+            checkBtn.disabled = false;
+            checkBtn.textContent = 'Check Name';
+            showAckError(retryErr.message || 'Please refresh and try again.');
+          });
+        }).catch(function() {
+          showSessionError('Session expired. Please refresh the page.');
+        });
+        return;
+      }
+      if (!data.ok || !data.match) {
+        showAckError(data && data.error ? data.error : "We couldn't find your name. Please check the spelling or contact Emma & Alex.");
+        return;
+      }
+      var m = data.match;
+      pendingGuestMatch = {
+        partyId: m.partyId,
+        dayEvening: m.dayEvening,
+        hasRsvped: m.hasRsvped,
+        matchedBy: m.matchedBy,
+        matchType: m.matchType,
+        matchedName: m.matchedName,
+        guestName: m.guestName,
+        children: m.children
+      };
+      renderMatchResult(pendingGuestMatch);
+    }
+
+    ensureSession().then(function() {
+      lookupGuestByName(query).then(processLookupResult).catch(function(err) {
+        checkBtn.disabled = false;
+        checkBtn.textContent = 'Check Name';
+        showAckError(err.message || 'Could not check your name right now. Please try again.');
+      });
+    }).catch(function() {
+      checkBtn.disabled = false;
+      checkBtn.textContent = 'Check Name';
+      showSessionError();
+    });
+  }
+
+  function renderMatchResult(match) {
+    clearAckError();
+    var resultEl = document.getElementById('ackResult');
+    var children = (match.children || []).join(', ');
+    var html = [
+      '<span class="ack-inline-label">Most likely match (' + match.matchType + ')</span>',
+      '<p class="ack-name-primary"><strong>' + escapeHtml(match.matchedName) + '</strong></p>'
+    ];
+    if (match.guestName) {
+      html.push('<span class="ack-inline-label">and Guest(s):</span>');
+      html.push('<p>' + escapeHtml(match.guestName) + '</p>');
+    }
+    if (children) {
+      html.push('<span class="ack-inline-label">Children:</span>');
+      html.push('<p>' + escapeHtml(children) + '</p>');
+    }
+    html.push('<p style="margin-top:0.65rem;">Is this you? If yes, click <strong>Confirm & Enter</strong>.</p>');
+    if (match.hasRsvped) {
+      html.push('<p style="margin-top:0.45rem; color:#7a1f0f;"><strong>We already have an RSVP on file for this party.</strong></p>');
+    }
+    resultEl.innerHTML = html.join('');
+    resultEl.classList.add('open');
+    document.getElementById('ackBtn').disabled = false;
+  }
+
+  function unlockPage() {
+    document.body.classList.remove('pre-ack');
+    document.getElementById('ackModal').classList.remove('open');
+    initializeRsvpSection();
+
+    // Auto-fill RSVP name from party data
+    var party = getSavedParty();
+    if (party && party.matchedName) {
+      var nameInput = document.getElementById('rsvp-name');
+      if (nameInput && !nameInput.value.trim()) {
+        nameInput.value = party.matchedName;
+      }
+    }
+  }
+
+  function showAckError(message) {
+    var errorEl = document.getElementById('ackError');
+    if (!errorEl) { return; }
+    errorEl.textContent = message;
+    errorEl.classList.add('open');
+  }
+
+  function clearAckError() {
+    var errorEl = document.getElementById('ackError');
+    if (!errorEl) { return; }
+    errorEl.textContent = '';
+    errorEl.classList.remove('open');
+  }
+
+  function confirmAcknowledgement() {
+    submitAcknowledgement();
+  }
+
+  /* Key details photo from manifest */
+  function loadKeyDetailsPhoto() {
+    fetch(PHOTO_MANIFEST_PATH, { cache: 'no-store' })
+      .then(function(r) { return r.ok ? r.json() : Promise.reject(); })
+      .then(function(data) {
+        var normalized = normalizePhotoManifest(data);
+        var img = document.getElementById('keyDetailsPhoto');
+        if (img) { img.src = normalized.mainPhoto.url; }
+      })
+      .catch(function() { /* use default src already in HTML */ });
+  }
+
+  /* Flying heads */
+  function spawnFlyingHead(originX, originY) {
+    if (!HEAD_POP_ENABLED) { return; }
+    var imageSrc = HEAD_IMAGE_CHOICES[Math.floor(Math.random() * HEAD_IMAGE_CHOICES.length)];
+    var el = document.createElement('img');
+    el.className = 'flying-head';
+    el.src = imageSrc;
+    el.alt = '';
+    el.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(el);
+
+    var size = 56 + Math.random() * 36;
+    var launchSpeedY = -(560 + Math.random() * 220);
+    var launchSpeedX = (Math.random() > 0.5 ? 1 : -1) * (55 + Math.random() * 110);
+    var spinVelocity = (Math.random() > 0.5 ? 1 : -1) * (280 + Math.random() * 500);
+
+    activeFlyingHeads.push({
+      node: el,
+      x: originX,
+      y: originY,
+      vx: launchSpeedX,
+      vy: launchSpeedY,
+      angle: Math.random() * 360,
+      spinVelocity: spinVelocity,
+      size: size
+    });
+    ensureFlyingHeadAnimation();
+  }
+
+  function ensureFlyingHeadAnimation() {
+    if (flyingHeadAnimationId) { return; }
+    var gravity = 1750;
+    var last = performance.now();
+
+    function tick(now) {
+      var dt = Math.min((now - last) / 1000, 0.05);
+      last = now;
+      activeFlyingHeads = activeFlyingHeads.filter(function(head) {
+        head.vy += gravity * dt;
+        head.x += head.vx * dt;
+        head.y += head.vy * dt;
+        head.angle += head.spinVelocity * dt;
+        head.node.style.width = head.size + 'px';
+        head.node.style.height = head.size + 'px';
+        head.node.style.transform = 'translate3d(' + (head.x - (head.size / 2)) + 'px,' + (head.y - (head.size / 2)) + 'px,0) rotate(' + head.angle + 'deg)';
+
+        var outOfBounds = head.y - head.size > window.innerHeight || head.x + head.size < -120 || head.x > window.innerWidth + 120;
+        if (outOfBounds) {
+          head.node.remove();
+          return false;
+        }
+        return true;
+      });
+
+      if (activeFlyingHeads.length) {
+        flyingHeadAnimationId = requestAnimationFrame(tick);
+      } else {
+        flyingHeadAnimationId = null;
+      }
+    }
+
+    flyingHeadAnimationId = requestAnimationFrame(tick);
+  }
+
+  function setupFlyingHeads() {
+    document.addEventListener('pointerdown', function(event) {
+      if (!HEAD_POP_ENABLED) { return; }
+      var now = performance.now();
+      if (now - lastHeadTimestamp < 75) { return; }
+      lastHeadTimestamp = now;
+      spawnFlyingHead(event.clientX, event.clientY);
+    });
+  }
+
+  function setFlyingHeadsEnabled(isEnabled) {
+    HEAD_POP_ENABLED = Boolean(isEnabled);
+    updateFunModeButtons();
+    return HEAD_POP_ENABLED;
+  }
+
+  /* Init */
+  document.addEventListener('DOMContentLoaded', function() {
+    ensureSession().catch(showSessionError);
+
+    var savedParty = getSavedParty();
+    var alreadyAcknowledged = localStorage.getItem('ea_ack_v2') === '1' && Boolean(savedParty && savedParty.matchedName);
+    if (!alreadyAcknowledged) {
+      document.body.classList.add('pre-ack');
+      document.getElementById('ackModal').classList.add('open');
+      var ackNameInput = document.getElementById('ackName');
+      ackNameInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          checkNameMatch();
+        }
+      });
+      ackNameInput.addEventListener('input', function() {
+        pendingGuestMatch = null;
+        clearAckError();
+        document.getElementById('ackBtn').disabled = true;
+        document.getElementById('ackResult').classList.remove('open');
+        document.getElementById('ackResult').innerHTML = '';
+      });
+      ackNameInput.focus();
+    } else {
+      unlockPage();
+    }
+
+    document.getElementById('rsvp-name').addEventListener('blur', function() {
+      if (!getSavedParty()) {
+        renderIndividualRsvpChoices();
+      }
+    });
+
+    renderHeroCredit();
+    setupScrollReveal();
+    setupActiveNav();
+    setupHeroParallax();
+    setupFlyingHeads();
+    loadKeyDetailsPhoto();
+
+    window.setFlyingHeadsEnabled = setFlyingHeadsEnabled;
+    updateFunModeButtons();
+
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+  });
+</script>
+</body>
+</html>
