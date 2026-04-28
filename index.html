@@ -4,13 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://script.google.com https://script.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self' https://script.google.com https://script.googleusercontent.com; form-action 'none'; base-uri 'self'; object-src 'none';">
-<title>Emma & Alex — 6th November 2027</title>
+<title>Emma & Alex — RSVP</title>
 <link rel="stylesheet" href="css/shared.css">
 <style>
-  body::before { content: ''; position: fixed; inset: 0; background: url('images/emi_alex_autumn_transparent.png') center 55% / min(35vw, 280px) no-repeat; opacity: 0; pointer-events: none; z-index: 0; transition: opacity 0.35s ease; filter: grayscale(1); }
-  body.show-watermark::before ~ * { position: relative; }
-  body.show-watermark::before { opacity: 0.1; }
-
   /* ACK MODAL */
   .ack-modal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background:
       radial-gradient(circle at 18% 18%, rgba(255, 200, 140, 0.16), transparent 42%),
@@ -47,7 +43,6 @@
   .fun-toggle-btn:hover { color: #fff; background: rgba(255,255,255,0.1); }
   .fun-toggle-btn.active { color: #fff; background: rgba(255,255,255,0.15); }
   .fun-toggle-btn.active { font-style: normal; animation: funRainbowFlicker 0.85s steps(2, end) infinite; }
-
   @keyframes funRainbowFlicker {
     0% { color: #ff4d4d; text-shadow: 0 0 5px rgba(255,77,77,0.8); opacity: 1; }
     20% { color: #ffa64d; text-shadow: 0 0 5px rgba(255,166,77,0.8); opacity: 0.65; }
@@ -63,7 +58,6 @@
 
   /* HERO */
   .hero { min-height: 100vh; background: linear-gradient(160deg, #7a2010 0%, #c4600a 45%, #b8860b 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 6rem 2rem 4rem; position: relative; overflow: hidden; }
-  .leaf-bg { position: absolute; inset: 0; pointer-events: none; opacity: 0.12; display: flex; flex-wrap: wrap; gap: 2.5rem; padding: 3rem; align-content: space-around; justify-content: space-around; font-size: 2.8rem; }
   .hero-img { width: min(300px, 72vw); height: auto; }
   .hero-eyebrow { font-family: Arial, sans-serif; font-size: 0.75rem; letter-spacing: 0.25em; text-transform: uppercase; color: rgba(255,243,230,0.85); margin-bottom: 1.5rem; }
   .hero-date { font-family: Arial, sans-serif; font-size: 1rem; letter-spacing: 0.2em; color: rgba(255,243,230,0.9); margin: 1.5rem 0; text-transform: uppercase; }
@@ -75,40 +69,24 @@
   .hero-scroll { font-family: Arial, sans-serif; font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,243,230,0.45); display: flex; align-items: center; gap: 0.5rem; }
   .scroll-line { width: 40px; height: 1px; background: rgba(255,243,230,0.3); }
 
-  /* SCHEDULE */
-  #schedule { background: var(--cream); }
-  .timeline { display: flex; flex-direction: column; gap: 0; margin-top: 2.5rem; }
-  .timeline-item { display: grid; grid-template-columns: 80px 12px 1fr; gap: 0 1.5rem; align-items: start; padding-bottom: 2rem; }
-  .timeline-time { font-family: Arial, sans-serif; font-size: 0.8rem; color: var(--orange); letter-spacing: 0.05em; font-weight: bold; padding-top: 2px; text-align: right; }
-  .timeline-line-wrap { display: flex; flex-direction: column; align-items: center; }
-  .timeline-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--orange); flex-shrink: 0; margin-top: 4px; }
-  .timeline-connector { width: 1px; flex: 1; background: linear-gradient(to bottom, var(--orange), transparent); min-height: 2rem; margin-top: 4px; }
-  .timeline-event { font-size: 1.05rem; font-weight: 500; color: var(--text-dark); }
-  .timeline-desc { font-size: 0.9rem; color: var(--text-light); margin-top: 0.2rem; }
-
-  /* VENUE — index-specific extras */
+  /* VENUE */
   .venue-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 2.5rem; }
   .venue-card-title { font-family: Arial, sans-serif; font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--orange-glow); margin-bottom: 0.75rem; display: block; }
   .venue-card p { font-size: 0.95rem; color: rgba(245,235,220,0.8); line-height: 1.7; }
   .venue-map-btn { display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 1rem; padding: 0.5rem 1.25rem; background: rgba(232,160,96,0.2); border: 1px solid rgba(232,160,96,0.4); border-radius: 8px; color: var(--orange-glow); font-family: Arial, sans-serif; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; text-decoration: none; transition: background 0.2s; }
   .venue-map-btn:hover { background: rgba(232,160,96,0.3); }
 
-  /* REGISTRY */
-  #registry { background: var(--cream); }
-  .registry-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-top: 2.5rem; }
-  .registry-card { background: white; border: 1px solid rgba(196,96,10,0.12); border-radius: 14px; padding: 1.5rem; text-align: center; }
-  .registry-icon { font-size: 2rem; margin-bottom: 0.75rem; }
-  .registry-name { font-size: 1.05rem; color: var(--text-dark); margin-bottom: 0.4rem; }
-  .registry-desc { font-size: 0.85rem; color: var(--text-light); margin-bottom: 1rem; }
-  .registry-link { display: inline-block; padding: 0.5rem 1.25rem; background: var(--orange); color: white; border-radius: 8px; font-family: Arial, sans-serif; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; }
-  .registry-link:hover { background: var(--orange-dark); }
-  .registry-note { text-align: center; font-size: 0.9rem; color: var(--text-light); font-style: italic; margin-top: 1.5rem; }
+  /* KEY DETAILS */
+  #key-details { background: var(--warm-white); }
+  .key-details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; align-items: center; margin-top: 2.5rem; }
+  .key-details-photo { aspect-ratio: 4/5; border-radius: 16px; overflow: hidden; border: 1px solid rgba(196,96,10,0.18); box-shadow: 0 12px 28px rgba(92,61,40,0.12); }
+  .key-details-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-  /* FAQ — index with background */
+  /* FAQ */
   #faq { background: var(--orange-light); }
   .faq-list { margin-top: 2.5rem; display: flex; flex-direction: column; gap: 0; }
 
-  /* RSVP — index extras */
+  /* RSVP */
   #rsvp .section-body { color: rgba(255,243,230,0.8); }
 
   /* FUN MODE: flying heads */
@@ -129,21 +107,8 @@
   /* RESPONSIVE */
   @media (max-width: 700px) {
     .hamburger { display: block; }
-    .story-grid { grid-template-columns: 1fr; }
-    .story-img-placeholder { aspect-ratio: 16/9; }
     .venue-grid { grid-template-columns: 1fr; }
-    .gallery-grid { grid-template-columns: repeat(2, 1fr); }
-    .timeline-item { grid-template-columns: 70px 12px 1fr; gap: 0 1rem; }
-    body.show-watermark::before { opacity: 0.08; background-size: min(50vw, 220px); background-position: center 28%; }
-  }
-
-  /* FLOATING LEAVES */
-  .hero-leaf { position: absolute; top: 0; pointer-events: none; user-select: none; z-index: 1; opacity: 0; will-change: transform, opacity; }
-  @keyframes leafDrift {
-    0% { transform: translateY(-40px) translateX(0) rotate(0deg); opacity: 0; }
-    8% { opacity: 1; }
-    85% { opacity: 1; }
-    100% { transform: translateY(calc(100vh + 40px)) translateX(var(--drift-x)) rotate(var(--spin)); opacity: 0; }
+    .key-details-grid { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -154,11 +119,7 @@
   <div class="nav-inner">
     <a class="nav-brand" href="#top">Emma & Alex</a>
     <ul class="nav-links">
-      <li><a href="#story">Our Story</a></li>
-      <li><a href="#schedule">Schedule</a></li>
       <li><a href="#venue">Venue</a></li>
-      <li><a href="#gallery">Gallery</a></li>
-      <li><a href="#registry">Registry</a></li>
       <li><a href="#faq">FAQ</a></li>
       <li><a href="#rsvp">RSVP</a></li>
       <li><button type="button" class="fun-toggle-btn" id="funModeToggleDesktop" onclick="toggleFunMode()">Fun Mode?</button></li>
@@ -168,11 +129,7 @@
     </button>
   </div>
   <div class="mobile-menu" id="mobileMenu">
-    <a href="#story" onclick="toggleMenu()">Our Story</a>
-    <a href="#schedule" onclick="toggleMenu()">Schedule</a>
     <a href="#venue" onclick="toggleMenu()">Venue</a>
-    <a href="#gallery" onclick="toggleMenu()">Gallery</a>
-    <a href="#registry" onclick="toggleMenu()">Registry</a>
     <a href="#faq" onclick="toggleMenu()">FAQ</a>
     <a href="#rsvp" onclick="toggleMenu()">RSVP</a>
     <button type="button" class="fun-toggle-btn" id="funModeToggleMobile" onclick="toggleFunMode()">Fun Mode?</button>
@@ -181,9 +138,6 @@
 
 <!-- HERO -->
 <section class="hero" id="top">
-  <div class="leaf-bg" aria-hidden="true">
-    🍂🍁🍃🍂🍁🍃🍂🍁🍃🍂🍁🍃🍂🍁🍃🍂🍁🍃🍂🍁🍃🍂🍁🍃🍂🍁🍃🍂
-  </div>
   <p class="hero-eyebrow">You are warmly invited to celebrate the marriage of</p>
   <div style="text-align:center; margin-bottom: 1.5rem; position: relative; z-index: 1;">
     <img class="hero-img" src="images/emi_alex_autumn_transparent.png" alt="Emma and Alex autumn illustration by Alice Krieits">
@@ -191,54 +145,30 @@
   <p class="hero-date">6th November 2027</p>
   <p class="hero-venue">Gaynes Park, Epping</p>
   <div class="countdown">
-    <div class="countdown-item"><span class="countdown-num" id="cd-days">–</span><span class="countdown-label">Days</span></div>
-    <div class="countdown-item"><span class="countdown-num" id="cd-hours">–</span><span class="countdown-label">Hours</span></div>
-    <div class="countdown-item"><span class="countdown-num" id="cd-mins">–</span><span class="countdown-label">Minutes</span></div>
-    <div class="countdown-item"><span class="countdown-num" id="cd-secs">–</span><span class="countdown-label">Seconds</span></div>
+    <div class="countdown-item"><span class="countdown-num" id="cd-days">&ndash;</span><span class="countdown-label">Days</span></div>
+    <div class="countdown-item"><span class="countdown-num" id="cd-hours">&ndash;</span><span class="countdown-label">Hours</span></div>
+    <div class="countdown-item"><span class="countdown-num" id="cd-mins">&ndash;</span><span class="countdown-label">Minutes</span></div>
+    <div class="countdown-item"><span class="countdown-num" id="cd-secs">&ndash;</span><span class="countdown-label">Seconds</span></div>
   </div>
   <div class="hero-scroll"><div class="scroll-line"></div>Scroll to explore<div class="scroll-line"></div></div>
 </section>
 
-<!-- OUR STORY (rendered by shared.js) -->
-<div id="storyContainer"></div>
-
-<!-- SCHEDULE -->
-<section id="schedule">
+<!-- KEY DETAILS -->
+<section id="key-details">
   <div class="section-inner">
     <span class="section-label">The day</span>
-    <h2 class="section-title">Schedule</h2>
+    <h2 class="section-title">Key Details</h2>
     <div class="divider"></div>
-    <p class="section-body">Here's how the day will unfold — more details to follow closer to the date.</p>
-    <div class="timeline">
-      <div class="timeline-item">
-        <div class="timeline-time">2:00 pm</div>
-        <div class="timeline-line-wrap"><div class="timeline-dot"></div><div class="timeline-connector"></div></div>
-        <div><p class="timeline-event">Guests arrive & welcome drinks</p><p class="timeline-desc">Settle in and enjoy a glass of something lovely</p></div>
+    <div class="key-details-grid">
+      <div>
+        <p class="section-body">
+          <strong>Start:</strong> 2:00 pm &mdash; guests arrive for welcome drinks<br>
+          <strong>Finish:</strong> 11:30 pm &mdash; carriages home<br><br>
+          We'd love you to join us for a day of celebration at Gaynes Park. Please aim to arrive by 2:00 pm so we can seat everyone comfortably before the ceremony begins at 2:30 pm.
+        </p>
       </div>
-      <div class="timeline-item">
-        <div class="timeline-time">2:30 pm</div>
-        <div class="timeline-line-wrap"><div class="timeline-dot"></div><div class="timeline-connector"></div></div>
-        <div><p class="timeline-event">Ceremony</p><p class="timeline-desc">We say our vows in the beautiful grounds of Gaynes Park</p></div>
-      </div>
-      <div class="timeline-item">
-        <div class="timeline-time">3:15 pm</div>
-        <div class="timeline-line-wrap"><div class="timeline-dot"></div><div class="timeline-connector"></div></div>
-        <div><p class="timeline-event">Drinks reception & canapés</p><p class="timeline-desc">Celebrate, mingle, and soak it all in</p></div>
-      </div>
-      <div class="timeline-item">
-        <div class="timeline-time">5:00 pm</div>
-        <div class="timeline-line-wrap"><div class="timeline-dot"></div><div class="timeline-connector"></div></div>
-        <div><p class="timeline-event">Wedding breakfast</p><p class="timeline-desc">A feast with friends, family, and speeches</p></div>
-      </div>
-      <div class="timeline-item">
-        <div class="timeline-time">7:30 pm</div>
-        <div class="timeline-line-wrap"><div class="timeline-dot"></div><div class="timeline-connector"></div></div>
-        <div><p class="timeline-event">Evening guests arrive</p><p class="timeline-desc">More loved ones join the celebration</p></div>
-      </div>
-      <div class="timeline-item">
-        <div class="timeline-time">8:00 pm</div>
-        <div class="timeline-line-wrap"><div class="timeline-dot"></div><div class="timeline-connector" style="background:transparent"></div></div>
-        <div><p class="timeline-event">First dance & evening party</p><p class="timeline-desc">Let's celebrate until midnight!</p></div>
+      <div class="key-details-photo">
+        <img id="keyDetailsPhoto" src="images/photos/main.jpg" alt="Emma and Alex">
       </div>
     </div>
   </div>
@@ -250,60 +180,22 @@
     <span class="section-label">Getting here</span>
     <h2 class="section-title">Venue & Travel</h2>
     <div class="divider" style="background:linear-gradient(90deg,var(--orange-glow),var(--orange))"></div>
-    <p class="section-body">Gaynes Park is a stunning country estate set in the heart of the Essex countryside — well worth the journey.</p>
+    <p class="section-body">Gaynes Park is a stunning country estate set in the heart of the Essex countryside.</p>
     <div class="venue-grid">
       <div class="venue-card">
-        <span class="venue-card-title">📍 Address</span>
+        <span class="venue-card-title">Address</span>
         <p>Gaynes Park<br>Theydon Garnon<br>Epping, Essex<br>CM16 7ES</p>
-        <a class="venue-map-btn" href="https://maps.google.com/?q=Gaynes+Park+Epping+Essex+CM16+7ES" target="_blank">Open in Google Maps ↗</a>
+        <a class="venue-map-btn" href="https://maps.google.com/?q=Gaynes+Park+Epping+Essex+CM16+7ES" target="_blank">Open in Google Maps</a>
       </div>
       <div class="venue-card">
-        <span class="venue-card-title">🚂 By Train</span>
-        <p>Epping station (Central Line / Elizabeth line interchange) is the nearest stop, approximately 10 minutes by taxi or rideshare from the venue.</p>
+        <span class="venue-card-title">By Train</span>
+        <p>Epping station (Central Line) is the nearest stop, approximately 10 minutes by taxi from the venue.</p>
       </div>
       <div class="venue-card">
-        <span class="venue-card-title">🚗 By Car</span>
-        <p>Gaynes Park is easily reached via the M11 or M25. Free parking is available on site. Please plan ahead for your return journey if you're drinking!</p>
-      </div>
-      <div class="venue-card">
-        <span class="venue-card-title">🏨 Accommodation</span>
-        <p>We recommend booking early. There are several hotels and B&Bs in Epping town centre, a short taxi ride away. We'll add a recommended list here soon.</p>
+        <span class="venue-card-title">By Car</span>
+        <p>Easily reached via the M11 or M25. Free parking is available on site.</p>
       </div>
     </div>
-  </div>
-</section>
-
-<!-- GALLERY (rendered by shared.js) -->
-<div id="galleryContainer"></div>
-
-<!-- REGISTRY -->
-<section id="registry">
-  <div class="section-inner">
-    <span class="section-label">Gifts</span>
-    <h2 class="section-title">Registry</h2>
-    <div class="divider"></div>
-    <p class="section-body">Your presence is truly the greatest gift. If you'd like to give something, we'd be so grateful for contributions to the below.</p>
-    <div class="registry-cards">
-      <div class="registry-card">
-        <div class="registry-icon">🏝️</div>
-        <p class="registry-name">Honeymoon Fund</p>
-        <p class="registry-desc">Help us create memories on our dream honeymoon</p>
-        <a href="#" class="registry-link">Contribute ↗</a>
-      </div>
-      <div class="registry-card">
-        <div class="registry-icon">🏠</div>
-        <p class="registry-name">Home Wishlist</p>
-        <p class="registry-desc">Things for our home — add your registry link here</p>
-        <a href="#" class="registry-link">View list ↗</a>
-      </div>
-      <div class="registry-card">
-        <div class="registry-icon">💌</div>
-        <p class="registry-name">Experience Gifts</p>
-        <p class="registry-desc">Restaurants, shows & adventures we'd love to share</p>
-        <a href="#" class="registry-link">View list ↗</a>
-      </div>
-    </div>
-    <p class="registry-note">No gifts expected — your being there means everything to us.</p>
   </div>
 </section>
 
@@ -320,23 +212,23 @@
       </div>
       <div class="faq-item">
         <button class="faq-q" onclick="toggleFaq(this)">Are children welcome?<svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
-        <div class="faq-a">We love your little ones! Named children on your invite are very welcome. If you're unsure whether your children are included, please check with us — we're happy to help you sort arrangements.</div>
+        <div class="faq-a">We love your little ones! Named children on your invite are very welcome. If you're unsure whether your children are included, please check with us.</div>
       </div>
       <div class="faq-item">
         <button class="faq-q" onclick="toggleFaq(this)">What time should I arrive?<svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
-        <div class="faq-a">Please aim to arrive by 2:00 pm so we can seat everyone comfortably before the ceremony begins at 2:30 pm. There'll be a welcome drink waiting for you!</div>
+        <div class="faq-a">Please aim to arrive by 2:00 pm so we can seat everyone comfortably before the ceremony begins at 2:30 pm.</div>
       </div>
       <div class="faq-item">
         <button class="faq-q" onclick="toggleFaq(this)">Is there parking at Gaynes Park?<svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
-        <div class="faq-a">Yes — there is free parking available on site. If you're planning to drink, please arrange alternative transport for the return journey. Taxis and rideshare apps work well from Epping.</div>
+        <div class="faq-a">Yes &mdash; there is free parking available on site. If you're planning to drink, please arrange alternative transport for the return journey.</div>
       </div>
       <div class="faq-item">
         <button class="faq-q" onclick="toggleFaq(this)">Can I take photos during the ceremony?<svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
-        <div class="faq-a">We're having an unplugged ceremony — we kindly ask that you put phones and cameras away so you can be fully present with us. Our photographer will capture everything beautifully, and we'll share photos with everyone afterwards.</div>
+        <div class="faq-a">We're having an unplugged ceremony &mdash; we kindly ask that you put phones and cameras away so you can be fully present. Our photographer will capture everything beautifully.</div>
       </div>
       <div class="faq-item">
         <button class="faq-q" onclick="toggleFaq(this)">What if I have dietary requirements?<svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>
-        <div class="faq-a">Please let us know about any dietary requirements or allergies in your RSVP — there's a notes field for exactly this. We want everyone to eat well and enjoy the day!</div>
+        <div class="faq-a">Please let us know about any dietary requirements or allergies in your RSVP &mdash; there's a notes field for exactly this. We want everyone to eat well and enjoy the day!</div>
       </div>
     </div>
   </div>
@@ -374,7 +266,7 @@
       <button class="rsvp-submit" id="rsvpSubmitBtn" onclick="submitRsvp()">Send my RSVP</button>
     </div>
     <div class="rsvp-success" id="rsvpSuccess">
-      <p style="font-size:2rem; margin-bottom:0.75rem">🍂</p>
+      <p style="font-size:2rem; margin-bottom:0.75rem">&#127810;</p>
       <p>Thank you! We've received your RSVP and can't wait to celebrate with you.</p>
     </div>
   </div>
@@ -399,19 +291,20 @@
 
 <!-- FOOTER -->
 <footer>
-  Made with love for <span>Emma & Alex</span> &nbsp;·&nbsp; 6th November 2027 &nbsp;·&nbsp; Gaynes Park, Epping
+  Made with love for <span>Emma & Alex</span> &nbsp;&middot;&nbsp; 6th November 2027 &nbsp;&middot;&nbsp; Gaynes Park, Epping
 </footer>
 </div>
 
 <script>
   var pendingGuestMatch = null;
   window.PAGE_CONFIG = {
-    source: 'wedding-site',
+    source: 'wedding-site-rsvp',
     storageKeyFallback: 'anonymous'
   };
 </script>
 <script src="js/shared.js"></script>
 <script>
+  /* Fun mode */
   var HEAD_POP_ENABLED = false;
   var HEAD_IMAGE_CHOICES = ['images/alex_head.png', 'images/emma_head.png'];
   var activeFlyingHeads = [];
@@ -445,6 +338,7 @@
     }
   }
 
+  /* Guest lookup */
   function lookupGuestByName(name) {
     return new Promise(function(resolve, reject) {
       if (!SESSION_TOKEN) {
@@ -484,6 +378,7 @@
     });
   }
 
+  /* RSVP setup */
   function initializeRsvpSection() {
     renderIndividualRsvpChoices();
     var party = getSavedParty();
@@ -491,6 +386,7 @@
     setRsvpLockedState(Boolean(alreadyRsvped));
   }
 
+  /* Acknowledgement — no evening redirect */
   function submitAcknowledgement() {
     if (!pendingGuestMatch) {
       showAckError('Please click "Check Name" and confirm the suggested match first.');
@@ -524,10 +420,6 @@
       localStorage.setItem('ea_ack_v2', '1');
       localStorage.setItem('ea_ack_name', pendingGuestMatch.matchedName);
       localStorage.setItem('ea_ack_party', JSON.stringify(pendingGuestMatch));
-      if (pendingGuestMatch.dayEvening === 'Evening') {
-        window.location.href = 'evening.html';
-        return;
-      }
       unlockPage();
     }).catch(function() {
       showAckError('Connection issue. Please try again.');
@@ -633,6 +525,15 @@
     document.body.classList.remove('pre-ack');
     document.getElementById('ackModal').classList.remove('open');
     initializeRsvpSection();
+
+    // Auto-fill RSVP name from party data
+    var party = getSavedParty();
+    if (party && party.matchedName) {
+      var nameInput = document.getElementById('rsvp-name');
+      if (nameInput && !nameInput.value.trim()) {
+        nameInput.value = party.matchedName;
+      }
+    }
   }
 
   function showAckError(message) {
@@ -653,19 +554,19 @@
     submitAcknowledgement();
   }
 
-  function setupHeroWatermark() {
-    var heroImage = document.querySelector('.hero-img');
-    if (!heroImage || !('IntersectionObserver' in window)) { return; }
-
-    var observer = new IntersectionObserver(function(entries) {
-      entries.forEach(function(entry) {
-        document.body.classList.toggle('show-watermark', !entry.isIntersecting);
-      });
-    }, { threshold: 0.05 });
-
-    observer.observe(heroImage);
+  /* Key details photo from manifest */
+  function loadKeyDetailsPhoto() {
+    fetch(PHOTO_MANIFEST_PATH, { cache: 'no-store' })
+      .then(function(r) { return r.ok ? r.json() : Promise.reject(); })
+      .then(function(data) {
+        var normalized = normalizePhotoManifest(data);
+        var img = document.getElementById('keyDetailsPhoto');
+        if (img) { img.src = normalized.mainPhoto.url; }
+      })
+      .catch(function() { /* use default src already in HTML */ });
   }
 
+  /* Flying heads */
   function spawnFlyingHead(originX, originY) {
     if (!HEAD_POP_ENABLED) { return; }
     var imageSrc = HEAD_IMAGE_CHOICES[Math.floor(Math.random() * HEAD_IMAGE_CHOICES.length)];
@@ -745,25 +646,7 @@
     return HEAD_POP_ENABLED;
   }
 
-  function setupFloatingLeaves() {
-    var hero = document.querySelector('.hero');
-    if (!hero) { return; }
-    var leaves = ['🍂', '🍁', '🍃'];
-    for (var i = 0; i < 5; i++) {
-      var el = document.createElement('span');
-      el.className = 'hero-leaf';
-      el.textContent = leaves[Math.floor(Math.random() * leaves.length)];
-      el.style.left = (8 + Math.random() * 84) + '%';
-      el.style.fontSize = (16 + Math.random() * 14) + 'px';
-      el.style.setProperty('--drift-x', (Math.random() > 0.5 ? '' : '-') + (20 + Math.random() * 50) + 'px');
-      el.style.setProperty('--spin', (Math.random() > 0.5 ? '' : '-') + (120 + Math.random() * 240) + 'deg');
-      var dur = 14 + Math.random() * 12;
-      el.style.animation = 'leafDrift ' + dur + 's ' + (Math.random() * dur) + 's linear infinite';
-      el.style.opacity = '0';
-      hero.appendChild(el);
-    }
-  }
-
+  /* Init */
   document.addEventListener('DOMContentLoaded', function() {
     ensureSession().catch(showSessionError);
 
@@ -788,30 +671,25 @@
       });
       ackNameInput.focus();
     } else {
-      if (savedParty && savedParty.dayEvening === 'Evening') {
-        window.location.href = 'evening.html';
-        return;
-      }
       unlockPage();
     }
+
     document.getElementById('rsvp-name').addEventListener('blur', function() {
       if (!getSavedParty()) {
         renderIndividualRsvpChoices();
       }
     });
+
     renderHeroCredit();
-    renderStorySection();
-    renderGallerySection();
     setupScrollReveal();
     setupActiveNav();
-    initializeRsvpSection();
-    loadPhotoManifest();
-    setupHeroWatermark();
     setupHeroParallax();
-    setupFloatingLeaves();
     setupFlyingHeads();
+    loadKeyDetailsPhoto();
+
     window.setFlyingHeadsEnabled = setFlyingHeadsEnabled;
     updateFunModeButtons();
+
     updateCountdown();
     setInterval(updateCountdown, 1000);
   });
