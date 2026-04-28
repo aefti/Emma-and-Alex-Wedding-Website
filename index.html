@@ -37,7 +37,7 @@
   body.pre-ack #siteContent > *:not(#ackModal) { opacity: 0; visibility: hidden; pointer-events: none; user-select: none; }
 
   /* FUN MODE BUTTON */
-  .fun-toggle-btn { display: inline-block; border: 1px solid rgba(255,243,230,0.25); background: transparent; color: rgba(255,243,230,0.7); font-family: Arial, sans-serif; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: none; font-style: italic; cursor: pointer; transition: color 0.2s, background 0.2s, border-color 0.2s; padding: 0.4rem 0.8rem; border-radius: 6px; margin-top: 1rem; }
+  .fun-toggle-btn { display: inline-block; border: 1px solid rgba(255,243,230,0.25); background: transparent; color: rgba(255,243,230,0.7); font-family: Arial, sans-serif; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: none; font-style: italic; cursor: pointer; transition: color 0.2s, background 0.2s, border-color 0.2s; padding: 0.25rem 0.6rem; border-radius: 6px; vertical-align: middle; }
   .fun-toggle-btn:hover { color: #fff; background: rgba(255,255,255,0.1); border-color: rgba(255,243,230,0.4); }
   .fun-toggle-btn.active { color: #fff; background: rgba(255,255,255,0.15); border-color: rgba(255,243,230,0.5); font-style: normal; animation: funRainbowFlicker 0.85s steps(2, end) infinite; }
   @keyframes funRainbowFlicker {
@@ -198,10 +198,8 @@
 </div>
 
 <!-- FOOTER -->
-<footer>
-  <button type="button" class="fun-toggle-btn" id="funModeToggleFooter" onclick="toggleFunMode()">Fun Mode?</button>
-  <br>
-  Made with love for <span>Emma & Alex</span> &nbsp;&middot;&nbsp; 6th November 2027 &nbsp;&middot;&nbsp; Gaynes Park, Epping
+<footer id="siteFooter" style="display:none;">
+  Made with love for <span>Emma & Alex</span> &nbsp;&middot;&nbsp; <button type="button" class="fun-toggle-btn" id="funModeToggleFooter" onclick="toggleFunMode()">Fun Mode?</button>
 </footer>
 </div>
 
@@ -606,6 +604,18 @@
 
     window.setFlyingHeadsEnabled = setFlyingHeadsEnabled;
     updateFunModeButtons();
+
+    // Show footer when RSVP success message appears
+    var rsvpSuccess = document.getElementById('rsvpSuccess');
+    if (rsvpSuccess) {
+      var footerObserver = new MutationObserver(function() {
+        if (rsvpSuccess.style.display === 'block') {
+          var footer = document.getElementById('siteFooter');
+          if (footer) { footer.style.display = ''; }
+        }
+      });
+      footerObserver.observe(rsvpSuccess, { attributes: true, attributeFilter: ['style'] });
+    }
 
     updateCountdown();
     setInterval(updateCountdown, 1000);

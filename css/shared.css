@@ -120,7 +120,7 @@ section { padding: 5rem 1.5rem; }
 .gallery-note { text-align: center; margin-top: 1.25rem; font-family: Arial, sans-serif; font-size: 0.8rem; color: var(--text-light); font-style: italic; }
 
 /* FOOTER */
-footer { background: #3a1a0a; color: rgba(255,243,230,0.5); text-align: center; padding: 2.5rem 1.5rem; font-family: Arial, sans-serif; font-size: 0.8rem; letter-spacing: 0.05em; }
+footer { background: #3a1a0a; color: rgba(255,243,230,0.5); text-align: center; padding: 1rem 1.5rem; font-family: Arial, sans-serif; font-size: 0.8rem; letter-spacing: 0.05em; display: flex; align-items: center; justify-content: center; gap: 0.5rem; flex-wrap: wrap; }
 footer span { color: var(--orange-glow); }
 
 /* RESPONSIVE */
