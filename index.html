@@ -49,8 +49,16 @@
     100% { color: #cc66ff; text-shadow: 0 0 5px rgba(204,102,255,0.8); opacity: 0.75; }
   }
 
+  /* PAGE BACKGROUND — single continuous gradient */
+  #siteContent { background: linear-gradient(160deg, #7a2010 0%, #c4600a 45%, #b8860b 100%); min-height: 100vh; }
+
+  /* WATERMARK */
+  body::before { content: ''; position: fixed; inset: 0; background: url('images/emi_alex_autumn_transparent.png') center 55% / min(35vw, 280px) no-repeat; opacity: 0; pointer-events: none; z-index: 0; transition: opacity 0.35s ease; filter: grayscale(1); }
+  body.show-watermark::before ~ * { position: relative; }
+  body.show-watermark::before { opacity: 0.1; }
+
   /* HERO */
-  .hero { background: linear-gradient(160deg, #7a2010 0%, #c4600a 45%, #b8860b 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 5rem 2rem 3rem; position: relative; overflow: hidden; }
+  .hero { background: transparent; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 5rem 2rem 3rem; position: relative; overflow: hidden; }
   .leaf-bg { position: absolute; inset: 0; pointer-events: none; opacity: 0.12; display: flex; flex-wrap: wrap; gap: 2.5rem; padding: 3rem; align-content: space-around; justify-content: space-around; font-size: 2.8rem; }
   .hero-img { width: min(260px, 62vw); height: auto; }
   .hero-eyebrow { font-family: Arial, sans-serif; font-size: 0.7rem; letter-spacing: 0.25em; text-transform: uppercase; color: rgba(255,243,230,0.85); margin-bottom: 1.2rem; line-height: 1.8; }
@@ -67,11 +75,14 @@
   .rsvp-cta-btn:hover { background: rgba(255,255,255,0.15); border-color: #fff; }
 
   /* RSVP */
-  #rsvp { background: linear-gradient(160deg, #7a2010 0%, #c4600a 45%, #b8860b 100%); }
+  #rsvp { background: transparent; text-align: center; padding: 3.5rem 1.5rem; }
+  #rsvp .section-inner { max-width: 560px; }
   #rsvp .section-label { color: var(--orange-glow); }
   #rsvp .section-title { color: #fff8f0; }
-  #rsvp .section-body { color: rgba(255,243,230,0.8); }
-  #rsvp .divider { background: linear-gradient(90deg, var(--orange-glow), var(--orange)); }
+  #rsvp .section-body { color: rgba(255,243,230,0.8); margin-left: auto; margin-right: auto; }
+  #rsvp .divider { background: linear-gradient(90deg, var(--orange-glow), var(--orange)); margin-left: auto; margin-right: auto; }
+  .rsvp-form { max-width: 100%; padding: 1.5rem; }
+  .rsvp-row { margin-bottom: 0.85rem; }
 
   /* FUN MODE: flying heads */
   .flying-head {
@@ -93,6 +104,8 @@
     .hero { padding: 4rem 1.5rem 2.5rem; }
     .countdown-item { padding: 0.5rem 0.7rem; min-width: 56px; }
     .countdown-num { font-size: 1.3rem; }
+    body.show-watermark::before { opacity: 0.08; background-size: min(50vw, 220px); background-position: center 28%; }
+    .rsvp-form { padding: 1rem; }
   }
 
   /* FLOATING LEAVES */
@@ -538,6 +551,19 @@
     }
   }
 
+  function setupHeroWatermark() {
+    var heroImage = document.querySelector('.hero-img');
+    if (!heroImage || !('IntersectionObserver' in window)) { return; }
+
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        document.body.classList.toggle('show-watermark', !entry.isIntersecting);
+      });
+    }, { threshold: 0.05 });
+
+    observer.observe(heroImage);
+  }
+
   /* Init */
   document.addEventListener('DOMContentLoaded', function() {
     ensureSession().catch(showSessionError);
@@ -574,6 +600,7 @@
 
     renderHeroCredit();
     setupHeroParallax();
+    setupHeroWatermark();
     setupFlyingHeads();
     setupFloatingLeaves();
 
