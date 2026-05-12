@@ -140,10 +140,14 @@ footer span { color: var(--orange-glow); }
 .reg-filter-tab { padding: 0.45rem 1rem; border: 1px solid rgba(196,96,10,0.2); border-radius: 20px; background: transparent; font-family: Arial, sans-serif; font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-mid); cursor: pointer; transition: all 0.2s; }
 .reg-filter-tab:hover { border-color: var(--orange); color: var(--orange); }
 .reg-filter-tab.active { background: var(--orange); color: #fff; border-color: var(--orange); }
-.reg-items-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-top: 1.5rem; }
-.reg-item-card { background: white; border: 1px solid rgba(196,96,10,0.12); border-radius: 14px; padding: 1.5rem; display: flex; flex-direction: column; transition: border-color 0.2s, box-shadow 0.2s; }
+.reg-items-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; margin-top: 1.5rem; }
+.reg-item-card { background: white; border: 1px solid rgba(196,96,10,0.12); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; transition: border-color 0.2s, box-shadow 0.2s; }
 .reg-item-card:hover { border-color: rgba(196,96,10,0.25); box-shadow: 0 4px 16px rgba(92,61,40,0.08); }
 .reg-item-card.reserved { opacity: 0.6; background: rgba(255,255,255,0.5); }
+.reg-item-image { width: 100%; aspect-ratio: 1/1; object-fit: cover; display: block; }
+.reg-item-placeholder { width: 100%; aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--orange-light), var(--rust-light)); }
+.reg-item-placeholder-icon { font-size: 2.5rem; opacity: 0.5; }
+.reg-item-body { padding: 1.25rem; display: flex; flex-direction: column; flex: 1; }
 .reg-item-name { font-size: 1.05rem; font-weight: 500; color: var(--text-dark); margin-bottom: 0.5rem; line-height: 1.3; }
 .reg-item-desc { font-size: 0.88rem; color: var(--text-mid); line-height: 1.6; margin-bottom: 0.75rem; flex: 1; }
 .reg-item-meta { font-size: 0.82rem; color: var(--text-light); margin-bottom: 0.35rem; font-style: italic; }
@@ -153,7 +157,7 @@ footer span { color: var(--orange-glow); }
 .reg-priority-badge.medium { background: rgba(184,134,11,0.12); color: var(--gold); }
 .reg-priority-badge.low { background: rgba(138,106,80,0.1); color: var(--text-light); }
 .reg-availability { font-family: Arial, sans-serif; font-size: 0.72rem; color: var(--text-light); letter-spacing: 0.04em; }
-.reg-reserve-btn { padding: 0.45rem 1rem; background: var(--orange); color: white; border: none; border-radius: 8px; font-family: Arial, sans-serif; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: background 0.2s; }
+.reg-reserve-btn { width: 100%; padding: 0.55rem 1rem; background: var(--orange); color: white; border: none; border-radius: 8px; font-family: Arial, sans-serif; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; transition: background 0.2s; margin-top: auto; }
 .reg-reserve-btn:hover { background: var(--orange-dark); }
 .reg-reserved-badge { padding: 0.45rem 1rem; background: rgba(138,106,80,0.12); color: var(--text-light); border-radius: 8px; font-family: Arial, sans-serif; font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; display: inline-block; }
 

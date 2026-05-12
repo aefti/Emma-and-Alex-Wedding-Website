@@ -501,6 +501,41 @@ var lightboxIndex = 0;
 /* Registry */
 var REGISTRY_ITEMS = [];
 var REGISTRY_ACTIVE_FILTER = 'all';
+var REGISTRY_IMAGE_MAP = {};
+
+var REGISTRY_MANIFEST_PATH = 'backend/photos/registry-manifest.json';
+
+function loadRegistryManifest() {
+  return fetch(REGISTRY_MANIFEST_PATH, { cache: 'no-store' })
+    .then(function(response) {
+      if (!response.ok) { throw new Error('Registry manifest not found.'); }
+      return response.json();
+    })
+    .then(function(data) {
+      REGISTRY_IMAGE_MAP = {};
+      if (data && Array.isArray(data.items)) {
+        data.items.forEach(function(entry) {
+          if (entry.itemId) {
+            REGISTRY_IMAGE_MAP[entry.itemId] = { image: entry.image, alt: entry.alt || '' };
+          }
+        });
+      }
+    })
+    .catch(function() {
+      REGISTRY_IMAGE_MAP = {};
+    });
+}
+
+var CATEGORY_ICONS = {
+  'kitchen': '🍳',
+  'bathroom': '🛁',
+  'bedroom': '🛏️',
+  'living': '🛋️',
+  'outdoor': '🌿',
+  'garden': '🌱',
+  'dining': '🍽️',
+  'other': '🎁'
+};
 
 function fetchRegistry(callback) {
   ensureSession().then(function(token) {
@@ -619,14 +654,28 @@ function renderRegistryItems(items) {
     var card = document.createElement('div');
     card.className = 'reg-item-card' + (isReserved ? ' reserved' : '');
     var priorityClass = (item.priority || 'low').toLowerCase();
+
+    var imageEntry = REGISTRY_IMAGE_MAP[item.itemId];
+    var imageHtml = '';
+    if (imageEntry && imageEntry.image) {
+      imageHtml = '<img class="reg-item-image" src="' + escapeHtml(imageEntry.image) + '" alt="' + escapeHtml(imageEntry.alt || item.itemName) + '" loading="lazy">';
+    } else {
+      var catKey = (item.category || 'other').toLowerCase();
+      var icon = CATEGORY_ICONS[catKey] || CATEGORY_ICONS['other'];
+      imageHtml = '<div class="reg-item-placeholder"><span class="reg-item-placeholder-icon">' + icon + '</span></div>';
+    }
+
     card.innerHTML =
-      '<p class="reg-item-name">' + escapeHtml(item.itemName) + '</p>' +
-      '<p class="reg-item-desc">' + escapeHtml(item.description) + '</p>' +
-      (item.suggestedBrandOrStyle ? '<p class="reg-item-meta">Suggested: ' + escapeHtml(item.suggestedBrandOrStyle) + '</p>' : '') +
-      (item.exampleStore ? '<p class="reg-item-meta">Where to look: ' + escapeHtml(item.exampleStore) + '</p>' : '') +
-      '<div class="reg-item-footer">' +
-        '<span class="reg-priority-badge ' + priorityClass + '">' + escapeHtml(item.priority || 'Low') + '</span>' +
-        '<span class="reg-availability">' + (isReserved ? 'Reserved' : available + ' of ' + item.quantityRequested + ' available') + '</span>' +
+      imageHtml +
+      '<div class="reg-item-body">' +
+        '<p class="reg-item-name">' + escapeHtml(item.itemName) + '</p>' +
+        '<p class="reg-item-desc">' + escapeHtml(item.description) + '</p>' +
+        (item.suggestedBrandOrStyle ? '<p class="reg-item-meta">Suggested: ' + escapeHtml(item.suggestedBrandOrStyle) + '</p>' : '') +
+        (item.exampleStore ? '<p class="reg-item-meta">Where to look: ' + escapeHtml(item.exampleStore) + '</p>' : '') +
+        '<div class="reg-item-footer">' +
+          '<span class="reg-priority-badge ' + priorityClass + '">' + escapeHtml(item.priority || 'Low') + '</span>' +
+          '<span class="reg-availability">' + (isReserved ? 'Reserved' : available + ' of ' + item.quantityRequested + ' available') + '</span>' +
+        '</div>' +
       '</div>';
 
     if (!isReserved) {

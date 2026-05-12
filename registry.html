@@ -188,13 +188,15 @@
     ensureSession().catch(showSessionError);
     setupScrollReveal();
 
-    fetchRegistry(function(result) {
-      if (result.ok && result.items) {
-        renderRegistryItems(result.items);
-      } else {
-        var grid = document.getElementById('regItemsGrid');
-        if (grid) { grid.innerHTML = '<p class="reg-loading">Could not load registry items. Please refresh the page.</p>'; }
-      }
+    loadRegistryManifest().then(function() {
+      fetchRegistry(function(result) {
+        if (result.ok && result.items) {
+          renderRegistryItems(result.items);
+        } else {
+          var grid = document.getElementById('regItemsGrid');
+          if (grid) { grid.innerHTML = '<p class="reg-loading">Could not load registry items. Please refresh the page.</p>'; }
+        }
+      });
     });
 
     fetchHoneymoonExperiences(function(result) {

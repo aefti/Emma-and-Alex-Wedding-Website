@@ -28,6 +28,8 @@
 | `google-apps-script/acknowledgements.gs` | Deprecated stub | Merged into Code.gs |
 | `google-apps-script/url_lookup.md` | Deployment URL reference | Active Code.gs URL + deprecated file references |
 | `backend/photos/manifest.json` | Gallery manifest (32 lines) | `mainPhoto` + `galleryPhotos[]` with `url` and `subtext` |
+| `backend/photos/registry-manifest.json` | Registry image manifest | `items[]` with `itemId`, `image`, `alt` — maps registry items to product images |
+| `images/registry/*.jpg` | Registry product images | `REG-001.jpg` through `REG-NNN.jpg`, square crop, 400–600px |
 | `images/emi_alex_autumn_transparent.png` | Hero illustration | By Alice Krieits (@alice_krieits) |
 | `images/alex_head.png` | Fun mode head | Flying head image |
 | `images/emma_head.png` | Fun mode head | Flying head image |
@@ -67,6 +69,12 @@
 - Registry reserve POST: `Code.gs` (`reserveRegistryItem_`, `sendRegistryReserveEmail_`)
 - Honeymoon experiences GET: `Code.gs` (`getHoneymoonExperiences_`)
 - Honeymoon experience POST: `Code.gs` (`appendHoneymoonRow_`, `sendHoneymoonEmail_`)
+
+### Registry Images
+- Registry manifest loading: `js/shared.js` (`loadRegistryManifest`)
+- `registry-manifest.json`: `backend/photos/registry-manifest.json`
+- Image map used by `renderRegistryItems()`: `REGISTRY_IMAGE_MAP`
+- Fallback placeholder with category icons: `CATEGORY_ICONS`
 
 ### Section Builders
 - `renderHeroCredit()`: `js/shared.js:408–417`
