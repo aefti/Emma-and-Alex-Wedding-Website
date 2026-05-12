@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://script.google.com https://script.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self' https://script.google.com https://script.googleusercontent.com; form-action 'none'; base-uri 'self'; object-src 'none';">
+<title>Gift Registry — Emma & Alex</title>
+<link rel="stylesheet" href="css/shared.css">
+<style>
+  .hamburger { display: none; background: none; border: none; cursor: pointer; padding: 8px; }
+  .hamburger span { display: block; width: 22px; height: 2px; background: #fff3e6; margin: 5px 0; }
+  .mobile-menu { display: none; background: var(--rust); padding: 1rem 1.5rem; }
+  .mobile-menu a { display: block; color: #fff3e6; text-decoration: none; padding: 0.65rem 0; font-family: Arial, sans-serif; font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.12); }
+
+  .reg-page-header { background: linear-gradient(160deg, #7a2010 0%, #c4600a 45%, #b8860b 100%); padding: 5rem 1.5rem 3rem; text-align: center; }
+  .reg-page-header .section-label { color: rgba(255,243,230,0.7); }
+  .reg-page-header .section-title { color: #fff8f0; }
+  .reg-page-header .section-body { color: rgba(255,243,230,0.8); max-width: 600px; margin: 0 auto; }
+  .reg-page-header .divider { background: linear-gradient(90deg, var(--orange-glow), var(--orange)); margin: 1.5rem auto; }
+
+  .reg-loading { text-align: center; padding: 3rem; color: var(--text-light); font-style: italic; }
+
+  @media (max-width: 700px) {
+    .hamburger { display: block; }
+    .reg-items-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-brand" href="index-full.html">Emma & Alex</a>
+    <ul class="nav-links">
+      <li><a href="index-full.html#story">Our Story</a></li>
+      <li><a href="index-full.html#schedule">Schedule</a></li>
+      <li><a href="index-full.html#venue">Venue</a></li>
+      <li><a href="index-full.html#gallery">Gallery</a></li>
+      <li><a href="registry.html" class="nav-active">Registry</a></li>
+      <li><a href="index-full.html#faq">FAQ</a></li>
+      <li><a href="index-full.html#rsvp">RSVP</a></li>
+    </ul>
+    <button class="hamburger" onclick="toggleMenu()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index-full.html#story" onclick="toggleMenu()">Our Story</a>
+    <a href="index-full.html#schedule" onclick="toggleMenu()">Schedule</a>
+    <a href="index-full.html#venue" onclick="toggleMenu()">Venue</a>
+    <a href="index-full.html#gallery" onclick="toggleMenu()">Gallery</a>
+    <a href="registry.html" onclick="toggleMenu()">Registry</a>
+    <a href="index-full.html#faq" onclick="toggleMenu()">FAQ</a>
+    <a href="index-full.html#rsvp" onclick="toggleMenu()">RSVP</a>
+  </div>
+</nav>
+
+<header class="reg-page-header">
+  <div class="section-inner">
+    <span class="section-label">Gifts</span>
+    <h1 class="section-title">Gift Registry</h1>
+    <div class="divider"></div>
+    <p class="section-body">Your presence is truly the greatest gift. If you'd like to give something more, here are some ideas for our home and honeymoon — no links, just inspiration.</p>
+  </div>
+</header>
+
+<section id="registry-items">
+  <div class="section-inner">
+    <div id="regFilterTabs" class="reg-filter-tabs"></div>
+    <div id="regItemsGrid" class="reg-items-grid">
+      <p class="reg-loading">Loading registry items...</p>
+    </div>
+  </div>
+</section>
+
+<section id="honeymoon">
+  <div class="section-inner">
+    <span class="section-label">Honeymoon</span>
+    <h2 class="section-title">Honeymoon Experiences</h2>
+    <div class="divider"></div>
+    <p class="hmx-intro">We're heading to Canada and Mexico for our honeymoon! If you've been and know something we shouldn't miss — a restaurant, a hike, a hidden gem — tell us about it below. You can also contribute towards the experience if you'd like.</p>
+    <div id="hmxGrid" class="hmx-experiences-grid">
+      <p class="hmx-empty">Loading experiences...</p>
+    </div>
+    <div class="hmx-form" id="hmxForm">
+      <div class="hmx-form-row">
+        <label class="hmx-form-label" for="hmxName">Your name *</label>
+        <input class="hmx-form-input" type="text" id="hmxName" placeholder="e.g. Sarah Thompson">
+      </div>
+      <div class="hmx-form-row">
+        <label class="hmx-form-label" for="hmxEmail">Email address *</label>
+        <input class="hmx-form-input" type="email" id="hmxEmail" placeholder="your@email.com">
+      </div>
+      <div class="hmx-form-row">
+        <label class="hmx-form-label" for="hmxPhone">Phone (optional)</label>
+        <input class="hmx-form-input" type="tel" id="hmxPhone" placeholder="07700 000000">
+      </div>
+      <div class="hmx-form-row">
+        <label class="hmx-form-label" for="hmxCountry">Country *</label>
+        <select class="hmx-form-select" id="hmxCountry">
+          <option value="">Choose a country</option>
+          <option value="Canada">Canada</option>
+          <option value="Mexico">Mexico</option>
+        </select>
+      </div>
+      <div class="hmx-form-row">
+        <label class="hmx-form-label" for="hmxDescription">Experience description *</label>
+        <textarea class="hmx-form-textarea" id="hmxDescription" placeholder="Tell us about an experience you think we'd love..."></textarea>
+      </div>
+      <div class="hmx-form-row">
+        <label class="hmx-form-label" for="hmxPledged">Pledged contribution (optional)</label>
+        <input class="hmx-form-input" type="text" id="hmxPledged" placeholder="e.g. £50">
+      </div>
+      <button class="hmx-form-submit" id="hmxSubmit" onclick="submitHoneymoonExperience()">Submit Experience</button>
+    </div>
+    <div class="hmx-success" id="hmxSuccess">
+      <p style="font-size:2rem; margin-bottom:0.75rem">🌍</p>
+      <p>Thank you for your suggestion! We can't wait to explore.</p>
+    </div>
+  </div>
+</section>
+
+<div class="reg-modal-overlay" id="regModal" aria-hidden="true" role="dialog">
+  <div class="reg-modal-card">
+    <h3 class="reg-modal-title">Reserve this gift</h3>
+    <p class="reg-modal-item" id="regModalItemName"></p>
+    <div class="reg-modal-warning">Are you sure? Reserving this item lets other guests know it has been chosen. If you need to cancel, please contact Emma & Alex directly.</div>
+    <div class="reg-modal-row">
+      <label class="reg-modal-label" for="regModalName">Your name *</label>
+      <input class="reg-modal-input" type="text" id="regModalName" placeholder="e.g. Sarah Thompson">
+    </div>
+    <div class="reg-modal-row">
+      <label class="reg-modal-label" for="regModalEmail">Email address *</label>
+      <input class="reg-modal-input" type="email" id="regModalEmail" placeholder="your@email.com">
+    </div>
+    <div class="reg-modal-row">
+      <label class="reg-modal-label" for="regModalPhone">Phone (optional)</label>
+      <input class="reg-modal-input" type="tel" id="regModalPhone" placeholder="07700 000000">
+    </div>
+    <div class="reg-modal-row">
+      <label class="reg-modal-label">Delivery preference</label>
+      <div class="reg-modal-radio-group">
+        <label class="reg-modal-radio-label"><input type="radio" name="regDelivery" value="Bring to wedding" checked>Bring to wedding</label>
+        <label class="reg-modal-radio-label"><input type="radio" name="regDelivery" value="Deliver to couple after wedding">Deliver after wedding</label>
+      </div>
+    </div>
+    <div class="reg-modal-actions">
+      <button class="reg-modal-cancel" onclick="closeReserveModal()">Cancel</button>
+      <button class="reg-modal-confirm" id="regModalConfirm" onclick="submitReservation()">Confirm Reservation</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  Made with love for <span>Emma & Alex</span> &nbsp;·&nbsp; 6th November 2027 &nbsp;·&nbsp; Gaynes Park, Epping
+</footer>
+
+<script>
+  var pendingGuestMatch = null;
+  window.PAGE_CONFIG = {
+    source: 'wedding-site-registry',
+    storageKeyFallback: 'anonymous'
+  };
+</script>
+<script src="js/shared.js"></script>
+<script>
+  function toggleMenu() {
+    var m = document.getElementById('mobileMenu');
+    m.style.display = m.style.display === 'block' ? 'none' : 'block';
+  }
+
+  document.querySelectorAll('.reg-modal-radio-label').forEach(function(label) {
+    label.addEventListener('click', function() {
+      document.querySelectorAll('.reg-modal-radio-label').forEach(function(l) { l.classList.remove('selected'); });
+      label.classList.add('selected');
+    });
+  });
+
+  document.getElementById('regModal').addEventListener('click', function(e) {
+    if (e.target === this) { closeReserveModal(); }
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') { closeReserveModal(); }
+  });
+
+  document.addEventListener('DOMContentLoaded', function() {
+    ensureSession().catch(showSessionError);
+    setupScrollReveal();
+
+    fetchRegistry(function(result) {
+      if (result.ok && result.items) {
+        renderRegistryItems(result.items);
+      } else {
+        var grid = document.getElementById('regItemsGrid');
+        if (grid) { grid.innerHTML = '<p class="reg-loading">Could not load registry items. Please refresh the page.</p>'; }
+      }
+    });
+
+    fetchHoneymoonExperiences(function(result) {
+      if (result.ok) {
+        renderHoneymoonExperiences(result.experiences);
+      }
+    });
+  });
+</script>
+</body>
+</html>

@@ -93,17 +93,6 @@
   .venue-map-btn { display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 1rem; padding: 0.5rem 1.25rem; background: rgba(232,160,96,0.2); border: 1px solid rgba(232,160,96,0.4); border-radius: 8px; color: var(--orange-glow); font-family: Arial, sans-serif; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; text-decoration: none; transition: background 0.2s; }
   .venue-map-btn:hover { background: rgba(232,160,96,0.3); }
 
-  /* REGISTRY */
-  #registry { background: var(--cream); }
-  .registry-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-top: 2.5rem; }
-  .registry-card { background: white; border: 1px solid rgba(196,96,10,0.12); border-radius: 14px; padding: 1.5rem; text-align: center; }
-  .registry-icon { font-size: 2rem; margin-bottom: 0.75rem; }
-  .registry-name { font-size: 1.05rem; color: var(--text-dark); margin-bottom: 0.4rem; }
-  .registry-desc { font-size: 0.85rem; color: var(--text-light); margin-bottom: 1rem; }
-  .registry-link { display: inline-block; padding: 0.5rem 1.25rem; background: var(--orange); color: white; border-radius: 8px; font-family: Arial, sans-serif; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; }
-  .registry-link:hover { background: var(--orange-dark); }
-  .registry-note { text-align: center; font-size: 0.9rem; color: var(--text-light); font-style: italic; margin-top: 1.5rem; }
-
   /* FAQ — index with background */
   #faq { background: var(--orange-light); }
   .faq-list { margin-top: 2.5rem; display: flex; flex-direction: column; gap: 0; }
@@ -284,24 +273,24 @@
     <div class="divider"></div>
     <p class="section-body">Your presence is truly the greatest gift. If you'd like to give something, we'd be so grateful for contributions to the below.</p>
     <div class="registry-cards">
-      <div class="registry-card">
-        <div class="registry-icon">🏝️</div>
-        <p class="registry-name">Honeymoon Fund</p>
-        <p class="registry-desc">Help us create memories on our dream honeymoon</p>
-        <a href="#" class="registry-link">Contribute ↗</a>
-      </div>
-      <div class="registry-card">
+      <a href="registry.html" class="registry-card">
         <div class="registry-icon">🏠</div>
-        <p class="registry-name">Home Wishlist</p>
-        <p class="registry-desc">Things for our home — add your registry link here</p>
-        <a href="#" class="registry-link">View list ↗</a>
-      </div>
-      <div class="registry-card">
+        <p class="registry-name">Home Registry</p>
+        <p class="registry-desc">Browse gift suggestions for our new home — brands and ideas, no links</p>
+        <span class="registry-link">Browse Registry →</span>
+      </a>
+      <a href="registry.html#honeymoon" class="registry-card">
+        <div class="registry-icon">🏝️</div>
+        <p class="registry-name">Honeymoon Experiences</p>
+        <p class="registry-desc">Suggest experiences for our Canada &amp; Mexico honeymoon</p>
+        <span class="registry-link">Share an Idea →</span>
+      </a>
+      <a href="registry.html#honeymoon" class="registry-card">
         <div class="registry-icon">💌</div>
-        <p class="registry-name">Experience Gifts</p>
-        <p class="registry-desc">Restaurants, shows & adventures we'd love to share</p>
-        <a href="#" class="registry-link">View list ↗</a>
-      </div>
+        <p class="registry-name">Something Else?</p>
+        <p class="registry-desc">If you'd like to gift something not listed, we'd love that too</p>
+        <span class="registry-link">Get in Touch →</span>
+      </a>
     </div>
     <p class="registry-note">No gifts expected — your being there means everything to us.</p>
   </div>

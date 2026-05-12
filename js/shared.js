@@ -498,6 +498,296 @@ function renderGallerySection() {
 /* Gallery lightbox */
 var lightboxIndex = 0;
 
+/* Registry */
+var REGISTRY_ITEMS = [];
+var REGISTRY_ACTIVE_FILTER = 'all';
+
+function fetchRegistry(callback) {
+  ensureSession().then(function(token) {
+    var callbackName = '__eaRegistry_' + Date.now() + '_' + Math.floor(Math.random() * 1000000);
+    var script = document.createElement('script');
+    var timeoutId = setTimeout(function() {
+      cleanup();
+      callback({ ok: false, error: 'Registry load timed out.' });
+    }, 15000);
+
+    function cleanup() {
+      clearTimeout(timeoutId);
+      if (script.parentNode) { script.parentNode.removeChild(script); }
+      try { delete window[callbackName]; } catch (err) { window[callbackName] = undefined; }
+    }
+
+    window[callbackName] = function(data) {
+      cleanup();
+      callback(data);
+    };
+
+    script.onerror = function() {
+      cleanup();
+      callback({ ok: false, error: 'Could not load registry.' });
+    };
+
+    script.src = GOOGLE_SHEETS_WEBHOOK
+      + '?action=registry'
+      + '&token=' + encodeURIComponent(token)
+      + '&callback=' + encodeURIComponent(callbackName)
+      + '&t=' + Date.now();
+    document.head.appendChild(script);
+  }).catch(function() {
+    callback({ ok: false, error: 'Session error.' });
+  });
+}
+
+function fetchHoneymoonExperiences(callback) {
+  ensureSession().then(function(token) {
+    var callbackName = '__eaHmx_' + Date.now() + '_' + Math.floor(Math.random() * 1000000);
+    var script = document.createElement('script');
+    var timeoutId = setTimeout(function() {
+      cleanup();
+      callback({ ok: false, error: 'Honeymoon load timed out.' });
+    }, 15000);
+
+    function cleanup() {
+      clearTimeout(timeoutId);
+      if (script.parentNode) { script.parentNode.removeChild(script); }
+      try { delete window[callbackName]; } catch (err) { window[callbackName] = undefined; }
+    }
+
+    window[callbackName] = function(data) {
+      cleanup();
+      callback(data);
+    };
+
+    script.onerror = function() {
+      cleanup();
+      callback({ ok: false, error: 'Could not load honeymoon experiences.' });
+    };
+
+    script.src = GOOGLE_SHEETS_WEBHOOK
+      + '?action=honeymoon'
+      + '&token=' + encodeURIComponent(token)
+      + '&callback=' + encodeURIComponent(callbackName)
+      + '&t=' + Date.now();
+    document.head.appendChild(script);
+  }).catch(function() {
+    callback({ ok: false, error: 'Session error.' });
+  });
+}
+
+function renderRegistryItems(items) {
+  REGISTRY_ITEMS = items || [];
+  var grid = document.getElementById('regItemsGrid');
+  var tabsContainer = document.getElementById('regFilterTabs');
+  if (!grid) { return; }
+
+  var categories = [];
+  var seen = {};
+  REGISTRY_ITEMS.forEach(function(item) {
+    var cat = item.category || 'Other';
+    if (!seen[cat]) { seen[cat] = true; categories.push(cat); }
+  });
+
+  if (tabsContainer) {
+    tabsContainer.innerHTML = '';
+    var allTab = document.createElement('button');
+    allTab.className = 'reg-filter-tab' + (REGISTRY_ACTIVE_FILTER === 'all' ? ' active' : '');
+    allTab.textContent = 'All';
+    allTab.onclick = function() { filterRegistryCategory('all'); };
+    tabsContainer.appendChild(allTab);
+    categories.forEach(function(cat) {
+      var tab = document.createElement('button');
+      tab.className = 'reg-filter-tab' + (REGISTRY_ACTIVE_FILTER === cat ? ' active' : '');
+      tab.textContent = cat;
+      tab.onclick = function() { filterRegistryCategory(cat); };
+      tabsContainer.appendChild(tab);
+    });
+  }
+
+  var filtered = REGISTRY_ACTIVE_FILTER === 'all'
+    ? REGISTRY_ITEMS
+    : REGISTRY_ITEMS.filter(function(item) { return (item.category || 'Other') === REGISTRY_ACTIVE_FILTER; });
+
+  grid.innerHTML = '';
+  if (!filtered.length) {
+    grid.innerHTML = '<p class="hmx-empty">No items found.</p>';
+    return;
+  }
+
+  filtered.forEach(function(item) {
+    var available = item.quantityRequested - item.quantityClaimed;
+    var isReserved = available <= 0 || item.status === 'Reserved';
+    var card = document.createElement('div');
+    card.className = 'reg-item-card' + (isReserved ? ' reserved' : '');
+    var priorityClass = (item.priority || 'low').toLowerCase();
+    card.innerHTML =
+      '<p class="reg-item-name">' + escapeHtml(item.itemName) + '</p>' +
+      '<p class="reg-item-desc">' + escapeHtml(item.description) + '</p>' +
+      (item.suggestedBrandOrStyle ? '<p class="reg-item-meta">Suggested: ' + escapeHtml(item.suggestedBrandOrStyle) + '</p>' : '') +
+      (item.exampleStore ? '<p class="reg-item-meta">Where to look: ' + escapeHtml(item.exampleStore) + '</p>' : '') +
+      '<div class="reg-item-footer">' +
+        '<span class="reg-priority-badge ' + priorityClass + '">' + escapeHtml(item.priority || 'Low') + '</span>' +
+        '<span class="reg-availability">' + (isReserved ? 'Reserved' : available + ' of ' + item.quantityRequested + ' available') + '</span>' +
+      '</div>';
+
+    if (!isReserved) {
+      var btn = document.createElement('button');
+      btn.className = 'reg-reserve-btn';
+      btn.textContent = 'Reserve this gift';
+      btn.onclick = function() { openReserveModal(item.itemId, item.itemName); };
+      card.appendChild(btn);
+    } else {
+      var badge = document.createElement('div');
+      badge.style.textAlign = 'center';
+      badge.style.marginTop = '0.75rem';
+      badge.innerHTML = '<span class="reg-reserved-badge">Reserved</span>';
+      card.appendChild(badge);
+    }
+
+    grid.appendChild(card);
+  });
+}
+
+function filterRegistryCategory(category) {
+  REGISTRY_ACTIVE_FILTER = category;
+  renderRegistryItems(REGISTRY_ITEMS);
+}
+
+function openReserveModal(itemId, itemName) {
+  var overlay = document.getElementById('regModal');
+  if (!overlay) { return; }
+  overlay.setAttribute('data-item-id', itemId);
+  overlay.setAttribute('data-item-name', itemName);
+  document.getElementById('regModalItemName').textContent = itemName;
+  document.getElementById('regModalName').value = '';
+  document.getElementById('regModalEmail').value = '';
+  document.getElementById('regModalPhone').value = '';
+  document.querySelectorAll('.reg-modal-radio-label').forEach(function(label) {
+    label.classList.remove('selected');
+    label.querySelector('input').checked = false;
+  });
+  document.getElementById('regModalConfirm').disabled = false;
+  document.getElementById('regModalConfirm').textContent = 'Confirm Reservation';
+  overlay.classList.add('open');
+}
+
+function closeReserveModal() {
+  var overlay = document.getElementById('regModal');
+  if (overlay) { overlay.classList.remove('open'); }
+}
+
+function submitReservation() {
+  var overlay = document.getElementById('regModal');
+  var itemId = overlay.getAttribute('data-item-id');
+  var itemName = overlay.getAttribute('data-item-name');
+  var name = document.getElementById('regModalName').value.trim();
+  var email = document.getElementById('regModalEmail').value.trim();
+  var phone = document.getElementById('regModalPhone').value.trim();
+  var deliveryRadio = document.querySelector('input[name="regDelivery"]:checked');
+  var delivery = deliveryRadio ? deliveryRadio.value : 'Deliver to couple after wedding';
+
+  if (!name || !email) {
+    alert('Please fill in your name and email.');
+    return;
+  }
+
+  var btn = document.getElementById('regModalConfirm');
+  btn.disabled = true;
+  btn.textContent = 'Reserving...';
+
+  var payload = {
+    eventType: 'registry-reserve',
+    itemId: itemId,
+    itemName: itemName,
+    reserverName: name,
+    reserverEmail: email,
+    reserverPhone: phone,
+    deliveryPreference: delivery,
+    submittedAtIso: new Date().toISOString(),
+    page: window.location.href
+  };
+
+  postToGoogleSheets(payload).then(function() {
+    closeReserveModal();
+    fetchRegistry(function(result) {
+      if (result.ok) {
+        renderRegistryItems(result.items);
+      }
+    });
+  }).catch(function() {
+    alert('Could not reserve — please check your connection and try again.');
+    btn.disabled = false;
+    btn.textContent = 'Confirm Reservation';
+  });
+}
+
+function renderHoneymoonExperiences(experiences) {
+  var grid = document.getElementById('hmxGrid');
+  if (!grid) { return; }
+  grid.innerHTML = '';
+  if (!experiences || !experiences.length) {
+    grid.innerHTML = '<p class="hmx-empty">No experiences suggested yet — be the first!</p>';
+    return;
+  }
+  experiences.forEach(function(exp) {
+    var flag = exp.country === 'Canada' ? '🇨🇦' : exp.country === 'Mexico' ? '🇲🇽' : '🌍';
+    var card = document.createElement('div');
+    card.className = 'hmx-card';
+    card.innerHTML =
+      '<div class="hmx-card-country">' + flag + ' ' + escapeHtml(exp.country) + '</div>' +
+      '<p class="hmx-card-desc">' + escapeHtml(exp.description) + '</p>';
+    grid.appendChild(card);
+  });
+}
+
+function submitHoneymoonExperience() {
+  var name = document.getElementById('hmxName').value.trim();
+  var email = document.getElementById('hmxEmail').value.trim();
+  var phone = document.getElementById('hmxPhone').value.trim();
+  var country = document.getElementById('hmxCountry').value;
+  var description = document.getElementById('hmxDescription').value.trim();
+  var pledged = document.getElementById('hmxPledged').value.trim();
+
+  if (!name || !email || !country || !description) {
+    alert('Please fill in your name, email, country, and experience description.');
+    return;
+  }
+
+  var btn = document.getElementById('hmxSubmit');
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+
+  var payload = {
+    eventType: 'honeymoon-experience',
+    contributorName: name,
+    contributorEmail: email,
+    contributorPhone: phone,
+    country: country,
+    experienceDescription: description,
+    pledgedAmount: pledged,
+    submittedAtIso: new Date().toISOString(),
+    page: window.location.href
+  };
+
+  postToGoogleSheets(payload).then(function() {
+    document.getElementById('hmxForm').style.display = 'none';
+    document.getElementById('hmxSuccess').classList.add('open');
+    document.getElementById('hmxName').value = '';
+    document.getElementById('hmxEmail').value = '';
+    document.getElementById('hmxPhone').value = '';
+    document.getElementById('hmxDescription').value = '';
+    document.getElementById('hmxPledged').value = '';
+    btn.disabled = false;
+    btn.textContent = 'Submit Experience';
+    fetchHoneymoonExperiences(function(result) {
+      if (result.ok) { renderHoneymoonExperiences(result.experiences); }
+    });
+  }).catch(function() {
+    alert('Could not submit — please check your connection and try again.');
+    btn.disabled = false;
+    btn.textContent = 'Submit Experience';
+  });
+}
+
 function openLightbox(index) {
   var overlay = document.getElementById('lightbox');
   if (!overlay) {
