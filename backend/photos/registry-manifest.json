@@ -1,7 +1,7 @@
 {
   "items": [
-    { "itemId": "REG-001", "image": "images/registry/REG-001.jpg", "alt": "Cast iron casserole dish" },
-    { "itemId": "REG-002", "image": "images/registry/REG-002.jpg", "alt": "Everyday dinnerware set" },
-    { "itemId": "REG-003", "image": "images/registry/REG-003.jpg", "alt": "Chef's knife" }
+    { "itemId": "REG-001", "image": "images/registry/la_creuset_pot_sprite.png", "alt": "Cast iron casserole dish" },
+    { "itemId": "REG-002", "image": "images/registry/dinnerware_sprite.png", "alt": "Everyday dinnerware set" },
+    { "itemId": "REG-003", "image": "images/registry/magnetic_knives_sprite.png", "alt": "Chef's knife" }
   ]
 }
