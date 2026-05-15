@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline' https://script.google.com https://script.googleusercontent.com; style-src 'self' 'unsafe-inline'; img-src 'self'; connect-src 'self' https://script.google.com https://script.googleusercontent.com; form-action 'none'; base-uri 'self'; object-src 'none';">
+<title>Emma & Alex — 6th November 2027</title>
+<link rel="stylesheet" href="css/shared.css">
+<style>
+  html, body { height: 100%; overflow: hidden; }
+  body { background: linear-gradient(160deg, #7a2010 0%, #c4600a 45%, #b8860b 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem; margin: 0; }
+
+  .bc-hero-img { width: min(300px, 72vw); height: auto; margin-bottom: 2rem; }
+  .bc-eyebrow { font-family: Arial, sans-serif; font-size: 0.75rem; letter-spacing: 0.25em; text-transform: uppercase; color: rgba(255,243,230,0.85); margin-bottom: 1.5rem; }
+  .bc-date { font-family: Arial, sans-serif; font-size: 1rem; letter-spacing: 0.2em; color: rgba(255,243,230,0.9); margin: 1.2rem 0 0.4rem; text-transform: uppercase; }
+  .bc-venue { font-size: 1.1rem; color: rgba(255,243,230,0.75); font-style: italic; margin-bottom: 2.5rem; }
+
+  .countdown { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; }
+  .countdown-item { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 1rem 1.5rem; min-width: 80px; text-align: center; }
+  .countdown-num { display: block; font-size: 2.2rem; color: #fff; font-weight: 300; line-height: 1; }
+  .countdown-label { font-family: Arial, sans-serif; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(255,243,230,0.65); margin-top: 0.3rem; display: block; }
+
+  .hero-leaf { position: absolute; top: 0; pointer-events: none; user-select: none; z-index: 1; opacity: 0; will-change: transform, opacity; }
+  @keyframes leafDrift {
+    0% { transform: translateY(-40px) translateX(0) rotate(0deg); opacity: 0; }
+    8% { opacity: 1; }
+    85% { opacity: 1; }
+    100% { transform: translateY(calc(100vh + 40px)) translateX(var(--drift-x)) rotate(var(--spin)); opacity: 0; }
+  }
+
+  @media (max-width: 700px) {
+    .countdown { gap: 0.75rem; }
+    .countdown-item { padding: 0.75rem 1rem; min-width: 65px; }
+    .countdown-num { font-size: 1.6rem; }
+  }
+</style>
+</head>
+<body>
+  <p class="bc-eyebrow">You are warmly invited to celebrate the marriage of</p>
+  <img class="bc-hero-img" src="images/emi_alex_autumn_transparent.png" alt="Emma and Alex autumn illustration by Alice Krieits">
+  <p class="bc-date">6th November 2027</p>
+  <p class="bc-venue">Gaynes Park, Epping</p>
+  <div class="countdown">
+    <div class="countdown-item"><span class="countdown-num" id="cd-days">–</span><span class="countdown-label">Days</span></div>
+    <div class="countdown-item"><span class="countdown-num" id="cd-hours">–</span><span class="countdown-label">Hours</span></div>
+    <div class="countdown-item"><span class="countdown-num" id="cd-mins">–</span><span class="countdown-label">Minutes</span></div>
+    <div class="countdown-item"><span class="countdown-num" id="cd-secs">–</span><span class="countdown-label">Seconds</span></div>
+  </div>
+
+<script src="js/shared.js"></script>
+<script>
+  (function() {
+    function updateCountdown() {
+      var target = new Date('2027-11-06T14:00:00');
+      var now = new Date();
+      var diff = target - now;
+      var days = document.getElementById('cd-days');
+      var hours = document.getElementById('cd-hours');
+      var mins = document.getElementById('cd-mins');
+      var secs = document.getElementById('cd-secs');
+      if (diff <= 0) {
+        days.textContent = '0';
+        hours.textContent = '0';
+        mins.textContent = '0';
+        secs.textContent = '0';
+        return;
+      }
+      days.textContent = Math.floor(diff / 86400000);
+      hours.textContent = Math.floor((diff % 86400000) / 3600000);
+      mins.textContent = Math.floor((diff % 3600000) / 60000);
+      secs.textContent = Math.floor((diff % 60000) / 1000);
+    }
+
+    function setupFloatingLeaves() {
+      var leaves = ['\u{1F342}', '\u{1F341}', '\u{1F343}'];
+      for (var i = 0; i < 5; i++) {
+        var el = document.createElement('span');
+        el.className = 'hero-leaf';
+        el.textContent = leaves[Math.floor(Math.random() * leaves.length)];
+        el.style.left = (8 + Math.random() * 84) + '%';
+        el.style.fontSize = (16 + Math.random() * 14) + 'px';
+        el.style.setProperty('--drift-x', (Math.random() > 0.5 ? '' : '-') + (20 + Math.random() * 50) + 'px');
+        el.style.setProperty('--spin', (Math.random() > 0.5 ? '' : '-') + (120 + Math.random() * 240) + 'deg');
+        var dur = 14 + Math.random() * 12;
+        el.style.animation = 'leafDrift ' + dur + 's ' + (Math.random() * dur) + 's linear infinite';
+        el.style.opacity = '0';
+        document.body.appendChild(el);
+      }
+    }
+
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+    setupFloatingLeaves();
+  })();
+</script>
+</body>
+</html>
