@@ -10,7 +10,10 @@
   html, body { height: 100%; overflow: hidden; }
   body { background: linear-gradient(160deg, #7a2010 0%, #c4600a 45%, #b8860b 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem; margin: 0; }
 
-  .bc-hero-img { width: min(300px, 72vw); height: auto; margin-bottom: 2rem; }
+  .bc-hero-img { width: min(300px, 72vw); height: auto; margin-bottom: 0.5rem; }
+  .bc-credit { font-family: Arial, sans-serif; font-size: 0.65rem; letter-spacing: 0.1em; color: rgba(255,243,230,0.45); margin-bottom: 2rem; }
+  .bc-credit a { color: rgba(255,243,230,0.55); text-decoration: none; }
+  .bc-credit a:hover { color: rgba(255,243,230,0.75); }
   .bc-eyebrow { font-family: Arial, sans-serif; font-size: 0.75rem; letter-spacing: 0.25em; text-transform: uppercase; color: rgba(255,243,230,0.85); margin-bottom: 1.5rem; }
   .bc-date { font-family: Arial, sans-serif; font-size: 1rem; letter-spacing: 0.2em; color: rgba(255,243,230,0.9); margin: 1.2rem 0 0.4rem; text-transform: uppercase; }
   .bc-venue { font-size: 1.1rem; color: rgba(255,243,230,0.75); font-style: italic; margin-bottom: 2.5rem; }
@@ -38,6 +41,7 @@
 <body>
   <p class="bc-eyebrow">You are warmly invited to celebrate the marriage of</p>
   <img class="bc-hero-img" src="images/emi_alex_autumn_transparent.png" alt="Emma and Alex autumn illustration by Alice Krieits">
+  <p class="bc-credit">Illustration by <a href="https://www.instagram.com/alice_krieits/" target="_blank">@alice_krieits</a></p>
   <p class="bc-date">6th November 2027</p>
   <p class="bc-venue">Gaynes Park, Epping</p>
   <div class="countdown">
