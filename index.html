@@ -15,9 +15,9 @@
   .bc-date { font-family: Arial, sans-serif; font-size: 1rem; letter-spacing: 0.2em; color: rgba(255,243,230,0.9); margin: 1.2rem 0 0.4rem; text-transform: uppercase; }
   .bc-venue { font-size: 1.1rem; color: rgba(255,243,230,0.75); font-style: italic; margin-bottom: 2.5rem; }
 
-  .countdown { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; }
-  .countdown-item { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 1rem 1.5rem; min-width: 80px; text-align: center; }
-  .countdown-num { display: block; font-size: 2.2rem; color: #fff; font-weight: 300; line-height: 1; }
+  .countdown { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: nowrap; }
+  .countdown-item { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; width: 72px; aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+  .countdown-num { display: block; font-size: 1.6rem; color: #fff; font-weight: 300; line-height: 1; }
   .countdown-label { font-family: Arial, sans-serif; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(255,243,230,0.65); margin-top: 0.3rem; display: block; }
 
   .hero-leaf { position: absolute; top: 0; pointer-events: none; user-select: none; z-index: 1; opacity: 0; will-change: transform, opacity; }
@@ -29,9 +29,9 @@
   }
 
   @media (max-width: 700px) {
-    .countdown { gap: 0.75rem; }
-    .countdown-item { padding: 0.75rem 1rem; min-width: 65px; }
-    .countdown-num { font-size: 1.6rem; }
+    .countdown-item { width: 60px; }
+    .countdown-num { font-size: 1.3rem; }
+    .countdown-label { font-size: 0.55rem; }
   }
 </style>
 </head>

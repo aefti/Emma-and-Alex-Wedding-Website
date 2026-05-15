@@ -31,11 +31,11 @@
   .rsvp-submit { border-radius: 8px; padding: 0.8rem; }
   .rsvp-success { margin-top: 1rem; color: #ffd8bd; }
   .rsvp-locked { max-width: 640px; }
-  .countdown { display: flex; gap: 1.2rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1.5rem; }
-  .countdown-item { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 0.8rem 1.2rem; min-width: 72px; text-align: center; }
-  .countdown-num { display: block; font-size: 2rem; color: #fff; font-weight: 300; line-height: 1; }
+  .countdown { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: nowrap; margin-bottom: 1.5rem; }
+  .countdown-item { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; width: 72px; aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+  .countdown-num { display: block; font-size: 1.6rem; color: #fff; font-weight: 300; line-height: 1; }
   .countdown-label { font-family: Arial, sans-serif; font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(255,243,230,0.65); margin-top: 0.3rem; display: block; }
-  @media (max-width: 700px) { .timeline-item { grid-template-columns: 72px 1fr; } }
+  @media (max-width: 700px) { .timeline-item { grid-template-columns: 72px 1fr; } .countdown-item { width: 60px; } .countdown-num { font-size: 1.3rem; } .countdown-label { font-size: 0.55rem; } }
 </style>
 </head>
 <body>
