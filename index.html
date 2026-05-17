@@ -90,7 +90,16 @@
         el.style.setProperty('--spin', (Math.random() > 0.5 ? '' : '-') + (120 + Math.random() * 240) + 'deg');
         var dur = 14 + Math.random() * 12;
         el.style.animation = 'leafDrift ' + dur + 's ' + (Math.random() * dur) + 's linear infinite';
-        el.style.opacity = '0';
+        el.style.opacity = '0.75';
+        var tints = ['sepia', 'saturate', 'hue-rotate'];
+        var pick = tints[Math.floor(Math.random() * tints.length)];
+        if (pick === 'sepia') {
+          el.style.filter = 'sepia(' + (Math.random() * 0.5) + ')';
+        } else if (pick === 'saturate') {
+          el.style.filter = 'saturate(' + (1 + Math.random() * 0.5) + ') hue-rotate(' + Math.floor(-30 + Math.random() * 15) + 'deg)';
+        } else {
+          el.style.filter = 'sepia(' + (Math.random() * 0.3) + ') hue-rotate(' + Math.floor(Math.random() * 30) + 'deg)';
+        }
         document.body.appendChild(el);
       }
     }
