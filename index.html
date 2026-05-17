@@ -76,13 +76,16 @@
     }
 
     function setupFloatingLeaves() {
-      var leaves = ['\u{1F342}', '\u{1F341}', '\u{1F343}'];
+      var leafSrcs = ['images/Leaf 1.png', 'images/Leaf 2.png', 'images/Leaf 3.png'];
       for (var i = 0; i < 5; i++) {
-        var el = document.createElement('span');
+        var el = document.createElement('img');
         el.className = 'hero-leaf';
-        el.textContent = leaves[Math.floor(Math.random() * leaves.length)];
+        el.src = leafSrcs[Math.floor(Math.random() * leafSrcs.length)];
+        el.alt = '';
         el.style.left = (8 + Math.random() * 84) + '%';
-        el.style.fontSize = (16 + Math.random() * 14) + 'px';
+        var size = 16 + Math.random() * 14;
+        el.style.width = size + 'px';
+        el.style.height = size + 'px';
         el.style.setProperty('--drift-x', (Math.random() > 0.5 ? '' : '-') + (20 + Math.random() * 50) + 'px');
         el.style.setProperty('--spin', (Math.random() > 0.5 ? '' : '-') + (120 + Math.random() * 240) + 'deg');
         var dur = 14 + Math.random() * 12;
