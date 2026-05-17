@@ -92,14 +92,14 @@
         var dur = 14 + Math.random() * 12;
         el.style.animation = 'leafDrift ' + dur + 's linear ' + (Math.random() * dur) + 's infinite backwards';
         el.style.opacity = '0.75';
-        var tints = ['sepia', 'saturate', 'hue-rotate'];
+        var tints = ['brown', 'red', 'yellow'];
         var pick = tints[Math.floor(Math.random() * tints.length)];
-        if (pick === 'sepia') {
-          el.style.filter = 'sepia(' + (Math.random() * 0.5) + ')';
-        } else if (pick === 'saturate') {
-          el.style.filter = 'saturate(' + (1 + Math.random() * 0.5) + ') hue-rotate(' + Math.floor(-30 + Math.random() * 15) + 'deg)';
+        if (pick === 'brown') {
+          el.style.filter = 'sepia(' + (0.2 + Math.random() * 0.5) + ')';
+        } else if (pick === 'red') {
+          el.style.filter = 'sepia(' + (0.15 + Math.random() * 0.3) + ') hue-rotate(' + Math.floor(-50 + Math.random() * 30) + 'deg)';
         } else {
-          el.style.filter = 'sepia(' + (Math.random() * 0.3) + ') hue-rotate(' + Math.floor(Math.random() * 30) + 'deg)';
+          el.style.filter = 'sepia(' + (0.1 + Math.random() * 0.25) + ') hue-rotate(' + Math.floor(-20 + Math.random() * 20) + 'deg)';
         }
         document.body.appendChild(el);
       }
