@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="css/shared.css">
 <style>
   html, body { height: 100%; overflow: hidden; }
+  nav, footer, header { display: none !important; }
   body { background: linear-gradient(160deg, #7a2010 0%, #c4600a 45%, #b8860b 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 2rem; margin: 0; }
 
   .bc-hero-img { width: min(300px, 72vw); height: auto; margin-bottom: 0.5rem; opacity: 0.75; }
@@ -89,7 +90,7 @@
         el.style.setProperty('--drift-x', (Math.random() > 0.5 ? '' : '-') + (20 + Math.random() * 50) + 'px');
         el.style.setProperty('--spin', (Math.random() > 0.5 ? '' : '-') + (120 + Math.random() * 240) + 'deg');
         var dur = 14 + Math.random() * 12;
-        el.style.animation = 'leafDrift ' + dur + 's ' + (Math.random() * dur) + 's linear infinite';
+        el.style.animation = 'leafDrift ' + dur + 's linear ' + (Math.random() * dur) + 's infinite backwards';
         el.style.opacity = '0.75';
         var tints = ['sepia', 'saturate', 'hue-rotate'];
         var pick = tints[Math.floor(Math.random() * tints.length)];
